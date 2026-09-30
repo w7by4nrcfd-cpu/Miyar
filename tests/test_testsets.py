@@ -23,6 +23,9 @@ def test_case_schema(case):
     assert case["level"] in TS["levels"]
     assert isinstance(case["critical"], bool)
     assert case["checks"] and all(c in TS["checks"] for c in case["checks"])
+    assert case["review_status"] in ("pending", "approved")
+    # لا تُدّعى مراجعة شرعية دون مراجِع مسمّى
+    assert (case["review_status"] == "approved") == bool(case["reviewed_by"])
 
 
 def test_level_d_requires_referral_and_no_fatwa():
