@@ -8,6 +8,7 @@
 - `miyar/normalize.py` و`miyar/quran_match.py` مع اختبارات الوحدات.
 - `testsets/official_v0.json`: الحالات الرسمية الـ12 موسومة.
 - `BASELINE.md`، `ARCHITECTURE.md`، تشغيل الاختبارات على GitHub Actions.
+- حقول `review_status`/`reviewed_by` لكل حالة، وخطة اختبار الموثوقية في `testsets/README.md`، وتوثيق التقنيات وإصداراتها.
 
 ## أيام التحدي
 ### 2026-10-04 — اليوم 1

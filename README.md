@@ -24,6 +24,10 @@ pip install -r requirements.txt
 python -m pytest -q
 ```
 
+## التقنيات
+Python 3.11 (المكتبة القياسية فقط في المرحلة 0) · pytest · GitHub Actions · نص Tanzil 1.0.2 ·
+بيانات الصحيحين من fawazahmed0/hadith-api. التفاصيل والإصدارات في [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## البيانات والتراخيص
 انظر [SOURCES.md](SOURCES.md). كود المشروع بترخيص MIT؛ البيانات بتراخيص مصادرها.
 
