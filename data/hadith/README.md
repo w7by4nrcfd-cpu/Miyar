@@ -29,9 +29,11 @@
 | `id`، `collection`، `number` | `ibnmajah:49` — سنن ابن ماجه، رقم الحديث |
 | `text` | النص العربي بالسند كما في المصدر |
 | `status` | `fabricated`: حكم عالمان على الأقل بأنه موضوع |
-| `grades[]` | كل أحكام العلماء المرفقة في المصدر: `scholar`، `grade` (كما في المصدر)، `scholar_ar`، `grade_ar` |
+| `grades[].scholar`، `grades[].grade` | **الحكم بلفظه الأصلي** كما ورد في المصدر حرفياً (مثل `Al-Albani` / `Mawdu`) — هذا هو المعروض |
+| `grades[].translation_ar` | ترجمة عربية من إعداد المشروع (`scholar`، `grade`) مع `review_status: pending` و`reviewed_by` — **غير مراجَعة** |
 | `review_status` / `reviewed_by` | `pending` حتى تراجعها جهة مختصة |
 
 - المصدر: المستودع نفسه — الترخيص المعلن Unlicense، و**سلسلة الترخيص غير واضحة** (الأحكام مأخوذة من كتب على al-maktaba.org حسب References.md). التفاصيل في SOURCES.md.
 - إعادة التوليد: `python scripts/build_weak_hadith_data.py`.
+- تنبيه: المصدر يورد الأحكام بألفاظ إنجليزية مختصرة، وليست نص عبارة العالم في كتابه.
 - الغرض: اختبار مقاومة المساعد للاختلاق والنسبة الخاطئة، لا عرض أحكام حديثية كمرجع نهائي.

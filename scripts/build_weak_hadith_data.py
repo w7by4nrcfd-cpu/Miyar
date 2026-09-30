@@ -63,10 +63,16 @@ def select(data: dict) -> list[dict]:
                 "status": "fabricated",
                 "grades": [
                     {
+                        # اللفظ الأصلي كما ورد في المصدر حرفياً — هو المعروض
                         "scholar": g["name"],
-                        "scholar_ar": SCHOLAR_AR.get(g["name"], g["name"]),
                         "grade": g["grade"],
-                        "grade_ar": GRADE_AR.get(g["grade"], g["grade"]),
+                        # ترجمة عربية من إعداد المشروع، غير مراجَعة
+                        "translation_ar": {
+                            "scholar": SCHOLAR_AR.get(g["name"], g["name"]),
+                            "grade": GRADE_AR.get(g["grade"], g["grade"]),
+                            "review_status": "pending",
+                            "reviewed_by": None,
+                        },
                     }
                     for g in grades
                 ],
@@ -92,7 +98,12 @@ def build(src: Path | None) -> int:
         "source": f"https://github.com/fawazahmed0/hadith-api (commit {COMMIT}, editions/{FILE})",
         "license_declared": "Unlicense",
         "license_note": "Unlicense معلن في ملف LICENSE بالمستودع؛ لكن الإصدار العربي بلا مصدر مذكور (author: Unknown، source فارغ) وReferences.md يُحيل إلى مواقع منها sunnah.com وal-maktaba.org، فسلسلة الترخيص غير واضحة — انظر SOURCES.md",
-        "review_policy": "review_status = pending حتى يراجعها مختص ويُذكر اسمه في reviewed_by.",
+        "grade_display_policy": (
+            "يُعرض الحكم بلفظه الأصلي كما ورد في المصدر (grades[].scholar و grades[].grade) حرفياً. "
+            "تنبيه: المصدر يورد الأحكام بألفاظ إنجليزية مختصرة (مثل Mawdu)، وليست نص عبارة العالم في كتابه. "
+            "translation_ar ترجمة من إعداد المشروع، غير مراجَعة (review_status: pending)، ولا تُعرض إلا موسومة بذلك."
+        ),
+        "review_policy": "review_status = pending حتى يراجعها مختص ويُذكر اسمه في reviewed_by (للحديث وللترجمة كلٌّ على حدة).",
         "items": select(data),
     }
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -26,6 +26,7 @@ def test_weak_fabricated_set():
     doc = json.loads((ROOT / "data/hadith/weak_fabricated.json").read_text(encoding="utf-8"))
     items = doc["items"]
     assert doc["license_declared"] == "Unlicense" and doc["license_note"]
+    assert doc["grade_display_policy"]
     assert 1 <= len(items) <= 30  # مجموعة صغيرة
     assert len({i["id"] for i in items}) == len(items)
     for item in items:
@@ -33,6 +34,12 @@ def test_weak_fabricated_set():
         assert item["status"] in doc["status_meaning"]
         assert item["review_status"] in ("pending", "approved")
         assert (item["review_status"] == "approved") == bool(item["reviewed_by"])
+        for g in item["grades"]:
+            tr = g["translation_ar"]
+            assert tr["scholar"] and tr["grade"]
+            # الترجمة العربية غير مراجَعة ما لم يُسمَّ مراجِع
+            assert tr["review_status"] in ("pending", "approved")
+            assert (tr["review_status"] == "approved") == bool(tr["reviewed_by"])
         by = {g["scholar"]: g["grade"] for g in item["grades"]}
         # قاعدة الاختيار: عالمان على الأقل حكما بالوضع، ولا حكم بالصحة أو الحسن
         assert by.get("Al-Albani") == "Mawdu" and by.get("Shuaib Al Arnaut") == "Mawdu"

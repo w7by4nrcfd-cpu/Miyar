@@ -8,7 +8,8 @@
   "source": "https://github.com/fawazahmed0/hadith-api (commit df57907be35291c91ad6a6691180e22ca9920784, editions/ara-ibnmajah.json)",
   "license_declared": "Unlicense",
   "license_note": "Unlicense معلن في ملف LICENSE بالمستودع؛ لكن الإصدار العربي بلا مصدر مذكور (author: Unknown، source فارغ) وReferences.md يُحيل إلى مواقع منها sunnah.com وal-maktaba.org، فسلسلة الترخيص غير واضحة — انظر SOURCES.md",
-  "review_policy": "review_status = pending حتى يراجعها مختص ويُذكر اسمه في reviewed_by.",
+  "grade_display_policy": "يُعرض الحكم بلفظه الأصلي كما ورد في المصدر (grades[].scholar و grades[].grade) حرفياً. تنبيه: المصدر يورد الأحكام بألفاظ إنجليزية مختصرة (مثل Mawdu)، وليست نص عبارة العالم في كتابه. translation_ar ترجمة من إعداد المشروع، غير مراجَعة (review_status: pending)، ولا تُعرض إلا موسومة بذلك.",
+  "review_policy": "review_status = pending حتى يراجعها مختص ويُذكر اسمه في reviewed_by (للحديث وللترجمة كلٌّ على حدة).",
   "items": [
     {
       "id": "ibnmajah:49",
@@ -20,27 +21,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -57,27 +74,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -94,27 +127,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -131,27 +180,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -168,27 +233,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -205,27 +286,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -242,27 +339,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -279,27 +392,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -316,27 +445,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -353,27 +498,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -390,27 +551,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -427,27 +604,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -464,27 +657,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -501,27 +710,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Munkar",
-          "grade_ar": "منكر"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "منكر",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -538,27 +763,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -575,27 +816,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -612,27 +869,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
@@ -649,27 +922,43 @@
       "grades": [
         {
           "scholar": "Al-Albani",
-          "scholar_ar": "الألباني",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "الألباني",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Muhammad Fouad Abd al-Baqi",
-          "scholar_ar": "محمد فؤاد عبد الباقي",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "محمد فؤاد عبد الباقي",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Shuaib Al Arnaut",
-          "scholar_ar": "شعيب الأرناؤوط",
           "grade": "Mawdu",
-          "grade_ar": "موضوع"
+          "translation_ar": {
+            "scholar": "شعيب الأرناؤوط",
+            "grade": "موضوع",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         },
         {
           "scholar": "Zubair Ali Zai",
-          "scholar_ar": "زبير علي زئي",
           "grade": "Daif",
-          "grade_ar": "ضعيف"
+          "translation_ar": {
+            "scholar": "زبير علي زئي",
+            "grade": "ضعيف",
+            "review_status": "pending",
+            "reviewed_by": null
+          }
         }
       ],
       "source": "fawazahmed0/hadith-api@df57907be352/ara-ibnmajah.json",
