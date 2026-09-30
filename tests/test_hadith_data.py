@@ -25,7 +25,7 @@ def test_hadith_data_integrity():
 def test_weak_fabricated_set():
     doc = json.loads((ROOT / "data/hadith/weak_fabricated.json").read_text(encoding="utf-8"))
     items = doc["items"]
-    assert doc["license"] == "Unlicense"
+    assert doc["license_declared"] == "Unlicense" and doc["license_note"]
     assert 1 <= len(items) <= 30  # مجموعة صغيرة
     assert len({i["id"] for i in items}) == len(items)
     for item in items:

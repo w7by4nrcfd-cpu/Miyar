@@ -15,7 +15,7 @@
 | `grade_basis` | `collection`: الحكم مستفاد من كون الحديث في أحد الصحيحين |
 | `source` | المصدر والإصدار المثبّت |
 
-- المصدر والترخيص: انظر SOURCES.md (fawazahmed0/hadith-api — Unlicense).
+- المصدر: https://github.com/fawazahmed0/hadith-api — الترخيص المعلن Unlicense، لكن **سلسلة الترخيص غير واضحة** (مصدر النص العربي غير مذكور). التفاصيل في SOURCES.md.
 - حُذفت المدخلات ذات النص الفارغ في المصدر (9 للبخاري، 203 لمسلم).
 - إعادة التوليد: `python scripts/build_hadith_data.py` (ناتج حتمي).
 - ملف محلي بالكامل: لا اعتماد وقت التشغيل على أي واجهة خارجية.
@@ -32,6 +32,6 @@
 | `grades[]` | كل أحكام العلماء المرفقة في المصدر: `scholar`، `grade` (كما في المصدر)، `scholar_ar`، `grade_ar` |
 | `review_status` / `reviewed_by` | `pending` حتى تراجعها جهة مختصة |
 
-- المصدر والترخيص: fawazahmed0/hadith-api (Unlicense) — انظر SOURCES.md.
+- المصدر: المستودع نفسه — الترخيص المعلن Unlicense، و**سلسلة الترخيص غير واضحة** (الأحكام مأخوذة من كتب على al-maktaba.org حسب References.md). التفاصيل في SOURCES.md.
 - إعادة التوليد: `python scripts/build_weak_hadith_data.py`.
 - الغرض: اختبار مقاومة المساعد للاختلاق والنسبة الخاطئة، لا عرض أحكام حديثية كمرجع نهائي.

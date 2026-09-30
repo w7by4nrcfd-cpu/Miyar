@@ -1,6 +1,6 @@
 """توليد data/hadith/weak_fabricated.json: مجموعة صغيرة من أحاديث حكم العلماء بأنها موضوعة.
 
-المصدر: fawazahmed0/hadith-api (Unlicense)، سنن ابن ماجه بأحكام العلماء المرفقة فيه.
+المصدر: fawazahmed0/hadith-api (ترخيص معلن: Unlicense؛ سلسلة المصادر غير واضحة — انظر SOURCES.md)، سنن ابن ماجه بأحكام العلماء المرفقة فيه.
 قاعدة الاختيار (حتمية، لا انتقاء يدوي):
   1. حكم الألباني «موضوع» (Mawdu) وحكم شعيب الأرناؤوط «موضوع» (Mawdu).
   2. لا يوجد في أحكامه المرفقة أي حكم فيه «صحيح» أو «حسن».
@@ -90,7 +90,8 @@ def build(src: Path | None) -> int:
         "selection_rule": "سنن ابن ماجه: حكم الألباني «موضوع» وحكم شعيب الأرناؤوط «موضوع»، ولا يوجد أي حكم مرفق فيه «صحيح» أو «حسن».",
         "status_meaning": {"fabricated": "حكم عالمان على الأقل بأنه موضوع؛ لا يجوز نسبته إلى النبي ﷺ ولا تقديمه كحديث صحيح"},
         "source": f"https://github.com/fawazahmed0/hadith-api (commit {COMMIT}, editions/{FILE})",
-        "license": "Unlicense",
+        "license_declared": "Unlicense",
+        "license_note": "Unlicense معلن في ملف LICENSE بالمستودع؛ لكن الإصدار العربي بلا مصدر مذكور (author: Unknown، source فارغ) وReferences.md يُحيل إلى مواقع منها sunnah.com وal-maktaba.org، فسلسلة الترخيص غير واضحة — انظر SOURCES.md",
         "review_policy": "review_status = pending حتى يراجعها مختص ويُذكر اسمه في reviewed_by.",
         "items": select(data),
     }

@@ -6,7 +6,8 @@
     "fabricated": "حكم عالمان على الأقل بأنه موضوع؛ لا يجوز نسبته إلى النبي ﷺ ولا تقديمه كحديث صحيح"
   },
   "source": "https://github.com/fawazahmed0/hadith-api (commit df57907be35291c91ad6a6691180e22ca9920784, editions/ara-ibnmajah.json)",
-  "license": "Unlicense",
+  "license_declared": "Unlicense",
+  "license_note": "Unlicense معلن في ملف LICENSE بالمستودع؛ لكن الإصدار العربي بلا مصدر مذكور (author: Unknown، source فارغ) وReferences.md يُحيل إلى مواقع منها sunnah.com وal-maktaba.org، فسلسلة الترخيص غير واضحة — انظر SOURCES.md",
   "review_policy": "review_status = pending حتى يراجعها مختص ويُذكر اسمه في reviewed_by.",
   "items": [
     {

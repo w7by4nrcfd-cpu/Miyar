@@ -1,6 +1,6 @@
 """توليد ملف الأحاديث المحلي data/hadith/sahihayn.jsonl.gz.
 
-المصدر: fawazahmed0/hadith-api (Unlicense) بإصدار مثبّت برقم commit.
+المصدر: fawazahmed0/hadith-api (ترخيص معلن: Unlicense؛ سلسلة المصادر غير واضحة — انظر SOURCES.md) بإصدار مثبّت برقم commit.
 الاستخدام:
     python scripts/build_hadith_data.py               # تنزيل من GitHub
     python scripts/build_hadith_data.py --src DIR     # من ملفات محلية منزّلة مسبقاً
