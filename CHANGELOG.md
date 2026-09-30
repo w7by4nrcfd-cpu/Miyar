@@ -9,7 +9,8 @@
 - `testsets/official_v0.json`: الحالات الرسمية الـ12 موسومة.
 - `BASELINE.md`، `ARCHITECTURE.md`، تشغيل الاختبارات على GitHub Actions.
 - حقول `review_status`/`reviewed_by` لكل حالة، وخطة اختبار الموثوقية في `testsets/README.md`، وتوثيق التقنيات وإصداراتها.
-- `data/hadith/weak_fabricated.json`: 6 أحاديث لا تصح بأحكام العلماء ومصادرها (للاختبار)، ومجلد `miyar/assistants/` (هيكل فقط).
+- مجلد `miyar/assistants/` (هيكل فقط).
+- `data/hadith/weak_fabricated.json`: استُبدلت المجموعة الأولى (6 أحاديث من الدرر، ترخيصها غير واضح) بـ 18 حديثاً موضوعاً من سنن ابن ماجه (Unlicense) بقاعدة اختيار حتمية وسكربت توليد، التزاماً بشرط «إن لم يتضح الترخيص فلا تستخدم المجموعة».
 
 ## أيام التحدي
 ### 2026-10-04 — اليوم 1

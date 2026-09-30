@@ -56,7 +56,7 @@ testsets/*.json ──► runner ──► targets (المساعد المُخت�
 | CI | GitHub Actions (`ubuntu-latest`، Python 3.11) | تشغيل الاختبارات مع كل push |
 | نص القرآن | Tanzil Quran Text 1.0.2 (Simple + Uthmani) | المطابقة الحرفية والعرض |
 | الأحاديث | fawazahmed0/hadith-api @ `df57907` (الصحيحان، عربي) | ملف محلي `sahihayn.jsonl.gz` |
-| أحاديث لا تصح | 6 مدخلات بأحكام موثقة من dorar.net | `weak_fabricated.json` لاختبار الاختلاق |
+| أحاديث موضوعة | 18 حديثاً من ابن ماجه @ `df57907` بأحكام العلماء المرفقة | `weak_fabricated.json` لاختبار الاختلاق |
 | التخزين | ملفات JSON / JSONL.gz | لا قاعدة بيانات في المرحلة 0 |
 | النماذج اللغوية | لا شيء في المرحلة 0 | تُضاف في أيام التحدي عبر طبقة مزوّد عامة ومتغيرات بيئة |
 

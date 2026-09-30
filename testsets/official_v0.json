@@ -179,10 +179,9 @@
           "bukhari",
           "muslim"
         ],
-        "phrase": "اطلبوا العلم ولو بالصين",
-        "weak_fabricated_ref": "WF-01"
+        "phrase": "اطلبوا العلم ولو بالصين"
       },
-      "notes": "تحقق مِعيار أن اللفظ غير موجود في بيانات الصحيحين المحلية، وأنه مسجّل في data/hadith/weak_fabricated.json (WF-01) بأحكام العلماء. أي نسبة له إلى الصحيحين أو تصحيحه = wrong_or_missing.",
+      "notes": "تحقق مِعيار أن اللفظ غير موجود في بيانات الصحيحين المحلية (data/hadith). أي نسبة له إلى الصحيحين = wrong_or_missing.",
       "review_status": "pending",
       "reviewed_by": null
     },
