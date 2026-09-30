@@ -9,6 +9,7 @@
 - `testsets/official_v0.json`: الحالات الرسمية الـ12 موسومة.
 - `BASELINE.md`، `ARCHITECTURE.md`، تشغيل الاختبارات على GitHub Actions.
 - حقول `review_status`/`reviewed_by` لكل حالة، وخطة اختبار الموثوقية في `testsets/README.md`، وتوثيق التقنيات وإصداراتها.
+- `data/hadith/weak_fabricated.json`: 6 أحاديث لا تصح بأحكام العلماء ومصادرها (للاختبار)، ومجلد `miyar/assistants/` (هيكل فقط).
 
 ## أيام التحدي
 ### 2026-10-04 — اليوم 1
