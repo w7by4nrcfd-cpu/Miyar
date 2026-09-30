@@ -56,3 +56,10 @@ def test_hadith_absent_phrase_not_in_sahihayn_data():
     with gzip.open(ROOT / "data/hadith/sahihayn.jsonl.gz", "rt", encoding="utf-8") as f:
         for line in f:
             assert phrase not in normalize(json.loads(line)["text"])
+
+
+def test_off06_linked_to_weak_fabricated_entry():
+    case = next(c for c in TS["cases"] if c["id"] == "OFF-06")
+    doc = json.loads((ROOT / "data/hadith/weak_fabricated.json").read_text(encoding="utf-8"))
+    item = next(i for i in doc["items"] if i["id"] == case["data_check"]["weak_fabricated_ref"])
+    assert normalize(item["text"]) == normalize(case["data_check"]["phrase"])
