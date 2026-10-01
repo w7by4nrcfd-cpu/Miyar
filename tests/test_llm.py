@@ -1,0 +1,157 @@
+"""اختبارات طبقة النموذج اللغوي بنقل وهمي — لا اتصال بالشبكة ولا استهلاك للحصة."""
+
+import json
+
+import pytest
+
+from miyar.llm import (
+    DEV_RUN,
+    CacheMiss,
+    CallBudgetExceeded,
+    GeminiProvider,
+    LLMClient,
+    LLMError,
+    LLMRequest,
+    MissingCredentials,
+    RateLimited,
+    ResponseStore,
+    client_from_env,
+)
+
+FAKE_KEY = "FAKE-KEY-for-tests-only-123"  # ليس مفتاحاً حقيقياً
+
+
+class FakeTransport:
+    """يسجّل الطلبات ويعيد استجابات معدّة مسبقاً بالترتيب."""
+
+    def __init__(self, *responses):
+        self.responses = list(responses)
+        self.calls = []
+
+    def __call__(self, url, headers, body, timeout):
+        self.calls.append({"url": url, "headers": headers, "body": json.loads(body)})
+        return self.responses.pop(0)
+
+
+def ok(text="جواب", finish="STOP"):
+    body = {
+        "candidates": [{"content": {"parts": [{"text": text}]}, "finishReason": finish}],
+        "usageMetadata": {"promptTokenCount": 3, "candidatesTokenCount": 2},
+    }
+    return 200, {}, json.dumps(body, ensure_ascii=False).encode()
+
+
+REQ = LLMRequest(provider="gemini", model="test-model", prompt="سؤال", system="تعليمات")
+
+
+def test_request_key_is_stable_and_sensitive():
+    assert REQ.key() == LLMRequest("gemini", "test-model", "سؤال", "تعليمات").key()
+    assert REQ.key() != LLMRequest("gemini", "test-model", "سؤال آخر", "تعليمات").key()
+    assert REQ.key() != LLMRequest("gemini", "other-model", "سؤال", "تعليمات").key()
+
+
+def test_gemini_request_shape_and_parse():
+    t = FakeTransport(ok("نص الإجابة"))
+    resp = GeminiProvider(FAKE_KEY, t).call(REQ)
+    call = t.calls[0]
+    assert call["url"].endswith("/v1beta/models/test-model:generateContent")
+    assert call["headers"]["x-goog-api-key"] == FAKE_KEY
+    assert call["body"]["contents"][0]["parts"][0]["text"] == "سؤال"
+    assert call["body"]["systemInstruction"]["parts"][0]["text"] == "تعليمات"
+    assert call["body"]["generationConfig"] == {"temperature": 0.0, "maxOutputTokens": 1024}
+    assert resp.text == "نص الإجابة" and resp.finish_reason == "STOP" and resp.usage["promptTokenCount"] == 3
+
+
+def test_gemini_429_retry_after_header_and_body():
+    t = FakeTransport((429, {"Retry-After": "12"}, b"{}"))
+    with pytest.raises(RateLimited) as e:
+        GeminiProvider(FAKE_KEY, t).call(REQ)
+    assert e.value.retry_after == 12.0
+    body = b'{"error":{"code":429,"status":"RESOURCE_EXHAUSTED","details":[{"retryDelay":"30s"}]}}'
+    with pytest.raises(RateLimited) as e:
+        GeminiProvider(FAKE_KEY, FakeTransport((429, {}, body))).call(REQ)
+    assert e.value.retry_after == 30.0
+
+
+def test_errors_never_leak_the_key():
+    body = f'{{"error":{{"message":"bad key {FAKE_KEY}"}}}}'.encode()
+    with pytest.raises(LLMError) as e:
+        GeminiProvider(FAKE_KEY, FakeTransport((400, {}, body))).call(REQ)
+    assert FAKE_KEY not in str(e.value) and "***" in str(e.value)
+
+
+def test_blocked_prompt_without_candidates():
+    body = json.dumps({"promptFeedback": {"blockReason": "SAFETY"}}).encode()
+    with pytest.raises(LLMError, match="SAFETY"):
+        GeminiProvider(FAKE_KEY, FakeTransport((200, {}, body))).call(REQ)
+
+
+def test_missing_key():
+    with pytest.raises(MissingCredentials):
+        GeminiProvider("")
+
+
+def _client(tmp_path, transport, mode="live", cap=5):
+    return LLMClient(GeminiProvider(FAKE_KEY, transport), ResponseStore(tmp_path), mode, cap)
+
+
+def test_live_call_is_stored_and_never_repeated(tmp_path):
+    t = FakeTransport(ok("مرة واحدة"))
+    c = _client(tmp_path, t)
+    first = c.complete(REQ)
+    second = c.complete(REQ)
+    assert len(t.calls) == 1
+    assert first.from_cache is False and second.from_cache is True and second.text == "مرة واحدة"
+
+
+def test_stored_file_is_labelled_and_has_no_secret(tmp_path):
+    _client(tmp_path, FakeTransport(ok())).complete(REQ)
+    files = list(tmp_path.glob("*.json"))
+    assert {f.name for f in files} == {f"{REQ.key()}.json", "usage.json"}
+    for f in files:
+        text = f.read_text(encoding="utf-8")
+        assert DEV_RUN in text and FAKE_KEY not in text
+
+
+def test_cached_mode_never_calls(tmp_path):
+    t = FakeTransport()
+    c = LLMClient(None, ResponseStore(tmp_path), "cached")
+    with pytest.raises(CacheMiss):
+        c.complete(REQ)
+    assert t.calls == []
+
+
+def test_cached_mode_replays_stored(tmp_path):
+    _client(tmp_path, FakeTransport(ok("محفوظ"))).complete(REQ)
+    assert LLMClient(None, ResponseStore(tmp_path), "cached").complete(REQ).text == "محفوظ"
+
+
+def test_daily_cap(tmp_path):
+    t = FakeTransport(ok("1"), ok("2"))
+    c = _client(tmp_path, t, cap=1)
+    c.complete(REQ)
+    with pytest.raises(CallBudgetExceeded):
+        c.complete(LLMRequest("gemini", "test-model", "سؤال جديد"))
+    assert len(t.calls) == 1
+
+
+def test_rate_limited_attempt_counts_and_is_not_stored(tmp_path):
+    t = FakeTransport((429, {}, b"{}"))
+    c = _client(tmp_path, t, cap=5)
+    with pytest.raises(RateLimited):
+        c.complete(REQ)
+    assert c.store.get(REQ) is None and c.store.live_calls_today() == 1
+
+
+def test_client_from_env(tmp_path):
+    base = {"MIYAR_LLM_CACHE_DIR": str(tmp_path), "MIYAR_LLM_MODEL": "m"}
+    c, model = client_from_env(base)
+    assert model == "m" and c.mode == "cached" and c.provider is None
+    with pytest.raises(LLMError, match="MIYAR_LLM_MODEL"):
+        client_from_env({"MIYAR_LLM_CACHE_DIR": str(tmp_path)})
+    with pytest.raises(MissingCredentials):
+        client_from_env({**base, "MIYAR_RUN_MODE": "live"})
+    with pytest.raises(LLMError, match="غير منفّذ"):
+        client_from_env({**base, "MIYAR_LLM_PROVIDER": "anthropic"})
+    c, _ = client_from_env({**base, "MIYAR_RUN_MODE": "live", "GEMINI_API_KEY": FAKE_KEY, "MIYAR_LIVE_MAX_CALLS_PER_DAY": "7"})
+    assert c.mode == "live" and c.max_live_calls_per_day == 7 and c.store.run_label == DEV_RUN
