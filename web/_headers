@@ -1,0 +1,11 @@
+# رؤوس Cloudflare Pages (https://developers.cloudflare.com/pages/configuration/headers/)
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+
+# النتائج تتغير بعد كل تشغيل: لا تخزين مؤقت
+/data/*
+  Cache-Control: no-store
