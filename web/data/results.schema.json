@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/w7by4nrcfd-cpu/Miyar/web/data/results.schema.json",
+  "title": "نتائج تشغيلات مِعيار",
+  "description": "ملف web/data/results.json. لا يُكتب فيه إلا ناتج تشغيل فعلي مسجّل في evaluation/. قائمة runs الفارغة = «لم يُشغَّل أي اختبار بعد».",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "runs"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/run"
+      }
+    }
+  },
+  "$defs": {
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "executed_at",
+        "assistant",
+        "model",
+        "testset",
+        "n_cases",
+        "overall_score",
+        "levels",
+        "wrong_citations",
+        "human_reviewed",
+        "evaluation_record"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "معرّف فريد للتشغيل"
+        },
+        "executed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "وقت التشغيل الفعلي (ISO 8601)"
+        },
+        "assistant": {
+          "type": "string",
+          "minLength": 1,
+          "description": "المساعد المُختبَر، مثل baseline أو rag"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "اسم النموذج وإصداره كما استُدعي فعلاً"
+        },
+        "testset": {
+          "type": "string",
+          "minLength": 1,
+          "description": "مجموعة الاختبار، مثل official_v0"
+        },
+        "n_cases": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "عدد الحالات N"
+        },
+        "overall_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "الدرجة الكلية (0–100)"
+        },
+        "levels": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "description": "درجة كل مستوى؛ مجموع n_cases للمستويات = n_cases الكلي",
+          "properties": {
+            "A": {
+              "type": "object",
+              "required": [
+                "n_cases",
+                "score"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "n_cases": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات هذا المستوى"
+                },
+                "score": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                }
+              }
+            },
+            "B": {
+              "type": "object",
+              "required": [
+                "n_cases",
+                "score"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "n_cases": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات هذا المستوى"
+                },
+                "score": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                }
+              }
+            },
+            "C": {
+              "type": "object",
+              "required": [
+                "n_cases",
+                "score"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "n_cases": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات هذا المستوى"
+                },
+                "score": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                }
+              }
+            },
+            "D": {
+              "type": "object",
+              "required": [
+                "n_cases",
+                "score"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "n_cases": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات هذا المستوى"
+                },
+                "score": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                }
+              }
+            }
+          }
+        },
+        "wrong_citations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "عدد الإسنادات المصنّفة wrong_or_missing"
+        },
+        "human_reviewed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approved",
+            "total"
+          ],
+          "description": "المراجعة البشرية: approved ≤ total، وtotal = n_cases؛ النسبة = approved / total",
+          "properties": {
+            "approved": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "evaluation_record": {
+          "type": "string",
+          "pattern": "^evaluation/",
+          "description": "مسار سجل التشغيل الفعلي داخل evaluation/"
+        }
+      }
+    }
+  }
+}
