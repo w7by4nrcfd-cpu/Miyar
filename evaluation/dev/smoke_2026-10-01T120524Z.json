@@ -1,0 +1,39 @@
+{
+  "run_label": "DEV_RUN",
+  "note": "DEV_RUN: اختبار دخان للاتصال فقط، ليس نتيجة تقييم ولا يُنشر.",
+  "ran_at": "2026-10-01T12:05:24+00:00",
+  "prompt": "Reply with exactly one word: OK",
+  "max_output_tokens": 16,
+  "results": [
+    {
+      "role": "judge",
+      "model_var": "MIYAR_LLM_MODEL_JUDGE",
+      "model": "gemini-3.8-flash",
+      "status": "error",
+      "error_type": "LLMError",
+      "error": "Gemini HTTP 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n"
+    },
+    {
+      "role": "assistant",
+      "model_var": "MIYAR_LLM_MODEL_ASSISTANT",
+      "model": "gemini-3.5-flash-lite",
+      "status": "ok",
+      "from_cache": true,
+      "text": "OK",
+      "finish_reason": "STOP",
+      "usage": {
+        "promptTokenCount": 8,
+        "candidatesTokenCount": 1,
+        "totalTokenCount": 9,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "request_key": "d5312fb8bf664e7e7e377ad8063fbc12d10195c09aa226fd3ea6e807c0222c1c"
+    }
+  ]
+}

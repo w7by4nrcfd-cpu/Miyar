@@ -1,0 +1,25 @@
+{
+  "run_label": "DEV_RUN",
+  "note": "DEV_RUN: اختبار دخان للاتصال فقط، ليس نتيجة تقييم ولا يُنشر.",
+  "ran_at": "2026-10-01T12:02:56+00:00",
+  "prompt": "Reply with exactly one word: OK",
+  "max_output_tokens": 16,
+  "results": [
+    {
+      "role": "judge",
+      "model_var": "MIYAR_LLM_MODEL_JUDGE",
+      "model": "gemini-2.5-flash",
+      "status": "error",
+      "error_type": "LLMError",
+      "error": "Gemini HTTP 404: {\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.8-flash for the latest features and improvements. We recommend you to use the Interactions API (https://ai.google.dev/gemini-api/docs"
+    },
+    {
+      "role": "assistant",
+      "model_var": "MIYAR_LLM_MODEL_ASSISTANT",
+      "model": "gemini-2.5-flash-lite",
+      "status": "error",
+      "error_type": "LLMError",
+      "error": "Gemini HTTP 404: {\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API (https://ai.google.dev/gemin"
+    }
+  ]
+}

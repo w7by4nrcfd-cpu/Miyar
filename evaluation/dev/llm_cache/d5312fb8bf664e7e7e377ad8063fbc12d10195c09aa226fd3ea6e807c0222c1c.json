@@ -1,0 +1,31 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-01T12:05:18+00:00",
+  "request_key": "d5312fb8bf664e7e7e377ad8063fbc12d10195c09aa226fd3ea6e807c0222c1c",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "Reply with exactly one word: OK",
+    "system": "",
+    "temperature": 0.0,
+    "max_output_tokens": 16
+  },
+  "response": {
+    "text": "OK",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 8,
+      "candidatesTokenCount": 1,
+      "totalTokenCount": 9,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 8
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  }
+}
