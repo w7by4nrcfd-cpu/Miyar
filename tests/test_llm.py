@@ -155,3 +155,19 @@ def test_client_from_env(tmp_path):
         client_from_env({**base, "MIYAR_LLM_PROVIDER": "anthropic"})
     c, _ = client_from_env({**base, "MIYAR_RUN_MODE": "live", "GEMINI_API_KEY": FAKE_KEY, "MIYAR_LIVE_MAX_CALLS_PER_DAY": "7"})
     assert c.mode == "live" and c.max_live_calls_per_day == 7 and c.store.run_label == DEV_RUN
+
+
+def test_client_from_env_role_models(tmp_path):
+    base = {
+        "MIYAR_LLM_CACHE_DIR": str(tmp_path),
+        "MIYAR_LLM_MODEL_JUDGE": "judge-m",
+        "MIYAR_LLM_MODEL_ASSISTANT": "assistant-m",
+    }
+    assert client_from_env(base, role="judge")[1] == "judge-m"
+    assert client_from_env(base, role="assistant")[1] == "assistant-m"
+    # بلا متغير الدور: يُرجع إلى MIYAR_LLM_MODEL
+    assert client_from_env({"MIYAR_LLM_CACHE_DIR": str(tmp_path), "MIYAR_LLM_MODEL": "m"}, role="judge")[1] == "m"
+    with pytest.raises(LLMError, match="MIYAR_LLM_MODEL"):
+        client_from_env({"MIYAR_LLM_CACHE_DIR": str(tmp_path)}, role="assistant")
+    with pytest.raises(ValueError):
+        client_from_env(base, role="other")

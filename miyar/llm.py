@@ -258,14 +258,29 @@ class LLMClient:
         return resp
 
 
-def client_from_env(env: dict | None = None, transport: Transport = urllib_transport) -> tuple[LLMClient, str]:
-    """يبني العميل من متغيرات البيئة. يعيد (العميل، اسم النموذج)."""
+# متغير النموذج لكل دور. الحَكَم والمساعد المُختبَر نموذجان مختلفان عمداً لتجنب تحيّز النموذج لإجاباته.
+ROLE_MODEL_VARS = {"judge": "MIYAR_LLM_MODEL_JUDGE", "assistant": "MIYAR_LLM_MODEL_ASSISTANT"}
+
+
+def model_for_role(env: dict, role: str | None) -> tuple[str, str]:
+    """يعيد (اسم المتغير، اسم النموذج): متغير الدور إن ضُبط، وإلا MIYAR_LLM_MODEL."""
+    if role is not None and role not in ROLE_MODEL_VARS:
+        raise ValueError(f"دور غير معروف: {role}")
+    if role is not None and env.get(ROLE_MODEL_VARS[role]):
+        return ROLE_MODEL_VARS[role], env[ROLE_MODEL_VARS[role]]
+    return "MIYAR_LLM_MODEL", env.get("MIYAR_LLM_MODEL", "")
+
+
+def client_from_env(
+    env: dict | None = None, transport: Transport = urllib_transport, role: str | None = None
+) -> tuple[LLMClient, str]:
+    """يبني العميل من متغيرات البيئة. يعيد (العميل، اسم النموذج). ``role``: judge أو assistant."""
     env = os.environ if env is None else env
     provider_name = env.get("MIYAR_LLM_PROVIDER", "gemini")
-    model = env.get("MIYAR_LLM_MODEL", "")
+    var, model = model_for_role(env, role)
     mode = env.get("MIYAR_RUN_MODE", "cached")
     if not model:
-        raise LLMError("MIYAR_LLM_MODEL غير مضبوط")
+        raise LLMError(f"{var} غير مضبوط")
     store = ResponseStore(env.get("MIYAR_LLM_CACHE_DIR") or DEFAULT_CACHE_DIR, env.get("MIYAR_RUN_LABEL", DEV_RUN))
     provider: Provider | None = None
     if provider_name != "gemini":
