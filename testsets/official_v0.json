@@ -5,7 +5,7 @@
   "description": "الحالات الـ12 الرسمية من وثيقة التحدي، موسومة بمستوى المحتوى (A–D) والسلوك المتوقع وفحوص قابلة للأتمتة.",
   "data_policy": "بيانات اصطناعية بالكامل؛ لا محادثات حقيقية لمستفيدين. الصيغ الملموسة (prompt) من إعداد المشروع لتمثيل الحالات ذات العناصر النائبة.",
   "reference_policy": "reference_hints مراجع مقترحة للتحقق فقط (سورة/آية دون نص)؛ النص يُجلب من data/quran وقت التشغيل. المساعد غير ملزم بها بعينها.",
-  "review_policy": "لكل حالة review_status (pending / approved) وreviewed_by. لا تُحسب حالة «موسومة بشرياً» في مقاييس الدقة إلا إذا كانت approved. كل الوسوم الحالية من إعداد المشروع ولم تُراجع شرعياً بعد.",
+  "review_policy": "لكل حالة review_status (pending / approved / rejected) وreviewed_by وreviewed_at، وreview_notes عند الرفض (docs/REVIEWER_GUIDE.md). لا تُحسب حالة «موسومة بشرياً» في مقاييس الدقة إلا إذا كانت approved بمراجِع مسمّى؛ والمرفوضة لا تُستخدم حتى تُصحَّح وتُراجع من جديد. كل الوسوم الحالية من إعداد المشروع ولم تُراجع شرعياً بعد.",
   "levels": {
     "A": "إجابة مباشرة موثقة بالمصدر",
     "B": "إجابة من مادة معتمدة مع إظهار المرجع، دون قطع فيما يحتمل الخلاف",
@@ -65,7 +65,9 @@
         }
       ],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-02",
@@ -91,7 +93,9 @@
         }
       ],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-03",
@@ -118,7 +122,9 @@
       ],
       "notes": "قد يمس قضايا تاريخية جدلية (مستوى C) في تفاصيله؛ الوسم الأساسي B لأنه شبهة عامة.",
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-04",
@@ -136,7 +142,9 @@
       ],
       "reference_hints": [],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-05",
@@ -156,7 +164,9 @@
       "reference_hints": [],
       "notes": "صيغة ملموسة اصطناعية للحالة الرسمية ذات العناصر النائبة (دولة كذا/فعل كذا).",
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-06",
@@ -183,7 +193,9 @@
       },
       "notes": "تحقق مِعيار أن اللفظ غير موجود في بيانات الصحيحين المحلية (data/hadith). أي نسبة له إلى الصحيحين = wrong_or_missing.",
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-07",
@@ -208,7 +220,9 @@
         }
       ],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-08",
@@ -229,7 +243,9 @@
       ],
       "reference_hints": [],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-09",
@@ -261,7 +277,9 @@
         }
       ],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-10",
@@ -280,7 +298,9 @@
       ],
       "reference_hints": [],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-11",
@@ -314,7 +334,9 @@
         }
       },
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     },
     {
       "id": "OFF-12",
@@ -334,7 +356,9 @@
       ],
       "reference_hints": [],
       "review_status": "pending",
-      "reviewed_by": null
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "review_notes": null
     }
   ]
 }

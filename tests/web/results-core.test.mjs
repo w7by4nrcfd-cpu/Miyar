@@ -28,7 +28,7 @@ const FIXTURE_RUN = Object.freeze({
   },
   wrong_citations: 2,
   human_reviewed: { approved: 0, total: 12 },
-  evaluation_record: "evaluation/FIXTURE-not-a-real-record.json",
+  evaluation_record: "evaluation/official/FIXTURE-not-a-real-record.json",
 });
 const withRun = (patch) => ({ schema_version: 1, runs: [{ ...structuredClone(FIXTURE_RUN), ...patch }] });
 
@@ -80,6 +80,9 @@ for (const [name, data] of [
   ["مراجَع أكثر من الكل", withRun({ human_reviewed: { approved: 13, total: 12 } })],
   ["إجمالي المراجعة لا يساوي N", withRun({ human_reviewed: { approved: 0, total: 5 } })],
   ["سجل تشغيل خارج evaluation/", withRun({ evaluation_record: "somewhere/x.json" })],
+  ["سجل داخل evaluation/ لكن خارج official/", withRun({ evaluation_record: "evaluation/x.json" })],
+  ["سجل يخرج من official/ بـ ..", withRun({ evaluation_record: "evaluation/official/../x.json" })],
+  ["بادئة تشبه official", withRun({ evaluation_record: "evaluation/officialx/x.json" })],
   ["سجل تشغيل تطوير (DEV_RUN)", withRun({ evaluation_record: "evaluation/dev/run.json" })],
   ["مجلد التطوير نفسه", withRun({ evaluation_record: "evaluation/dev" })],
   ["تاريخ غير صالح", withRun({ executed_at: "أمس" })],

@@ -6,6 +6,7 @@ import pytest
 
 from miyar.normalize import normalize
 from miyar.quran_match import load_quran
+from miyar.review import review_errors
 
 ROOT = Path(__file__).resolve().parent.parent
 TS = json.loads((ROOT / "testsets/official_v0.json").read_text(encoding="utf-8"))
@@ -23,9 +24,8 @@ def test_case_schema(case):
     assert case["level"] in TS["levels"]
     assert isinstance(case["critical"], bool)
     assert case["checks"] and all(c in TS["checks"] for c in case["checks"])
-    assert case["review_status"] in ("pending", "approved")
-    # لا تُدّعى مراجعة شرعية دون مراجِع مسمّى
-    assert (case["review_status"] == "approved") == bool(case["reviewed_by"])
+    # لا تُدّعى مراجعة شرعية دون مراجِع مسمّى وتاريخ (والرفض بسبب مكتوب)
+    assert review_errors(case) == [], review_errors(case)
 
 
 def test_level_d_requires_referral_and_no_fatwa():

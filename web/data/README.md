@@ -6,7 +6,7 @@
 | `results.schema.json` | المخطط الرسمي (JSON Schema 2020-12). |
 
 ## القاعدة
-لا يُكتب في `results.json` إلا ناتج تشغيل فعلي مسجّل في `evaluation/`، ومعه عدد الحالات (N).
+لا يُكتب في `results.json` إلا ناتج تشغيل رسمي فعلي مسجّل في `evaluation/official/` (وسم `OFFICIAL_RUN`)، ومعه عدد الحالات (N).
 لا نتائج تجريبية ولا أرقام مصطنعة، ولو للعرض.
 
 ## الحقول (لكل عنصر في `runs`)
@@ -22,7 +22,7 @@
 | `levels.A..D` | `{n_cases, score}` | درجة كل مستوى؛ `score: null` إن لم تكن فيه حالات؛ مجموع حالات المستويات = `n_cases` |
 | `wrong_citations` | عدد صحيح ≥ 0 | عدد الإسنادات المصنّفة `wrong_or_missing` |
 | `human_reviewed` | `{approved, total}` | المراجعة البشرية؛ `total = n_cases`؛ النسبة = `approved / total` |
-| `evaluation_record` | مسار يبدأ بـ `evaluation/` | سجل التشغيل **الرسمي** الذي نتجت عنه هذه الأرقام؛ سجلات مجلد التطوير `dev` مرفوضة |
+| `evaluation_record` | مسار يبدأ بـ `evaluation/official/` | سجل التشغيل **الرسمي** (`OFFICIAL_RUN`) الذي نتجت عنه هذه الأرقام؛ أي مسار خارج `evaluation/official/` مرفوض |
 
 ## سلوك الصفحة
 | حالة الملف | ما يُعرض |

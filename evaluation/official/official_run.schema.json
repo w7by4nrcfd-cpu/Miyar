@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/w7by4nrcfd-cpu/Miyar/evaluation/official/official_run.schema.json",
+  "title": "سجل تشغيل رسمي لمِعيار (OFFICIAL_RUN)",
+  "description": "ملف لكل تشغيل رسمي في evaluation/official/<run_id>.json. يفرضه tests/test_official_runs.py.",
+  "type": "object",
+  "required": ["run_label", "run_id", "executed_at", "n_cases", "testsets", "assistant", "model", "cases"],
+  "properties": {
+    "run_label": {"const": "OFFICIAL_RUN"},
+    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+$", "description": "يطابق اسم الملف دون .json"},
+    "executed_at": {"type": "string", "format": "date-time", "description": "ISO 8601 بمنطقة زمنية؛ داخل 4–6 أكتوبر 2026 بتوقيت الرياض"},
+    "n_cases": {"type": "integer", "minimum": 1, "description": "عدد الحالات N = len(cases)"},
+    "testsets": {"type": "array", "minItems": 1, "items": {"type": "string"}, "description": "مثل official_v0 وextended_v1"},
+    "assistant": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1, "description": "النموذج الذي أجاب فعلاً"},
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string", "minLength": 1}}}
+    }
+  }
+}

@@ -24,9 +24,12 @@ function validateRun(run, i) {
   if (isNonEmptyString(run.executed_at) && Number.isNaN(Date.parse(run.executed_at))) {
     at("executed_at ليس تاريخاً صالحاً");
   }
-  // مبدأ الصدق: كل نتيجة لها سجل تشغيل فعلي في evaluation/
-  if (isNonEmptyString(run.evaluation_record) && !run.evaluation_record.startsWith("evaluation/")) {
-    at("evaluation_record يجب أن يشير إلى مسار داخل evaluation/");
+  // مبدأ الصدق: كل نتيجة لها سجل تشغيل رسمي (OFFICIAL_RUN) داخل evaluation/official/ وحده
+  if (
+    isNonEmptyString(run.evaluation_record) &&
+    (!run.evaluation_record.startsWith("evaluation/official/") || run.evaluation_record.split("/").includes(".."))
+  ) {
+    at("evaluation_record يجب أن يشير إلى مسار داخل evaluation/official/");
   }
   // تشغيلات التطوير (مجلد dev داخل evaluation) ليست نتائج رسمية ولا تُعرض أبداً
   if (isNonEmptyString(run.evaluation_record) && /^evaluation\/dev(\/|$)/.test(run.evaluation_record)) {
