@@ -1,0 +1,44 @@
+{
+  "run_label": "DEV_RUN",
+  "note": "DEV_RUN: اختبار دخان للاتصال فقط، ليس نتيجة تقييم ولا يُنشر.",
+  "ran_at": "2026-10-01T12:32:03+00:00",
+  "prompts": {
+    "judge": "⚠️ FIXTURE — synthetic test data, not a real source.\nSource text: \"The FIXTURE river is 12 km long.\"\nClaim: \"The FIXTURE river is 12 km long.\"\nDoes the source text support the claim? Reply ONLY with JSON of the form {\"verdict\": \"supported\" | \"needs_review\" | \"wrong_or_missing\"}.",
+    "assistant": "Reply with exactly one word: OK"
+  },
+  "results": [
+    {
+      "role": "judge",
+      "model_var": "MIYAR_LLM_MODEL_JUDGE",
+      "status": "ok",
+      "answered_by": "gemini-3.8-flash",
+      "attempts": [
+        {
+          "requested_model": "gemini-3.8-flash",
+          "answered_by": "gemini-3.8-flash",
+          "from_cache": false,
+          "text": "{\"verdict\": \"supported\"}",
+          "finish_reason": "STOP",
+          "thoughts_tokens": 0,
+          "output_tokens": 7,
+          "usage": {
+            "promptTokenCount": 86,
+            "candidatesTokenCount": 7,
+            "totalTokenCount": 93,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 86
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "request_key": "576e710afff0c98ed7fcc92f605450249d37c47e88c31db0a03c96b19e6b5856",
+          "status": "ok",
+          "verdict": "supported",
+          "matches_expected": true
+        }
+      ]
+    }
+  ]
+}

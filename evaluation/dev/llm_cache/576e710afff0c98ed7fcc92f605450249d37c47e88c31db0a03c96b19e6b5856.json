@@ -1,0 +1,37 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-01T12:32:03+00:00",
+  "request_key": "576e710afff0c98ed7fcc92f605450249d37c47e88c31db0a03c96b19e6b5856",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "prompt": "⚠️ FIXTURE — synthetic test data, not a real source.\nSource text: \"The FIXTURE river is 12 km long.\"\nClaim: \"The FIXTURE river is 12 km long.\"\nDoes the source text support the claim? Reply ONLY with JSON of the form {\"verdict\": \"supported\" | \"needs_review\" | \"wrong_or_missing\"}.",
+    "system": "",
+    "temperature": 0.0,
+    "max_output_tokens": 1024,
+    "thinking_level": "low",
+    "thinking_budget": null,
+    "response_mime_type": "application/json"
+  },
+  "response": {
+    "text": "{\"verdict\": \"supported\"}",
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "requested_model": "gemini-3.8-flash",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 86,
+      "candidatesTokenCount": 7,
+      "totalTokenCount": 93,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 86
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 7
+  }
+}

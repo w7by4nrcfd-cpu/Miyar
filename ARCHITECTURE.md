@@ -85,7 +85,7 @@ testsets/*.json ──► runner ──► targets (المساعد المُخت�
 | الأحاديث | fawazahmed0/hadith-api @ `df57907` (الصحيحان، عربي) | ملف محلي `sahihayn.jsonl.gz` |
 | أحاديث موضوعة | 18 حديثاً من ابن ماجه @ `df57907` بأحكام العلماء المرفقة | `weak_fabricated.json` لاختبار الاختلاق |
 | التخزين | ملفات JSON / JSONL.gz | لا قاعدة بيانات في المرحلة 0 |
-| النماذج اللغوية داخل المنتج | **Gemini** عبر REST `generateContent` (urllib، بلا مكتبة): الحَكَم `gemini-3.8-flash`، والمساعد المُختبَر `gemini-3.5-flash-lite` (نموذجان مختلفان عمداً لتجنب تحيّز النموذج لإجاباته) | `miyar/llm.py`؛ `MIYAR_LLM_MODEL_JUDGE` و`MIYAR_LLM_MODEL_ASSISTANT`، واحتياطياً `MIYAR_LLM_MODEL`. للحَكَم: 3 محاولات بتأخير تصاعدي عند 503/429 ثم `gemini-3.5-flash` (`MIYAR_LLM_MODEL_JUDGE_FALLBACK`)، مع تسجيل النموذج الذي أجاب فعلاً. استُدعي في اختبار دخان تطويري فقط (`DEV_RUN`) |
+| النماذج اللغوية داخل المنتج | **Gemini** عبر REST `generateContent` (urllib، بلا مكتبة): الحَكَم `gemini-3.8-flash`، والمساعد المُختبَر `gemini-3.5-flash-lite` (نموذجان مختلفان عمداً لتجنب تحيّز النموذج لإجاباته) | `miyar/llm.py`؛ `MIYAR_LLM_MODEL_JUDGE` و`MIYAR_LLM_MODEL_ASSISTANT`، واحتياطياً `MIYAR_LLM_MODEL`. للحَكَم: 3 محاولات بتأخير تصاعدي عند 503/429 ثم `gemini-3.5-flash` (`MIYAR_LLM_MODEL_JUDGE_FALLBACK`)، مع تسجيل النموذج الذي أجاب فعلاً. سقف الحَكَم ≥ 1024 رمزاً وتفكير منخفض (`thinkingLevel` لـ Gemini 3، `thinkingBudget` لـ 2.5)؛ الإجابات الفارغة أو `MAX_TOKENS` لا تُخزَّن. استُدعي في اختبار دخان تطويري فقط (`DEV_RUN`) |
 | أدوات التطوير | Claude Code وClaude (استُخدما فعلاً في التطوير والتخطيط) | ليست جزءاً من المنتج |
 
 ## أوضاع التشغيل المخطط لها (تُبنى في أيام التحدي)

@@ -9,6 +9,7 @@ from miyar.llm import (
     CacheMiss,
     CallBudgetExceeded,
     GeminiProvider,
+    IncompleteOutput,
     LLMClient,
     LLMError,
     LLMRequest,
@@ -254,3 +255,79 @@ def test_judge_role_has_fallback_assistant_does_not(tmp_path):
     assert assistant.fallback_models == () and assistant.max_attempts == 1
     custom, _ = client_from_env({**base, "MIYAR_LLM_MODEL_JUDGE_FALLBACK": "x"}, role="judge")
     assert custom.fallback_models == ("x",)
+
+
+# ---------- الإجابات الناقصة، وإعداد التفكير، وسقف الحَكَم ----------
+def _resp(text, finish="STOP", thoughts=0, out=0):
+    body = {
+        "candidates": [{"content": {"parts": [{"text": text}] if text else []}, "finishReason": finish}],
+        "usageMetadata": {"thoughtsTokenCount": thoughts, "candidatesTokenCount": out},
+    }
+    return 200, {}, json.dumps(body).encode()
+
+
+def test_old_request_keys_are_unchanged():
+    # البصمة القديمة (قبل الحقول الاختيارية) يجب أن تبقى كما هي حتى لا يضيع المخزن
+    old = json.dumps(
+        {"provider": "gemini", "model": "test-model", "prompt": "سؤال", "system": "تعليمات",
+         "temperature": 0.0, "max_output_tokens": 1024},
+        ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    import hashlib
+    assert REQ.key() == hashlib.sha256(old.encode("utf-8")).hexdigest()
+    assert REQ.key() != LLMRequest("gemini", "test-model", "سؤال", "تعليمات", thinking_level="low").key()
+
+
+def test_empty_or_max_tokens_output_is_never_stored(tmp_path):
+    for i, r in enumerate([_resp("", "MAX_TOKENS", 13, 0), _resp("مقطوع", "MAX_TOKENS", 5, 3), _resp("  ")]):
+        c = _client(tmp_path / str(i), FakeTransport(r))
+        with pytest.raises(IncompleteOutput) as e:
+            c.complete(REQ)
+        assert c.store.get(REQ) is None
+        assert not list((tmp_path / str(i)).glob("[0-9a-f]*.json"))
+    assert e.value.response.finish_reason == "STOP"
+
+
+def test_invalid_for_replay_record_is_skipped(tmp_path):
+    _client(tmp_path, FakeTransport(ok("قديم"))).complete(REQ)
+    f = tmp_path / f"{REQ.key()}.json"
+    rec = json.loads(f.read_text(encoding="utf-8"))
+    rec["invalid_for_replay"] = True
+    f.write_text(json.dumps(rec, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(CacheMiss):
+        LLMClient(None, ResponseStore(tmp_path), "cached").complete(REQ)
+
+
+def test_usage_fields_are_recorded(tmp_path):
+    c = _client(tmp_path, FakeTransport(_resp('{"verdict":"supported"}', "STOP", 40, 7)))
+    r = c.complete(REQ)
+    assert (r.finish_reason, r.thoughts_tokens, r.output_tokens) == ("STOP", 40, 7)
+    stored = json.loads((tmp_path / f"{REQ.key()}.json").read_text(encoding="utf-8"))["response"]
+    assert stored["thoughts_tokens"] == 40 and stored["output_tokens"] == 7
+
+
+def test_judge_floor_thinking_and_json_mime(tmp_path):
+    t = FakeTransport(_resp("{}", "STOP", 1, 1))
+    c, _ = client_from_env(
+        {"MIYAR_LLM_CACHE_DIR": str(tmp_path), "MIYAR_LLM_MODEL_JUDGE": "gemini-3.8-flash",
+         "MIYAR_RUN_MODE": "live", "GEMINI_API_KEY": FAKE_KEY, "MIYAR_LIVE_MAX_CALLS_PER_DAY": "5"},
+        transport=t, role="judge")
+    c.complete(LLMRequest("gemini", "gemini-3.8-flash", "س", max_output_tokens=16, response_mime_type="application/json"))
+    cfg = t.calls[0]["body"]["generationConfig"]
+    assert cfg["maxOutputTokens"] == 1024
+    assert cfg["thinkingConfig"] == {"thinkingLevel": "low"}
+    assert cfg["responseMimeType"] == "application/json"
+
+
+def test_thinking_config_by_family():
+    from miyar.llm import JUDGE_THINKING, thinking_config_for
+    assert thinking_config_for("gemini-3.8-flash", JUDGE_THINKING) == {"thinking_level": "low"}
+    assert thinking_config_for("gemini-2.5-flash", JUDGE_THINKING) == {"thinking_budget": 256}
+    assert thinking_config_for("gemma-4-31b-it", JUDGE_THINKING) == {}
+
+
+def test_incomplete_primary_falls_back(tmp_path):
+    t = FakeTransport(_resp("", "MAX_TOKENS", 13, 0), ok("من الاحتياطي"))
+    c, slept = _judge_client(tmp_path, t)
+    r = c.complete(REQ)
+    assert r.model == "fallback-model" and slept == []
+    assert [a["status"] for a in r.attempts] == ["incomplete", 200]

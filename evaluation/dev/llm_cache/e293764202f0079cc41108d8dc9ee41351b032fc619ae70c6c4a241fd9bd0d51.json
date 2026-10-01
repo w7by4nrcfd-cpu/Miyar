@@ -28,5 +28,8 @@
       "thoughtsTokenCount": 13,
       "serviceTier": "standard"
     }
-  }
+  },
+  "invalid_for_replay": true,
+  "invalid_reason": "DEV_RUN: إجابة فارغة (finishReason=MAX_TOKENS؛ 13 رمز تفكير من سقف 16). حُفظت قبل منع تخزين الإجابات الناقصة في 2026-10-01؛ لا تُعاد من المخزن.",
+  "invalidated_at": "2026-10-01"
 }

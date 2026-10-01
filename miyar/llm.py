@@ -9,6 +9,11 @@
 - **احتياط الحَكَم:** عند 503 أو 429 يُعاد الطلب حتى 3 محاولات بتأخير تصاعدي، ثم يُجرَّب النموذج الاحتياطي
   (افتراضياً ``gemini-3.5-flash``) بالطريقة نفسها. كل استجابة تسجّل النموذج الذي أجاب فعلاً (``model``)
   والمطلوب (``requested_model``) وسجل المحاولات (``attempts``).
+- **لا تُحفظ إجابة ناقصة:** النص الفارغ أو ``finishReason=MAX_TOKENS`` يرفع ``IncompleteOutput`` ولا يُخزَّن،
+  والسجلات الموسومة ``invalid_for_replay`` في المخزن لا تُعاد أبداً.
+- **سقف الحَكَم:** 1024 رمزاً على الأقل، مع ضبط التفكير (``thinkingLevel`` لعائلة Gemini 3، و``thinkingBudget``
+  لعائلة 2.5) حتى لا يستهلك التفكيرُ السقفَ قبل الإجابة. كل استجابة تحمل ``finish_reason`` و``thoughts_tokens``
+  و``output_tokens``.
 - **لا أسرار في الملفات:** المفتاح يُقرأ من متغير بيئة ولا يُكتب في المخزن ولا في رسائل الخطأ.
 - **وسم التشغيل:** كل ملف في المخزن يحمل ``run_label`` (افتراضياً ``DEV_RUN``)، ومخزن التطوير في ``evaluation/dev/``.
 
@@ -56,6 +61,14 @@ class ServiceUnavailable(LLMError):
     """المزوّد مشغول مؤقتاً (HTTP 503)."""
 
 
+class IncompleteOutput(LLMError):
+    """ردّ 200 لكن الإجابة فارغة أو مقطوعة (MAX_TOKENS). لا تُخزَّن."""
+
+    def __init__(self, message: str, response: "LLMResponse"):
+        super().__init__(message)
+        self.response = response
+
+
 class RateLimited(LLMError):
     """رفض المزوّد الطلب لتجاوز الحد (HTTP 429)."""
 
@@ -73,9 +86,14 @@ class LLMRequest:
     system: str = ""
     temperature: float = 0.0
     max_output_tokens: int = 1024
+    # حقول اختيارية: تُحذف من البصمة إن كانت None، فتبقى بصمات الطلبات المخزنة سابقاً كما هي
+    thinking_level: str | None = None  # Gemini 3: minimal/low/medium/high
+    thinking_budget: int | None = None  # Gemini 2.5: عدد رموز التفكير
+    response_mime_type: str | None = None  # مثل application/json
 
     def key(self) -> str:
-        canonical = json.dumps(asdict(self), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        fields = {k: v for k, v in asdict(self).items() if v is not None}
+        canonical = json.dumps(fields, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -90,6 +108,17 @@ class LLMResponse:
     request_key: str = ""
     requested_model: str = ""  # النموذج المطلوب (يختلف عن model إن أجاب الاحتياطي)
     attempts: list = field(default_factory=list)  # [{"model", "status"}] لكل محاولة حية في هذا الاستدعاء
+
+    @property
+    def thoughts_tokens(self) -> int:
+        return int(self.usage.get("thoughtsTokenCount") or 0)
+
+    @property
+    def output_tokens(self) -> int:
+        return int(self.usage.get("candidatesTokenCount") or 0)
+
+    def is_incomplete(self) -> bool:
+        return not self.text.strip() or self.finish_reason == "MAX_TOKENS"
 
 
 # ---------- النقل ----------
@@ -135,6 +164,15 @@ class GeminiProvider:
             "contents": [{"role": "user", "parts": [{"text": req.prompt}]}],
             "generationConfig": {"temperature": req.temperature, "maxOutputTokens": req.max_output_tokens},
         }
+        thinking = {}
+        if req.thinking_level is not None:
+            thinking["thinkingLevel"] = req.thinking_level
+        if req.thinking_budget is not None:
+            thinking["thinkingBudget"] = req.thinking_budget
+        if thinking:
+            body["generationConfig"]["thinkingConfig"] = thinking
+        if req.response_mime_type:
+            body["generationConfig"]["responseMimeType"] = req.response_mime_type
         if req.system:
             body["systemInstruction"] = {"parts": [{"text": req.system}]}
         url = f"{self.BASE_URL}/models/{req.model}:generateContent"
@@ -190,6 +228,8 @@ class ResponseStore:
         if not p.exists():
             return None
         rec = json.loads(p.read_text(encoding="utf-8"))
+        if rec.get("invalid_for_replay"):
+            return None  # سجل موسوم غير صالح للإعادة (مثل إجابة فارغة حُفظت قبل منع ذلك)
         r = rec["response"]
         return LLMResponse(
             text=r["text"],
@@ -202,6 +242,8 @@ class ResponseStore:
         )
 
     def put(self, req: LLMRequest, resp: LLMResponse) -> Path:
+        if resp.is_incomplete():
+            raise IncompleteOutput("لا تُخزَّن إجابة فارغة أو مقطوعة", resp)
         self.dir.mkdir(parents=True, exist_ok=True)
         rec = {
             "run_label": self.run_label,
@@ -215,6 +257,8 @@ class ResponseStore:
                 "requested_model": resp.requested_model or req.model,
                 "finish_reason": resp.finish_reason,
                 "usage": resp.usage,
+                "thoughts_tokens": resp.thoughts_tokens,
+                "output_tokens": resp.output_tokens,
             },
         }
         p = self._path(req.key())
@@ -262,6 +306,8 @@ class LLMClient:
         max_attempts: int = 1,
         backoff_seconds: float = DEFAULT_BACKOFF_SECONDS,
         sleep: Callable[[float], None] = time.sleep,
+        min_output_tokens: int = 0,
+        thinking: dict | None = None,
     ):
         if mode not in MODES:
             raise ValueError(f"وضع غير معروف: {mode}")
@@ -275,10 +321,21 @@ class LLMClient:
         self.max_attempts = max(1, max_attempts)
         self.backoff_seconds = backoff_seconds
         self.sleep = sleep
+        self.min_output_tokens = min_output_tokens
+        self.thinking = thinking  # دالة النموذج ← إعداد التفكير، تُطبَّق إن لم يحدده الطلب
+
+    def _prepare(self, req: LLMRequest) -> LLMRequest:
+        if req.max_output_tokens < self.min_output_tokens:
+            req = replace(req, max_output_tokens=self.min_output_tokens)
+        if self.thinking is not None and req.thinking_level is None and req.thinking_budget is None:
+            req = replace(req, **thinking_config_for(req.model, self.thinking))
+        return req
 
     def complete(self, req: LLMRequest) -> LLMResponse:
-        """النموذج المطلوب أولاً، ثم الاحتياطيات بالترتيب عند 503/429 بعد استنفاد المحاولات."""
-        chain = [req] + [replace(req, model=m) for m in self.fallback_models if m != req.model]
+        """النموذج المطلوب أولاً، ثم الاحتياطيات بالترتيب عند 503/429 بعد استنفاد المحاولات، أو عند إجابة ناقصة."""
+        chain = [self._prepare(req)] + [
+            self._prepare(replace(req, model=m)) for m in self.fallback_models if m != req.model
+        ]
         attempts: list[dict] = []
         # المخزن أولاً عبر السلسلة كلها: إن أجاب الاحتياطي سابقاً أُعيدت إجابته ولا يُعاد أي استدعاء
         for r in chain:
@@ -291,7 +348,14 @@ class LLMClient:
             last = i == len(chain) - 1
             try:
                 resp = self._call_with_retries(r, attempts)
-            except RETRYABLE:
+                if resp.is_incomplete():
+                    attempts[-1]["status"] = "incomplete"
+                    raise IncompleteOutput(
+                        f"{r.model}: إجابة ناقصة (finishReason={resp.finish_reason}، "
+                        f"تفكير={resp.thoughts_tokens}، إخراج={resp.output_tokens})",
+                        resp,
+                    )
+            except (*RETRYABLE, IncompleteOutput):
                 if last:
                     raise
                 continue
@@ -333,6 +397,18 @@ ROLE_MODEL_VARS = {"judge": "MIYAR_LLM_MODEL_JUDGE", "assistant": "MIYAR_LLM_MOD
 # احتياط الحَكَم وحده: 3 محاولات بتأخير تصاعدي عند 503/429، ثم النموذج الاحتياطي.
 JUDGE_FALLBACK_VAR = "MIYAR_LLM_MODEL_JUDGE_FALLBACK"
 DEFAULT_JUDGE_FALLBACK = "gemini-3.5-flash"
+JUDGE_MIN_OUTPUT_TOKENS = 1024
+# التفكير للحَكَم: منخفض حتى يبقى معظم السقف للإجابة
+JUDGE_THINKING = {"level": "low", "budget": 256}
+
+
+def thinking_config_for(model: str, thinking: dict) -> dict:
+    """Gemini 3 وما بعده: thinkingLevel؛ Gemini 2.5: thinkingBudget؛ غيرهما: بلا إعداد."""
+    if re.match(r"gemini-([3-9]|\d\d)", model):
+        return {"thinking_level": thinking["level"]}
+    if model.startswith("gemini-2.5"):
+        return {"thinking_budget": thinking["budget"]}
+    return {}
 
 
 def model_for_role(env: dict, role: str | None) -> tuple[str, str]:
@@ -367,5 +443,8 @@ def client_from_env(
     if role == "judge":
         fallback = env.get(JUDGE_FALLBACK_VAR, DEFAULT_JUDGE_FALLBACK)
         fallbacks = tuple(m for m in [fallback] if m)
-        return LLMClient(provider, store, mode, max_calls, fallbacks, DEFAULT_MAX_ATTEMPTS), model
+        return LLMClient(
+            provider, store, mode, max_calls, fallbacks, DEFAULT_MAX_ATTEMPTS,
+            min_output_tokens=JUDGE_MIN_OUTPUT_TOKENS, thinking=JUDGE_THINKING,
+        ), model
     return LLMClient(provider, store, mode, max_calls), model

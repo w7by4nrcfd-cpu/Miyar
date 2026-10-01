@@ -37,5 +37,6 @@
       },
       "request_key": "e293764202f0079cc41108d8dc9ee41351b032fc619ae70c6c4a241fd9bd0d51"
     }
-  ]
+  ],
+  "annotation": "DEV_RUN: status \"ok\" هنا سُجّل قبل فحص الإخراج الفارغ؛ النتيجة الفعلية إخراج فارغ (MAX_TOKENS)، وسجل المخزن الموافق موسوم invalid_for_replay."
 }
