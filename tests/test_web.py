@@ -65,7 +65,9 @@ def test_about_page_disclosures():
         "Gemini",
         "Tanzil.net",
         "سلسلة الترخيص غير واضحة",
-        "لا يستدعي أي نموذج لغوي",
+        "لا يستدعي حالياً أي نموذج لغوي",
+        "لم يُستدعَ بعد",
+        "استُخدم فعلاً",
     ):
         assert needle in html, needle
 
