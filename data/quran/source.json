@@ -1,0 +1,36 @@
+{
+  "source": "Quranpedia.net — https://quranpedia.net",
+  "dumps_page": "https://quranpedia.net/dumps",
+  "dump_version": "2026-10-01",
+  "manifest_generated_at": "2026-10-01T03:32:17+00:00",
+  "downloaded_at": "2026-10-01",
+  "license_file": "LICENSE-quranpedia.md",
+  "attribution_required": "Quranpedia.net مع رابط https://quranpedia.net ورقم النسخة عند إعادة نشر البيانات كمجموعة بيانات",
+  "files": [
+    {
+      "file": "mushafs-1.json.gz",
+      "role": "simple",
+      "url": "https://quranpedia.net/dumps/mushafs-1.json.gz",
+      "title": "مصحف حفص",
+      "description_in_file": "القرآن الكريم برواية حفص عن عاصم، موافق لطبعة مجمع الملك فهد لطباعة المصحف الشريف",
+      "rawi_in_file": "حفص",
+      "sha256": "9010e604abdbecc045258a9a945a4d33d850eebde81dc23e4db5b722eb88ee9a",
+      "bytes": 403040,
+      "built_at": "2026-10-01T03:31:32+00:00",
+      "license_version_in_file": "2026-10-01"
+    },
+    {
+      "file": "mushafs-2.json.gz",
+      "role": "uthmani",
+      "url": "https://quranpedia.net/dumps/mushafs-2.json.gz",
+      "title": "مصحف حفص نسخة نصية",
+      "description_in_file": "المصحف الكريم برواية حفص عن عاصم بالخط العثماني من إصدار مجمع الملك فهد لطباعة المصحف الشريف، غير موافق للمطبوع",
+      "rawi_in_file": "حفص",
+      "sha256": "86828b5c18633d0598575918da0596b0e46bd9eb7e988c9646fd27d1fc7f0fb4",
+      "bytes": 414536,
+      "built_at": "2026-10-01T03:31:33+00:00",
+      "license_version_in_file": "2026-10-01"
+    }
+  ],
+  "note": "ملف من إعداد المشروع يوثّق مصدر الملفين ونسختهما؛ قيم sha256 وbytes وbuilt_at منقولة من manifest.json الرسمي وتطابق الملفين المنزّلين."
+}

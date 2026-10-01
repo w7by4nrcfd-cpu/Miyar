@@ -1,6 +1,7 @@
 """مطابقة حرفية لنصوص القرآن الكريم — بلا نموذج لغوي.
 
-يحمّل نص Tanzil (الإملائي والعثماني)، ويوحّده بـ miyar.normalize، ثم:
+يحمّل نص المصحف من تنزيلات Quranpedia.net الرسمية (رواية حفص: نص مضبوط بالرسم الإملائي ``mushafs-1``،
+ونص بالرسم العثماني ``mushafs-2``)، ويوحّده بـ miyar.normalize، ثم:
 - ``find``: يبحث عن مقطع منقول بتطابق حرفي تام (بعد التوحيد) في أي موضع من المصحف،
   ولو امتد عبر آيات متتالية من السورة نفسها.
 - ``verify``: يتحقق من نسبة مقطع إلى سورة وآية محددتين، ويعيد أحد التصنيفات الثلاثة:
@@ -8,7 +9,7 @@
 - ``closest``: يقترح أقرب الآيات لمقطع لا يطابق حرفياً (للتنبيه على النقل الخاطئ).
 
 قاعدة ثابتة: لا يصدر ``supported`` إلا عند تطابق حرفي فعلي في الموضع المذكور.
-ملفات البيانات لا تُعدَّل (شرط ترخيص Tanzil)؛ كل التوحيد يتم في الذاكرة.
+ملفات البيانات لا تُعدَّل (منسوخة كما نُزّلت، ببصماتها في data/quran/SHA256SUMS)؛ كل التوحيد يتم في الذاكرة.
 """
 
 from __future__ import annotations
@@ -16,7 +17,8 @@ from __future__ import annotations
 import math
 import os
 import re
-import xml.etree.ElementTree as ET
+import gzip
+import json
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
@@ -47,8 +49,8 @@ class Verse:
     sura: int
     aya: int
     sura_name: str
-    text: str  # الرسم العثماني كما في Tanzil (للعرض)
-    text_simple: str  # الرسم الإملائي كما في Tanzil
+    text: str  # الرسم العثماني (Quranpedia mushafs-2) للعرض
+    text_simple: str  # الرسم الإملائي المضبوط (Quranpedia mushafs-1)
 
     @property
     def ref(self) -> str:
@@ -343,51 +345,34 @@ def _joined_match(segments: list[list[str]], window: list[str]) -> bool:
     return True
 
 
-def _parse_simple(path: Path) -> dict[tuple[int, int], tuple[str, str]]:
-    root = ET.parse(path).getroot()
-    out = {}
-    for sura in root.iter("sura"):
-        s, name = int(sura.get("index")), sura.get("name")
-        for aya in sura.iter("aya"):
-            out[(s, int(aya.get("index")))] = (name, aya.get("text"))
-    return out
+SIMPLE_FILE = "mushafs-1.json.gz"  # مصحف حفص — نص مضبوط بالرسم الإملائي
+UTHMANI_FILE = "mushafs-2.json.gz"  # مصحف حفص نسخة نصية — الرسم العثماني
+_BOM = "\ufeff"
 
 
-_BASMALA = "بسم الله الرحمن الرحيم"
+def _parse_quranpedia(path: Path) -> dict[tuple[int, int], tuple[str, str]]:
+    """{(سورة، آية): (اسم السورة، النص)} من ملف تنزيلات Quranpedia (المخطط /v1/mushafs/{id}).
 
-
-def _parse_uthmani(path: Path) -> dict[tuple[int, int], str]:
-    out = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line or line.startswith("#"):
-            continue
-        s, a, text = line.split("|", 2)
-        out[(int(s), int(a))] = text
-    return out
-
-
-def _drop_leading_basmala(sura: int, aya: int, text: str) -> str:
-    """ملف Tanzil العثماني يسبق الآية الأولى من كل سورة بالبسملة (عدا الفاتحة والتوبة).
-
-    البسملة هنا ليست جزءاً من الآية، فتُفصل في الذاكرة فقط (الملف لا يُعدَّل).
+    يُحذف من النص في الذاكرة فقط محرف BOM (U+FEFF) الوارد في بداية أغلب الآيات؛ والملف لا يُعدَّل.
     """
-    if aya != 1 or sura in (1, 9):
-        return text
-    words = text.split(" ")
-    if normalize(" ".join(words[:4])) == _BASMALA:
-        return " ".join(words[4:])
-    return text
+    data = json.loads(gzip.decompress(path.read_bytes()).decode("utf-8"))["data"]
+    out = {}
+    for sura in data["surahs"]:
+        name = sura["name"].removeprefix("سورة ").strip()
+        for aya in sura["ayahs"]:
+            out[(int(aya["surah"]), int(aya["number"]))] = (name, aya["text"].replace(_BOM, "").strip())
+    return out
 
 
 @lru_cache(maxsize=4)
 def _load_cached(data_dir: str) -> QuranIndex:
     d = Path(data_dir) / "quran"
-    simple = _parse_simple(d / "quran-simple.xml")
-    uthmani = _parse_uthmani(d / "quran-uthmani.txt")
+    simple = _parse_quranpedia(d / SIMPLE_FILE)
+    uthmani = _parse_quranpedia(d / UTHMANI_FILE)
     if simple.keys() != uthmani.keys():
         raise ValueError("اختلاف في مراجع الآيات بين الرسم الإملائي والعثماني")
     verses = [
-        Verse(s, a, simple[(s, a)][0], _drop_leading_basmala(s, a, uthmani[(s, a)]), simple[(s, a)][1])
+        Verse(s, a, simple[(s, a)][0], uthmani[(s, a)][1], simple[(s, a)][1])
         for (s, a) in sorted(simple)
     ]
     return QuranIndex(verses)

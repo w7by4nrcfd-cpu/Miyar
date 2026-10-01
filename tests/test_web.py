@@ -63,7 +63,7 @@ def test_about_page_disclosures():
         "لم تُراجَع بعد",
         "Claude Code",
         "Gemini",
-        "Tanzil.net",
+        "Quranpedia.net",
         "سلسلة الترخيص غير واضحة",
         "لا يستدعي حالياً أي نموذج لغوي",
         "لم يُستدعَ بعد",

@@ -1,2 +1,3 @@
-9d7ba23d4ba89cd1307c74205d9d6d4fad03a29175d1081acf10c44a93511cd9  data/quran/quran-simple.xml
-abe6447a5d29bb126383ba9120628060cf96dc9ef5b402a506fc251f6ed0b9a2  data/quran/quran-uthmani.txt
+9010e604abdbecc045258a9a945a4d33d850eebde81dc23e4db5b722eb88ee9a  data/quran/mushafs-1.json.gz
+86828b5c18633d0598575918da0596b0e46bd9eb7e988c9646fd27d1fc7f0fb4  data/quran/mushafs-2.json.gz
+784d33f90a3159d685d9a66e6460389e7d4595f0b7e2f2be98bf0eca041fd75b  data/quran/LICENSE-quranpedia.md

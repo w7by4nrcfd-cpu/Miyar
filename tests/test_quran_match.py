@@ -26,6 +26,21 @@ def test_data_files_match_checksums():
         assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest, name
 
 
+def test_source_metadata_matches_files():
+    # النسخة والبصمات المسجّلة في source.json (من manifest Quranpedia الرسمي) تطابق الملفات فعلاً
+    import json
+    src = json.loads((ROOT / "data/quran/source.json").read_text(encoding="utf-8"))
+    assert src["dump_version"] and src["source"].startswith("Quranpedia.net")
+    for f in src["files"]:
+        raw = (ROOT / "data/quran" / f["file"]).read_bytes()
+        assert hashlib.sha256(raw).hexdigest() == f["sha256"] and len(raw) == f["bytes"], f["file"]
+    assert {f["role"] for f in src["files"]} == {"simple", "uthmani"}
+
+
+def test_bom_removed_in_memory(q):
+    assert not any("\ufeff" in v.text or "\ufeff" in v.text_simple for v in q.verses)
+
+
 def test_counts(q):
     assert len(q.verses) == 6236
     assert q.sura_name(1) == "الفاتحة"
@@ -86,7 +101,7 @@ def test_find_too_short_or_absent(q):
 def test_verify_exact(q):
     r = q.verify("﴿لَا إِكْرَاهَ فِي الدِّينِ﴾", 2, 256)
     assert r.status == SUPPORTED and r.reason == "exact_match"
-    assert "إِكْرَاهَ" in r.cited_text
+    assert "اكراه" in normalize(r.cited_text)  # النص المعروض بالرسم العثماني من المصدر
 
 
 def test_verify_without_diacritics_and_hamza(q):
