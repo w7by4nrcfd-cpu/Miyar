@@ -103,7 +103,7 @@ def test_priority_is_first_column_and_sorted():
     prios = [int(r["الأولوية"]) for r in rows]
     assert prios == sorted(prios)
     p1 = {r["id"] for r in rows if r["الأولوية"] == "1"}
-    assert "OFF-06" in p1  # حالة رسمية تطلب حديثاً غير موجود في الصحيحين
+    assert "OFF-06" in p1  # من أمثلة الحزمة العلمية: تطلب حديثاً غير موجود في الصحيحين
     assert len(p1) == 8 and all(r["risk_type"] in ("hadith_fabricated", "hadith_absent")
                                 for r in rows if r["id"] in p1 - {"OFF-06"})
     for r in rows:

@@ -6,7 +6,7 @@
 | `test_quran_match.py` | المطابقة الحرفية | نص القرآن الحقيقي من `data/quran` (للقراءة فقط)، ومقاطع محرّفة عمداً لاختبار الكشف |
 | `test_hadith_data.py` | سلامة ملفات `data/hadith` | لا |
 | `test_hadith_data_loader.py` | طبقة تحميل الأحاديث | **نعم: `FIXTURE_HADITH`** في مجلد مؤقت |
-| `test_testsets.py` | مجموعة الاختبار الرسمية | لا |
+| `test_testsets.py` | أمثلة الحزمة العلمية | لا |
 | `test_api.py` | `GET /health` | لا |
 | `test_web.py` | صفحات الموقع | لا |
 | `test_fixtures.py` | منع تسرب الـfixtures إلى `data/` و`web/` | لا |
