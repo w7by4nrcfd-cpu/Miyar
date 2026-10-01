@@ -209,8 +209,8 @@
         },
         "evaluation_record": {
           "type": "string",
-          "pattern": "^evaluation/",
-          "description": "مسار سجل التشغيل الفعلي داخل evaluation/"
+          "pattern": "^evaluation/(?!dev(/|$))",
+          "description": "مسار سجل التشغيل الرسمي داخل evaluation/ (سجلات مجلد التطوير dev مرفوضة)"
         }
       }
     }

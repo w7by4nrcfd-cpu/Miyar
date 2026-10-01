@@ -22,7 +22,7 @@
 | `levels.A..D` | `{n_cases, score}` | درجة كل مستوى؛ `score: null` إن لم تكن فيه حالات؛ مجموع حالات المستويات = `n_cases` |
 | `wrong_citations` | عدد صحيح ≥ 0 | عدد الإسنادات المصنّفة `wrong_or_missing` |
 | `human_reviewed` | `{approved, total}` | المراجعة البشرية؛ `total = n_cases`؛ النسبة = `approved / total` |
-| `evaluation_record` | مسار يبدأ بـ `evaluation/` | سجل التشغيل الذي نتجت عنه هذه الأرقام |
+| `evaluation_record` | مسار يبدأ بـ `evaluation/` | سجل التشغيل **الرسمي** الذي نتجت عنه هذه الأرقام؛ سجلات مجلد التطوير `dev` مرفوضة |
 
 ## سلوك الصفحة
 | حالة الملف | ما يُعرض |

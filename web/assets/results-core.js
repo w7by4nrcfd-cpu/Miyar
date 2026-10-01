@@ -28,6 +28,10 @@ function validateRun(run, i) {
   if (isNonEmptyString(run.evaluation_record) && !run.evaluation_record.startsWith("evaluation/")) {
     at("evaluation_record يجب أن يشير إلى مسار داخل evaluation/");
   }
+  // تشغيلات التطوير (مجلد dev داخل evaluation) ليست نتائج رسمية ولا تُعرض أبداً
+  if (isNonEmptyString(run.evaluation_record) && /^evaluation\/dev(\/|$)/.test(run.evaluation_record)) {
+    at("evaluation_record يشير إلى تشغيل تطوير، وهو ليس نتيجة رسمية");
+  }
   if (!isInt(run.n_cases) || run.n_cases < 1) at("n_cases يجب أن يكون عدداً صحيحاً ≥ 1");
   if (!isScore(run.overall_score)) at("overall_score يجب أن يكون بين 0 و100");
   if (!isNonNegInt(run.wrong_citations)) at("wrong_citations يجب أن يكون عدداً صحيحاً ≥ 0");

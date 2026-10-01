@@ -80,6 +80,8 @@ for (const [name, data] of [
   ["مراجَع أكثر من الكل", withRun({ human_reviewed: { approved: 13, total: 12 } })],
   ["إجمالي المراجعة لا يساوي N", withRun({ human_reviewed: { approved: 0, total: 5 } })],
   ["سجل تشغيل خارج evaluation/", withRun({ evaluation_record: "somewhere/x.json" })],
+  ["سجل تشغيل تطوير (DEV_RUN)", withRun({ evaluation_record: "evaluation/dev/run.json" })],
+  ["مجلد التطوير نفسه", withRun({ evaluation_record: "evaluation/dev" })],
   ["تاريخ غير صالح", withRun({ executed_at: "أمس" })],
   ["run_id مكرر", { schema_version: 1, runs: [FIXTURE_RUN, FIXTURE_RUN] }],
 ]) {
