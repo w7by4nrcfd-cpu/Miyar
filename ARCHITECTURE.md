@@ -54,7 +54,7 @@ testsets/*.json ──► runner ──► targets (المساعد المُخت�
 | `hadith_search.py` | يوم 2 | بحث هجين في `data/hadith` مع المصدر والدرجة |
 | `judge.py` | يوم 2 | دعم المصدر للادعاء + سلوك المستوى، مع درجة ثقة |
 | `scoring.py` | يوم 2 | الدرجة والمقارنة وقرار البوابة |
-| `api.py` | يوم 3 | FastAPI |
+| `api.py` | هيكل 2026-10-01؛ النقاط الفعلية يوم 3 | FastAPI — حالياً `/health` فقط |
 
 ## تصنيفات الإسناد
 - `supported` مؤيَّد: تطابق فعلي مع مصدر في البيانات فقط.
@@ -73,9 +73,13 @@ testsets/*.json ──► runner ──► targets (المساعد المُخت�
 | المكوّن | الاسم والإصدار | الاستخدام |
 |---|---|---|
 | لغة التشغيل | Python 3.11 | كل الوحدات |
-| المكتبات | المكتبة القياسية فقط (`unicodedata`، `difflib`، `xml.etree`، `gzip`) | التوحيد والمطابقة وقراءة البيانات |
-| الاختبارات | pytest 9.1 (محلياً) / `pytest>=8` في `requirements.txt` | اختبارات الوحدات |
-| CI | GitHub Actions (`ubuntu-latest`، Python 3.11) | تشغيل الاختبارات مع كل push |
+| المكتبات | المكتبة القياسية (`unicodedata`، `difflib`، `xml.etree`، `gzip`) | التوحيد والمطابقة وقراءة البيانات |
+| الخلفية | FastAPI 0.142.2 + Uvicorn 0.54.0 (محلياً؛ `fastapi>=0.115,<1` و`uvicorn>=0.30,<1` في `requirements.txt`) | `miyar/api.py`: `GET /health` فقط |
+| الواجهة | HTML/CSS/JavaScript (وحدات ES) بلا مكتبات ولا أدوات بناء | `web/` |
+| اختبار الواجهة | Node.js 22 (`node --test`) | منطق صفحة النتائج |
+| الاستضافة المخطط لها | Cloudflare Pages (موقع ثابت، بلا أمر بناء) | لم يُنشر بعد |
+| الاختبارات | pytest 9.1 (محلياً) / `pytest>=8` في `requirements.txt`، وhttpx 0.28.1 لـ TestClient | اختبارات الوحدات |
+| CI | GitHub Actions (`ubuntu-latest`، Python 3.11، Node 22) | تشغيل الاختبارات مع كل push |
 | نص القرآن | Tanzil Quran Text 1.0.2 (Simple + Uthmani) | المطابقة الحرفية والعرض |
 | الأحاديث | fawazahmed0/hadith-api @ `df57907` (الصحيحان، عربي) | ملف محلي `sahihayn.jsonl.gz` |
 | أحاديث موضوعة | 18 حديثاً من ابن ماجه @ `df57907` بأحكام العلماء المرفقة | `weak_fabricated.json` لاختبار الاختلاق |

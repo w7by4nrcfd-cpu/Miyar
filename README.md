@@ -25,14 +25,18 @@
 - مِعيار لا يولّد آية ولا حديثاً ولا حكماً؛ كل نص شرعي يُعرض منقول من بيانات لها مصدر.
 - مطابقة نص القرآن برمجية حرفية (بعد توحيد التشكيل والهمزات) دون نموذج لغوي.
 
-## التشغيل (المرحلة 0)
+## التشغيل
 ```bash
 pip install -r requirements.txt
-python -m pytest -q
+python -m pytest -q                          # اختبارات بايثون
+node --test tests/web/*.test.mjs             # منطق صفحة النتائج
+python -m http.server 8000 --directory web   # معاينة الموقع: http://localhost:8000
+uvicorn miyar.api:app --port 8001            # الخلفية: /health فقط
 ```
+النشر الثابت على Cloudflare Pages: [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## التقنيات
-Python 3.11 (المكتبة القياسية فقط في المرحلة 0) · pytest · GitHub Actions · نص Tanzil 1.0.2 ·
+Python 3.11 · FastAPI (هيكل `/health` فقط) · HTML/CSS/JS بلا أدوات بناء · pytest · Node 22 (`node --test`) · GitHub Actions · نص Tanzil 1.0.2 ·
 بيانات الصحيحين من fawazahmed0/hadith-api. التفاصيل والإصدارات في [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## البيانات والتراخيص
