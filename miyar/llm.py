@@ -6,6 +6,9 @@
 - **وضعان:** ``cached`` يعيد من المخزن فقط ويرفع ``CacheMiss`` عند غيابه (لا استدعاء مدفوع أبداً)؛
   ``live`` يستدعي النموذج عند الغياب، بسقف يومي ``MIYAR_LIVE_MAX_CALLS_PER_DAY``.
 - **حد الاستخدام (429):** يُرفع ``RateLimited`` مع مدة الانتظار إن عُرفت، ليتراجع المستدعي إلى النتائج المحفوظة.
+- **احتياط الحَكَم:** عند 503 أو 429 يُعاد الطلب حتى 3 محاولات بتأخير تصاعدي، ثم يُجرَّب النموذج الاحتياطي
+  (افتراضياً ``gemini-3.5-flash``) بالطريقة نفسها. كل استجابة تسجّل النموذج الذي أجاب فعلاً (``model``)
+  والمطلوب (``requested_model``) وسجل المحاولات (``attempts``).
 - **لا أسرار في الملفات:** المفتاح يُقرأ من متغير بيئة ولا يُكتب في المخزن ولا في رسائل الخطأ.
 - **وسم التشغيل:** كل ملف في المخزن يحمل ``run_label`` (افتراضياً ``DEV_RUN``)، ومخزن التطوير في ``evaluation/dev/``.
 
@@ -19,8 +22,9 @@ import json
 import os
 import re
 import urllib.error
+import time
 import urllib.request
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Protocol
@@ -46,6 +50,10 @@ class CacheMiss(LLMError):
 
 class CallBudgetExceeded(LLMError):
     """تجاوز السقف اليومي للاستدعاءات الحية."""
+
+
+class ServiceUnavailable(LLMError):
+    """المزوّد مشغول مؤقتاً (HTTP 503)."""
 
 
 class RateLimited(LLMError):
@@ -75,11 +83,13 @@ class LLMRequest:
 class LLMResponse:
     text: str
     provider: str
-    model: str
+    model: str  # النموذج الذي أجاب فعلاً
     finish_reason: str | None = None
     usage: dict = field(default_factory=dict)
     from_cache: bool = False
     request_key: str = ""
+    requested_model: str = ""  # النموذج المطلوب (يختلف عن model إن أجاب الاحتياطي)
+    attempts: list = field(default_factory=list)  # [{"model", "status"}] لكل محاولة حية في هذا الاستدعاء
 
 
 # ---------- النقل ----------
@@ -133,6 +143,8 @@ class GeminiProvider:
         text = _redact(raw.decode("utf-8", errors="replace"), self._key)
         if status == 429:
             raise RateLimited(f"Gemini 429: {text[:300]}", _retry_after(resp_headers, text))
+        if status == 503:
+            raise ServiceUnavailable(f"Gemini 503: {text[:300]}")
         if status != 200:
             raise LLMError(f"Gemini HTTP {status}: {text[:300]}")
         data = json.loads(text)
@@ -199,7 +211,8 @@ class ResponseStore:
             "response": {
                 "text": resp.text,
                 "provider": resp.provider,
-                "model": resp.model,
+                "model": resp.model,  # النموذج الذي أجاب فعلاً
+                "requested_model": resp.requested_model or req.model,
                 "finish_reason": resp.finish_reason,
                 "usage": resp.usage,
             },
@@ -232,8 +245,24 @@ def _today() -> str:
 
 
 # ---------- العميل ----------
+RETRYABLE = (RateLimited, ServiceUnavailable)
+DEFAULT_MAX_ATTEMPTS = 3
+DEFAULT_BACKOFF_SECONDS = 2.0  # 2ث ثم 4ث بين المحاولات الثلاث
+MAX_WAIT_SECONDS = 60.0
+
+
 class LLMClient:
-    def __init__(self, provider: Provider | None, store: ResponseStore, mode: str = "cached", max_live_calls_per_day: int = 0):
+    def __init__(
+        self,
+        provider: Provider | None,
+        store: ResponseStore,
+        mode: str = "cached",
+        max_live_calls_per_day: int = 0,
+        fallback_models: tuple[str, ...] = (),
+        max_attempts: int = 1,
+        backoff_seconds: float = DEFAULT_BACKOFF_SECONDS,
+        sleep: Callable[[float], None] = time.sleep,
+    ):
         if mode not in MODES:
             raise ValueError(f"وضع غير معروف: {mode}")
         if mode == "live" and provider is None:
@@ -242,24 +271,68 @@ class LLMClient:
         self.store = store
         self.mode = mode
         self.max_live_calls_per_day = max_live_calls_per_day
+        self.fallback_models = tuple(fallback_models)
+        self.max_attempts = max(1, max_attempts)
+        self.backoff_seconds = backoff_seconds
+        self.sleep = sleep
 
     def complete(self, req: LLMRequest) -> LLMResponse:
-        hit = self.store.get(req)
-        if hit is not None:
-            return hit  # لا يُكرَّر استدعاء أُجري
+        """النموذج المطلوب أولاً، ثم الاحتياطيات بالترتيب عند 503/429 بعد استنفاد المحاولات."""
+        chain = [req] + [replace(req, model=m) for m in self.fallback_models if m != req.model]
+        attempts: list[dict] = []
+        # المخزن أولاً عبر السلسلة كلها: إن أجاب الاحتياطي سابقاً أُعيدت إجابته ولا يُعاد أي استدعاء
+        for r in chain:
+            hit = self.store.get(r)
+            if hit is not None:
+                return self._finish(hit, req, attempts)
         if self.mode == "cached":
             raise CacheMiss(f"لا استجابة محفوظة للطلب {req.key()[:12]}")
-        if self.store.live_calls_today() >= self.max_live_calls_per_day:
-            raise CallBudgetExceeded(f"بلغ السقف اليومي للاستدعاءات الحية ({self.max_live_calls_per_day})")
-        self.store.record_live_call()  # يُحتسب قبل الإرسال: المحاولة المرفوضة تستهلك من الحصة أيضاً
-        resp = self.provider.call(req)
-        self.store.put(req, resp)
-        resp.request_key = req.key()
+        for i, r in enumerate(chain):
+            last = i == len(chain) - 1
+            try:
+                resp = self._call_with_retries(r, attempts)
+            except RETRYABLE:
+                if last:
+                    raise
+                continue
+            resp.requested_model = req.model
+            self.store.put(r, resp)
+            resp.request_key = r.key()
+            return self._finish(resp, req, attempts)
+        raise AssertionError("unreachable")
+
+    def _call_with_retries(self, req: LLMRequest, attempts: list[dict]) -> LLMResponse:
+        for n in range(1, self.max_attempts + 1):
+            if self.store.live_calls_today() >= self.max_live_calls_per_day:
+                raise CallBudgetExceeded(f"بلغ السقف اليومي للاستدعاءات الحية ({self.max_live_calls_per_day})")
+            self.store.record_live_call()  # يُحتسب قبل الإرسال: المحاولة المرفوضة تستهلك من الحصة أيضاً
+            try:
+                resp = self.provider.call(req)
+            except RETRYABLE as e:
+                attempts.append({"model": req.model, "status": 429 if isinstance(e, RateLimited) else 503})
+                if n == self.max_attempts:
+                    raise
+                wait = self.backoff_seconds * 2 ** (n - 1)
+                if isinstance(e, RateLimited) and e.retry_after:
+                    wait = max(wait, e.retry_after)
+                self.sleep(min(wait, MAX_WAIT_SECONDS))
+                continue
+            attempts.append({"model": req.model, "status": 200})
+            return resp
+        raise AssertionError("unreachable")
+
+    @staticmethod
+    def _finish(resp: LLMResponse, original: LLMRequest, attempts: list[dict]) -> LLMResponse:
+        resp.requested_model = original.model
+        resp.attempts = attempts
         return resp
 
 
 # متغير النموذج لكل دور. الحَكَم والمساعد المُختبَر نموذجان مختلفان عمداً لتجنب تحيّز النموذج لإجاباته.
 ROLE_MODEL_VARS = {"judge": "MIYAR_LLM_MODEL_JUDGE", "assistant": "MIYAR_LLM_MODEL_ASSISTANT"}
+# احتياط الحَكَم وحده: 3 محاولات بتأخير تصاعدي عند 503/429، ثم النموذج الاحتياطي.
+JUDGE_FALLBACK_VAR = "MIYAR_LLM_MODEL_JUDGE_FALLBACK"
+DEFAULT_JUDGE_FALLBACK = "gemini-3.5-flash"
 
 
 def model_for_role(env: dict, role: str | None) -> tuple[str, str]:
@@ -291,4 +364,8 @@ def client_from_env(
     elif mode == "live":
         raise MissingCredentials("GEMINI_API_KEY غير مضبوط")
     max_calls = int(env.get("MIYAR_LIVE_MAX_CALLS_PER_DAY", "0") or 0)
+    if role == "judge":
+        fallback = env.get(JUDGE_FALLBACK_VAR, DEFAULT_JUDGE_FALLBACK)
+        fallbacks = tuple(m for m in [fallback] if m)
+        return LLMClient(provider, store, mode, max_calls, fallbacks, DEFAULT_MAX_ATTEMPTS), model
     return LLMClient(provider, store, mode, max_calls), model

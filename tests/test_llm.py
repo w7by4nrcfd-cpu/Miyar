@@ -15,6 +15,7 @@ from miyar.llm import (
     MissingCredentials,
     RateLimited,
     ResponseStore,
+    ServiceUnavailable,
     client_from_env,
 )
 
@@ -171,3 +172,85 @@ def test_client_from_env_role_models(tmp_path):
         client_from_env({"MIYAR_LLM_CACHE_DIR": str(tmp_path)}, role="assistant")
     with pytest.raises(ValueError):
         client_from_env(base, role="other")
+
+
+# ---------- احتياط الحَكَم: 3 محاولات بتأخير تصاعدي ثم النموذج الاحتياطي ----------
+BUSY = (503, {}, b'{"error": {"code": 503, "status": "UNAVAILABLE"}}')
+LIMITED = (429, {}, b'{"error": {"code": 429}}')
+
+
+def _judge_client(tmp_path, transport, cap=20):
+    slept = []
+    c = LLMClient(
+        GeminiProvider(FAKE_KEY, transport), ResponseStore(tmp_path), "live", cap,
+        fallback_models=("fallback-model",), max_attempts=3, sleep=slept.append,
+    )
+    return c, slept
+
+
+def test_retry_then_success_on_primary(tmp_path):
+    t = FakeTransport(BUSY, LIMITED, ok("نجح"))
+    c, slept = _judge_client(tmp_path, t)
+    r = c.complete(REQ)
+    assert r.text == "نجح" and r.model == r.requested_model == "test-model"
+    assert slept == [2.0, 4.0]  # تأخير تصاعدي
+    assert [a["status"] for a in r.attempts] == [503, 429, 200]
+
+
+def test_fallback_after_three_failures_records_answering_model(tmp_path):
+    t = FakeTransport(BUSY, BUSY, BUSY, ok("من الاحتياطي"))
+    c, slept = _judge_client(tmp_path, t)
+    r = c.complete(REQ)
+    assert r.model == "fallback-model" and r.requested_model == "test-model"
+    assert t.calls[-1]["url"].endswith("/models/fallback-model:generateContent")
+    assert slept == [2.0, 4.0]
+    assert [(a["model"], a["status"]) for a in r.attempts] == [
+        ("test-model", 503), ("test-model", 503), ("test-model", 503), ("fallback-model", 200)]
+    stored = json.loads((tmp_path / f"{r.request_key}.json").read_text(encoding="utf-8"))
+    assert stored["response"]["model"] == "fallback-model"
+    assert stored["response"]["requested_model"] == "test-model"
+    # الإعادة من المخزن: لا استدعاء جديد، والنموذج المسجّل هو الذي أجاب فعلاً
+    again = c.complete(REQ)
+    assert len(t.calls) == 4 and again.from_cache
+    assert again.model == "fallback-model" and again.requested_model == "test-model"
+    cached = LLMClient(None, ResponseStore(tmp_path), "cached", fallback_models=("fallback-model",)).complete(REQ)
+    assert cached.model == "fallback-model"
+
+
+def test_all_fail_raises_last_error(tmp_path):
+    t = FakeTransport(BUSY, BUSY, BUSY, LIMITED, LIMITED, LIMITED)
+    c, _ = _judge_client(tmp_path, t)
+    with pytest.raises(RateLimited):
+        c.complete(REQ)
+    assert len(t.calls) == 6 and c.store.live_calls_today() == 6
+
+
+def test_retries_respect_daily_cap(tmp_path):
+    t = FakeTransport(BUSY, BUSY)
+    c, _ = _judge_client(tmp_path, t, cap=2)
+    with pytest.raises(CallBudgetExceeded):
+        c.complete(REQ)
+    assert len(t.calls) == 2
+
+
+def test_non_retryable_error_is_not_retried(tmp_path):
+    t = FakeTransport((404, {}, b'{"error": {"code": 404}}'))
+    c, slept = _judge_client(tmp_path, t)
+    with pytest.raises(LLMError, match="404"):
+        c.complete(REQ)
+    assert len(t.calls) == 1 and slept == []
+
+
+def test_503_raises_service_unavailable():
+    with pytest.raises(ServiceUnavailable):
+        GeminiProvider(FAKE_KEY, FakeTransport(BUSY)).call(REQ)
+
+
+def test_judge_role_has_fallback_assistant_does_not(tmp_path):
+    base = {"MIYAR_LLM_CACHE_DIR": str(tmp_path), "MIYAR_LLM_MODEL_JUDGE": "j", "MIYAR_LLM_MODEL_ASSISTANT": "a"}
+    judge, _ = client_from_env(base, role="judge")
+    assert judge.fallback_models == ("gemini-3.5-flash",) and judge.max_attempts == 3
+    assistant, _ = client_from_env(base, role="assistant")
+    assert assistant.fallback_models == () and assistant.max_attempts == 1
+    custom, _ = client_from_env({**base, "MIYAR_LLM_MODEL_JUDGE_FALLBACK": "x"}, role="judge")
+    assert custom.fallback_models == ("x",)

@@ -1,0 +1,41 @@
+{
+  "run_label": "DEV_RUN",
+  "note": "DEV_RUN: اختبار دخان للاتصال فقط، ليس نتيجة تقييم ولا يُنشر.",
+  "ran_at": "2026-10-01T12:24:29+00:00",
+  "prompt": "Reply with exactly one word: OK",
+  "max_output_tokens": 16,
+  "results": [
+    {
+      "role": "judge",
+      "model_var": "MIYAR_LLM_MODEL_JUDGE",
+      "requested_model": "gemini-3.8-flash",
+      "fallback_models": [
+        "gemini-3.5-flash"
+      ],
+      "status": "ok",
+      "answered_by": "gemini-3.8-flash",
+      "attempts": [
+        {
+          "model": "gemini-3.8-flash",
+          "status": 200
+        }
+      ],
+      "from_cache": false,
+      "text": "",
+      "finish_reason": "MAX_TOKENS",
+      "usage": {
+        "promptTokenCount": 8,
+        "totalTokenCount": 21,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8
+          }
+        ],
+        "thoughtsTokenCount": 13,
+        "serviceTier": "standard"
+      },
+      "request_key": "e293764202f0079cc41108d8dc9ee41351b032fc619ae70c6c4a241fd9bd0d51"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-01T12:24:29+00:00",
+  "request_key": "e293764202f0079cc41108d8dc9ee41351b032fc619ae70c6c4a241fd9bd0d51",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "prompt": "Reply with exactly one word: OK",
+    "system": "",
+    "temperature": 0.0,
+    "max_output_tokens": 16
+  },
+  "response": {
+    "text": "",
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "requested_model": "gemini-3.8-flash",
+    "finish_reason": "MAX_TOKENS",
+    "usage": {
+      "promptTokenCount": 8,
+      "totalTokenCount": 21,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 8
+        }
+      ],
+      "thoughtsTokenCount": 13,
+      "serviceTier": "standard"
+    }
+  }
+}
