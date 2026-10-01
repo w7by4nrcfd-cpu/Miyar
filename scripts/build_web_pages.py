@@ -51,6 +51,7 @@ LAYOUT = """<!doctype html>
     <span class="label">وضع العرض:</span>
     <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
     <button class="mode" type="button" aria-disabled="true" disabled title="التشغيل الحي غير متاح حالياً">○ تشغيل حي — معطّل حالياً</button>
+    <span class="modenote">للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026.</span>
   </div>
 </div>
 <header class="site">
@@ -319,7 +320,7 @@ def transparency(f: dict) -> str:
 <ul>
   <li><strong>لا نجمع بياناتك الشخصية:</strong> لا حسابات، ولا نماذج إدخال، ولا ملفات تعريف ارتباط، ولا أدوات تحليلات أو تتبع.</li>
   <li>لا خطوط ولا مكتبات من مواقع خارجية؛ سياسة أمان المحتوى تمنع تحميل أي مورد من خارج الموقع.</li>
-  <li>الموقع مستضاف على Cloudflare Pages، وقد يعالج مزوّد الاستضافة بيانات تقنية لازمة لتقديم الصفحات (مثل عنوان IP) وفق سياسته؛ ولم نفعّل أي أداة تحليلات.</li>
+  <li>الموقع مستضاف على Cloudflare Workers، وقد يعالج مزوّد الاستضافة بيانات تقنية لازمة لتقديم الصفحات (مثل عنوان IP) وفق سياسته؛ ولم نفعّل أي أداة تحليلات.</li>
   <li>حالات الاختبار اصطناعية، ولا تُستخدم محادثات حقيقية لأي مستفيد.</li>
   <li>لا مفاتيح ولا أسرار في الموقع ولا في المستودع؛ إعدادات المزوّد في متغيرات بيئة على الخادم فقط.</li>
 </ul>
@@ -391,12 +392,17 @@ def status(f: dict) -> str:
 
 RESULTS = """
 <h1>النتائج</h1>
-<p>تعرض هذه الصفحة نتائج التشغيلات الفعلية فقط، من الملف <span class="ltr" lang="en">data/results.json</span>.
-كل رقم يجب أن يكون ناتجاً عن تشغيل مسجّل في <span class="ltr" lang="en">evaluation/</span> مع عدد الحالات.</p>
+<div class="notice demo" role="note">
+  <p><strong>للعرض فقط: هذه ليست نتائج تقييم رسمية.</strong>
+  وضع «نتائج محفوظة» يعرض ملف نتائج محفوظاً مسبقاً دون أي استدعاء لنموذج لغوي، وهو <strong>فارغ حالياً</strong>:
+  لا نتائج تقييم رسمية فيه، ولا بيانات تجريبية مصطنعة.</p>
+  <p><strong>التقييم الرسمي يبدأ 4 أكتوبر 2026</strong> (أيام التحدي 4–6 أكتوبر)، ولا يُعرض هنا بعده إلا ناتج تشغيل رسمي
+  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N).</p>
+</div>
 <div id="results" aria-live="polite">
   <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
 </div>
-<noscript><div class="notice empty"><strong>لم يُشغَّل أي اختبار بعد</strong>
+<noscript><div class="notice empty"><strong>لم يُشغَّل أي تقييم رسمي بعد</strong>
 <span>(تحتاج هذه الصفحة إلى JavaScript لقراءة ملف النتائج.)</span></div></noscript>
 <p>انظر <a href="status.html">الحدود والحالة</a> لما تمّ وما لم يتم.</p>
 """

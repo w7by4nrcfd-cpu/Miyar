@@ -118,3 +118,6 @@ ul.links li { margin-bottom: 6px; }
   table.stack td:last-child { border-bottom: 0; }
   table.stack td[data-label]::before { content: attr(data-label); display: block; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
 }
+.modenote { flex-basis: 100%; color: var(--text); font-weight: 600; }
+.notice.demo { border-color: var(--rev-bd); background: var(--rev-bg); color: var(--rev-fg); margin-bottom: 16px; }
+.notice.demo strong { display: inline; font-size: inherit; }

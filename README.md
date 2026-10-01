@@ -16,7 +16,7 @@
 المشروع في **المرحلة 0 (البنية التحتية)** فقط. انظر [BASELINE.md](BASELINE.md) لقائمة
 دقيقة بما هو جاهز قبل أيام التحدي، و[CHANGELOG.md](CHANGELOG.md) لما يُنجز يوماً بيوم.
 
-رابط التجربة المباشرة: _يُضاف بعد النشر خلال أيام التحدي._
+رابط التجربة المباشرة: <https://miyar.w7by4nrcfd.workers.dev> (موقع ثابت على Cloudflare Workers؛ صفحة النتائج للعرض فقط ولا نتائج تقييم رسمية قبل 4 أكتوبر 2026).
 
 ## المبادئ
 - كل رقم معروض ناتج عن تشغيل فعلي مسجّل في `evaluation/` مع عدد الحالات (N).
@@ -33,7 +33,7 @@ node --test tests/web/*.test.mjs             # منطق صفحة النتائج
 python -m http.server 8000 --directory web   # معاينة الموقع: http://localhost:8000
 uvicorn miyar.api:app --port 8001            # الخلفية: /health فقط
 ```
-النشر الثابت على Cloudflare Pages: [docs/DEPLOY.md](docs/DEPLOY.md).
+النشر الثابت على Cloudflare Workers (وليس Pages): [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## التقنيات
 Python 3.11 · FastAPI (هيكل `/health` فقط) · HTML/CSS/JS بلا أدوات بناء · pytest · Node 22 (`node --test`) · GitHub Actions · نص القرآن من تنزيلات Quranpedia.net (النسخة 2026-10-01) ·

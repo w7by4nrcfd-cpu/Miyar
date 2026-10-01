@@ -1,4 +1,4 @@
-# رؤوس Cloudflare Pages (https://developers.cloudflare.com/pages/configuration/headers/)
+# رؤوس الأصول الثابتة في Cloudflare Workers (https://developers.cloudflare.com/workers/static-assets/headers/)
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

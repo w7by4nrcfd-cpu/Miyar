@@ -106,6 +106,20 @@ def test_transparency_page_disclosures():
         assert needle in t, needle
 
 
+@pytest.mark.parametrize("page", PAGES)
+def test_mode_bar_says_display_only_not_official(page):
+    t = _text(page)
+    assert "للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026." in t
+
+
+def test_results_page_says_demo_not_official():
+    t = _text("results.html")
+    for needle in ("للعرض فقط: هذه ليست نتائج تقييم رسمية", "فارغ حالياً", "التقييم الرسمي يبدأ 4 أكتوبر 2026"):
+        assert needle in t, needle
+    js = (WEB / "assets/results.js").read_text(encoding="utf-8")
+    assert "لم يُشغَّل أي تقييم رسمي بعد" in js and "التقييم الرسمي يبدأ 4 أكتوبر 2026" in js
+
+
 def test_status_page_is_honest():
     t = _text("status.html")
     assert "لا توجد نتائج تقييم رسمية بعد" in t

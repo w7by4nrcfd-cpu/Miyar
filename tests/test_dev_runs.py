@@ -20,7 +20,7 @@ def test_published_results_do_not_reference_dev_runs():
 
 
 def test_no_published_file_references_dev_runs():
-    # كل ما في web/ منشور على Cloudflare Pages: صفحات، بيانات، سكربتات، أنماط، README
+    # كل ما في web/ منشور على Cloudflare Workers: صفحات، بيانات، سكربتات، أنماط، README
     leaks = [
         str(p.relative_to(ROOT))
         for p in (ROOT / "web").rglob("*")

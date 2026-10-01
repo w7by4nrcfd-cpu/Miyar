@@ -1,21 +1,17 @@
 # النشر
 
-## 1) الموقع الثابت `web/` على Cloudflare Pages (من الجوال)
-الموقع HTML/CSS/JS فقط، **بلا أمر بناء**.
+## 1) الموقع الثابت `web/` على Cloudflare Workers (وليس Pages)
+الرابط المنشور: <https://miyar.w7by4nrcfd.workers.dev>
 
-1. افتح https://dash.cloudflare.com وسجّل الدخول (الخطة المجانية تكفي).
-2. **Workers & Pages** ← **Create** ← تبويب **Pages** ← **Connect to Git**.
-3. اربط حساب GitHub واختر المستودع `w7by4nrcfd-cpu/Miyar`.
-4. الإعدادات:
-   | الحقل | القيمة |
-   |---|---|
-   | Production branch | `main` |
-   | Framework preset | `None` |
-   | Build command | **اتركه فارغاً** |
-   | Build output directory | `web` |
-   | Root directory | اتركه فارغاً (جذر المستودع) |
-5. **Save and Deploy**. بعد دقيقة يظهر رابط مثل `https://miyar.pages.dev`.
-6. كل دفع إلى `main` يعيد النشر تلقائياً.
+النشر عبر **Cloudflare Workers** (أصول ثابتة Static Assets)، **وليس Cloudflare Pages**. الموقع HTML/CSS/JS فقط، **بلا أمر بناء**.
+أمر النشر من جذر المستودع:
+
+```bash
+npx wrangler deploy --assets=./web --name miyar --compatibility-date=2026-10-01
+```
+
+- يحتاج تسجيل الدخول إلى حساب Cloudflare في wrangler (`npx wrangler login`) أو متغير البيئة `CLOUDFLARE_API_TOKEN`؛ **لا يُكتب أي مفتاح في المستودع**.
+- بعد أي تعديل في `web/` يُعاد تشغيل أمر النشر؛ ولا تفترض أن الدفع إلى `main` ينشر تلقائياً.
 
 الصفحات: `index.html` (الرئيسية)، `levels.html` (مستويات المحتوى)، `sources.html` (المصادر والمنهجية)،
 `transparency.html` (الشفافية والخصوصية)، `status.html` (الحدود والحالة)، `results.html` (النتائج).

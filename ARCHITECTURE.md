@@ -78,7 +78,7 @@ testsets/*.json ──► runner ──► targets (المساعد المُخت�
 | الخلفية | FastAPI 0.142.2 + Uvicorn 0.54.0 (محلياً؛ `fastapi>=0.115,<1` و`uvicorn>=0.30,<1` في `requirements.txt`) | `miyar/api.py`: `GET /health` فقط |
 | الواجهة | HTML/CSS/JavaScript (وحدات ES) بلا مكتبات ولا أدوات بناء | `web/` |
 | اختبار الواجهة | Node.js 22 (`node --test`) | منطق صفحة النتائج |
-| الاستضافة المخطط لها | Cloudflare Pages (موقع ثابت، بلا أمر بناء) | لم يُنشر بعد |
+| الاستضافة | Cloudflare Workers، أصول ثابتة (`npx wrangler deploy --assets=./web --name miyar --compatibility-date=2026-10-01`) | منشور: https://miyar.w7by4nrcfd.workers.dev |
 | الاختبارات | pytest 9.1 (محلياً) / `pytest>=8` في `requirements.txt`، وhttpx 0.28.1 لـ TestClient | اختبارات الوحدات |
 | CI | GitHub Actions (`ubuntu-latest`، Python 3.11، Node 22) | تشغيل الاختبارات مع كل push |
 | نص القرآن | Quranpedia.net، التنزيلات الرسمية النسخة 2026-10-01: `mushafs-1` (حفص، مضبوط بالرسم الإملائي) و`mushafs-2` (حفص، بالرسم العثماني؛ موصوف في ملفه بأنه «غير موافق للمطبوع») | المطابقة الحرفية (الرسمان) والعرض (العثماني) |

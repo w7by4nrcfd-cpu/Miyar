@@ -13,8 +13,8 @@ function el(tag, attrs = {}, ...children) {
 function renderEmpty(root) {
   root.replaceChildren(
     el("div", { class: "notice empty", role: "status" },
-      el("strong", {}, "لم يُشغَّل أي اختبار بعد"),
-      el("span", {}, "لا توجد نتائج لعرضها. ستظهر هنا نتائج التشغيلات الفعلية فقط بعد تنفيذها وتسجيلها في evaluation/."))
+      el("strong", {}, "لم يُشغَّل أي تقييم رسمي بعد"),
+      el("span", {}, "ملف النتائج المحفوظ فارغ: لا نتائج رسمية ولا بيانات تجريبية. التقييم الرسمي يبدأ 4 أكتوبر 2026، ولا يظهر هنا إلا ناتج تشغيل رسمي مسجّل في evaluation/official/."))
   );
 }
 
