@@ -49,7 +49,7 @@ class Verse:
     sura: int
     aya: int
     sura_name: str
-    text: str  # الرسم العثماني (Quranpedia mushafs-2) للعرض
+    text: str  # الرسم العثماني (Quranpedia mushafs-2، موصوف في ملفه «غير موافق للمطبوع») للعرض
     text_simple: str  # الرسم الإملائي المضبوط (Quranpedia mushafs-1)
 
     @property
@@ -346,7 +346,7 @@ def _joined_match(segments: list[list[str]], window: list[str]) -> bool:
 
 
 SIMPLE_FILE = "mushafs-1.json.gz"  # مصحف حفص — نص مضبوط بالرسم الإملائي
-UTHMANI_FILE = "mushafs-2.json.gz"  # مصحف حفص نسخة نصية — الرسم العثماني
+UTHMANI_FILE = "mushafs-2.json.gz"  # مصحف حفص نسخة نصية — الرسم العثماني، «غير موافق للمطبوع» بحسب وصفه
 _BOM = "\ufeff"
 
 
