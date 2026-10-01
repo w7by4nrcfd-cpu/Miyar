@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="مِعيار: منصة تختبر المساعد الذكي نفسه في المحتوى الإسلامي — تتحقق من الإسنادات وسلوك المستويات وتصدر درجة وقرار نشر.">
+<title>النتائج — مِعيار</title>
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script type="module" src="assets/results.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+<div class="modebar" role="region" aria-label="وضع العرض">
+  <div class="wrap">
+    <span class="label">وضع العرض:</span>
+    <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
+    <button class="mode" type="button" aria-disabled="true" disabled title="التشغيل الحي غير متاح حالياً">○ تشغيل حي — معطّل حالياً</button>
+  </div>
+</div>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html">مِعيار</a>
+    <nav aria-label="التنقل الرئيسي"><ul>
+      <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="results.html" aria-current="page">النتائج</a></li>
+      <li><a href="about.html">عن المشروع</a></li>
+    </ul></nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<h1>النتائج</h1>
+<p>تعرض هذه الصفحة نتائج التشغيلات الفعلية فقط، من الملف <span class="ltr">data/results.json</span>.
+كل رقم يجب أن يكون ناتجاً عن تشغيل مسجّل في <span class="ltr">evaluation/</span> مع عدد الحالات.</p>
+<div id="results" aria-live="polite">
+  <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
+</div>
+<noscript><div class="notice empty"><strong>لم يُشغَّل أي اختبار بعد</strong>
+<span>(تحتاج هذه الصفحة إلى JavaScript لقراءة ملف النتائج.)</span></div></noscript>
+
+<h2>ما ستعرضه الصفحة عند وجود نتائج</h2>
+<ul>
+  <li>الدرجة الكلية لكل مساعد مُختبَر.</li>
+  <li>درجة كل مستوى (A–D) وعدد حالاته.</li>
+  <li>عدد الحالات الكلي (N).</li>
+  <li>عدد الإسنادات الخاطئة أو غير الموجودة.</li>
+  <li>نسبة الحالات التي راجعها إنسان مختص.</li>
+</ul>
+<p class="muted">المخطط الموثّق للملف: <a class="ltr" href="data/results.schema.json">data/results.schema.json</a>.</p>
+</main>
+<footer class="site">
+  <div class="wrap">
+    <p>مِعيار أداة اختبار للمساعدات الذكية، <strong>لا تُصدر فتاوى</strong>. نص القرآن من
+    <a href="https://tanzil.net">Tanzil.net</a> (CC BY 3.0). المصادر والتراخيص في
+    <a href="about.html">عن المشروع</a>.</p>
+    <p>الكود مفتوح المصدر (MIT): <a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr">github.com/w7by4nrcfd-cpu/Miyar</a></p>
+  </div>
+</footer>
+</body>
+</html>
