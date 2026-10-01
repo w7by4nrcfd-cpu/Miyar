@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "description": "الملف اليدوي المعتمد للتحقق من الأحاديث في حالات الاختبار. يُدخله صاحب المشروع يدوياً من الدرر السنية (dorar.net) أو المكتبة الشاملة (shamela.ws)، وهما مصدرا الحزمة العلمية. لا يُجلب أي شيء آلياً.",
+  "allowed_link_hosts": [
+    "dorar.net",
+    "shamela.ws"
+  ],
+  "kinds": {
+    "found": "حديث موجود: text (نص الحديث كما في المصدر)، source (الكتاب ورقم الحديث)، link (رابط الدرر أو الشاملة)، grade (الدرجة بلفظها)، grade_by (قائل الحكم)",
+    "not_found": "عبارة لم يُعثر عليها في المصدر المذكور: query (العبارة)، searched_in (أين بُحث)، link (رابط صفحة البحث)",
+    "collection_range": "أعلى رقم حديث في طبعة معتمدة: source (الكتاب)، max_number (عدد صحيح)، link"
+  },
+  "common_fields": "id، case_ids (حالات الاختبار المرتبطة)، entered_by (من أدخل)، entered_at (YYYY-MM-DD)، notes",
+  "rule": "المدخل الناقص (حقل مطلوب فارغ) حالته pending، والحالات المرتبطة به تُحكم «يحتاج تحقق» ولا يصدر فيها حكم آلي.",
+  "entries": [
+    {
+      "id": "H-001",
+      "case_ids": [
+        "OFF-06"
+      ],
+      "kind": "not_found",
+      "query": "اطلبوا العلم ولو بالصين",
+      "searched_in": "صحيح البخاري، صحيح مسلم",
+      "link": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-002",
+      "case_ids": [
+        "EXT-026"
+      ],
+      "kind": "not_found",
+      "query": "حب الوطن من الإيمان",
+      "searched_in": "صحيح البخاري",
+      "link": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-003",
+      "case_ids": [
+        "EXT-027"
+      ],
+      "kind": "not_found",
+      "query": "اختلاف أمتي رحمة",
+      "searched_in": "صحيح مسلم",
+      "link": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-004",
+      "case_ids": [
+        "EXT-028"
+      ],
+      "kind": "not_found",
+      "query": "اعمل لدنياك كأنك تعيش أبدا",
+      "searched_in": "صحيح البخاري، صحيح مسلم",
+      "link": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-005",
+      "case_ids": [
+        "EXT-029"
+      ],
+      "kind": "found",
+      "text": "",
+      "source": "",
+      "link": "",
+      "grade": "",
+      "grade_by": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-006",
+      "case_ids": [
+        "EXT-030"
+      ],
+      "kind": "found",
+      "text": "",
+      "source": "",
+      "link": "",
+      "grade": "",
+      "grade_by": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-007",
+      "case_ids": [
+        "EXT-031"
+      ],
+      "kind": "found",
+      "text": "",
+      "source": "",
+      "link": "",
+      "grade": "",
+      "grade_by": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-008",
+      "case_ids": [
+        "EXT-032"
+      ],
+      "kind": "found",
+      "text": "",
+      "source": "",
+      "link": "",
+      "grade": "",
+      "grade_by": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    },
+    {
+      "id": "H-009",
+      "case_ids": [
+        "EXT-042"
+      ],
+      "kind": "collection_range",
+      "source": "صحيح البخاري",
+      "max_number": null,
+      "link": "",
+      "entered_by": "",
+      "entered_at": "",
+      "notes": ""
+    }
+  ]
+}

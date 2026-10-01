@@ -3,14 +3,35 @@ from pathlib import Path
 
 import pytest
 
-from miyar.hadith_data import Hadith, load_hadiths, register_format
+from miyar.hadith_data import UNAPPROVED_DATA_DIR, Hadith, UnapprovedSource, load_hadiths, register_format
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
 @pytest.fixture(scope="module")
 def store():
-    return load_hadiths()
+    # المجموعة الخارجية غير معتمدة: تُحمَّل في الاختبارات بإذن صريح فقط
+    return load_hadiths(UNAPPROVED_DATA_DIR, allow_unapproved=True)
+
+
+def test_unapproved_set_is_refused_by_default():
+    with pytest.raises(UnapprovedSource):
+        load_hadiths(UNAPPROVED_DATA_DIR)
+
+
+def test_default_data_dir_has_no_hadith_corpus():
+    # data/hadith/ فيه الملف اليدوي المعتمد فقط، ولا مجموعة يحمّلها هذا المحمّل
+    assert not (ROOT / "data/hadith/manifest.json").exists()
+    with pytest.raises(FileNotFoundError):
+        load_hadiths()
+
+
+def test_unapproved_flag_in_manifest(tmp_path):
+    data = _mini_data(tmp_path, [_entry()], {"alt.jsonl": json.dumps(FIXTURE_HADITH, ensure_ascii=False) + "\n"},
+                      approved=False)
+    with pytest.raises(UnapprovedSource):
+        load_hadiths(data)
+    assert len(load_hadiths(data, allow_unapproved=True)) == 1
 
 
 def test_loads_all_datasets_from_manifest(store):
@@ -39,12 +60,15 @@ def test_license_status_is_exposed(store):
         assert ds.license_declared == "Unlicense" and ds.license_clear is False and ds.license_note
 
 
-def _mini_data(tmp_path: Path, manifest_entries: list[dict], files: dict[str, str]) -> Path:
+def _mini_data(tmp_path: Path, manifest_entries: list[dict], files: dict[str, str], approved: bool | None = None) -> Path:
     d = tmp_path / "data" / "hadith"
     d.mkdir(parents=True)
     for name, content in files.items():
         (d / name).write_text(content, encoding="utf-8")
-    (d / "manifest.json").write_text(json.dumps({"schema_version": 1, "datasets": manifest_entries}), encoding="utf-8")
+    m = {"schema_version": 1, "datasets": manifest_entries}
+    if approved is not None:
+        m["approved"] = approved
+    (d / "manifest.json").write_text(json.dumps(m), encoding="utf-8")
     return tmp_path / "data"
 
 

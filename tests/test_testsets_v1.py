@@ -1,6 +1,6 @@
-"""حارس testsets/extended_v1.json: البنية، والتغطية، والتحقق البرمجي من كل نص قرآني أو حديثي فيها مقابل data/."""
+"""حارس testsets/extended_v1.json: البنية، والتغطية، والتحقق البرمجي من النصوص القرآنية مقابل data/quran،
+وربط حالات الحديث بالملف اليدوي المعتمد data/hadith/manual_hadith.json."""
 
-import gzip
 import json
 import subprocess
 import sys
@@ -16,11 +16,6 @@ OFFICIAL = json.loads((ROOT / "testsets/official_v0.json").read_text(encoding="u
 EXT = json.loads((ROOT / "testsets/extended_v1.json").read_text(encoding="utf-8"))
 CASES = EXT["cases"]
 ALL = OFFICIAL["cases"] + CASES
-
-
-def _sahihayn():
-    with gzip.open(ROOT / "data/hadith/sahihayn.jsonl.gz", "rt", encoding="utf-8") as f:
-        return [json.loads(line) for line in f]
 
 
 def test_total_is_about_sixty_with_unique_ids():
@@ -123,35 +118,43 @@ def test_wrong_and_invalid_references_are_detected():
         assert correct in [loc.ref for loc in r.found_at], (c["id"], correct)
 
 
-def test_absent_hadith_phrases_not_in_sahihayn_data():
-    rows = _sahihayn()
-    cases = [c for c in CASES if c.get("data_check", {}).get("type") == "hadith_absent"]
-    assert len(cases) >= 3
+HADITH_TYPES = {"hadith_absent": "not_found", "hadith_fabricated": "found", "hadith_number_out_of_range": "collection_range"}
+
+
+def test_hadith_cases_point_to_manual_file_entries():
+    # كل حالة تعتمد على الحديث مربوطة بمدخل في الملف اليدوي المعتمد (لا بمجموعة خارجية)
+    from miyar.hadith_manual import entries_by_id
+    entries = entries_by_id()
+    cases = [c for c in ALL if c.get("data_check", {}).get("type") in HADITH_TYPES]
+    assert len(cases) == 9
     for c in cases:
-        phrase = normalize(c["data_check"]["phrase"])
-        colls = set(c["data_check"]["collections"])
-        assert not any(phrase in normalize(r["text"]) for r in rows if r["collection"] in colls), c["id"]
+        dc = c["data_check"]
+        e = entries.get(dc.get("manual_ref"))
+        assert e is not None, c["id"]
+        assert e["kind"] == HADITH_TYPES[dc["type"]] and c["id"] in e["case_ids"], c["id"]
+        assert "id" not in dc, c["id"]  # لا إحالة إلى معرّف في المجموعة الخارجية
 
 
-def test_fabricated_hadith_fragments_come_from_data():
-    weak = {it["id"]: it for it in json.loads((ROOT / "data/hadith/weak_fabricated.json").read_text(encoding="utf-8"))["items"]}
-    cases = [c for c in CASES if c.get("data_check", {}).get("type") == "hadith_fabricated"]
-    assert len(cases) >= 4
-    for c in cases:
-        item = weak[c["data_check"]["id"]]
-        assert item["status"] == "fabricated", c["id"]
-        frag = c["data_check"]["fragment"]
-        assert normalize(frag) in normalize(item["text"]), c["id"]  # منسوخ من البيانات لا مكتوب من عندنا
-        assert frag in c["prompt"], c["id"]
-
-
-def test_hadith_number_out_of_range():
-    rows = _sahihayn()
+def test_fabricated_fragments_are_in_prompts():
     for c in CASES:
         dc = c.get("data_check", {})
-        if dc.get("type") == "hadith_number_out_of_range":
-            top = max(float(r["number"]) for r in rows if r["collection"] == dc["collection"])
-            assert dc["number"] > top, c["id"]
+        if dc.get("type") == "hadith_fabricated":
+            assert dc["fragment"] in c["prompt"], c["id"]
+
+
+def test_completed_manual_entries_match_their_cases():
+    # عند إدخال المدخل يدوياً: يجب أن يطابق حالته (العبارة غير الموجودة، والرقم خارج النطاق)
+    from miyar.hadith_manual import entries_by_id, entry_status
+    entries = entries_by_id()
+    for c in ALL:
+        dc = c.get("data_check", {})
+        e = entries.get(dc.get("manual_ref")) if dc.get("manual_ref") else None
+        if not e or entry_status(e) != "complete":
+            continue
+        if dc["type"] == "hadith_absent":
+            assert normalize(dc["phrase"]) in normalize(e["query"]), c["id"]
+        if dc["type"] == "hadith_number_out_of_range":
+            assert dc["number"] > e["max_number"], c["id"]
 
 
 def test_prompt_injection_cases_are_data_only_and_marked():

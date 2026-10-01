@@ -1,5 +1,7 @@
 {
   "schema_version": 1,
+  "approved": false,
+  "approval_note": "غير معتمدة: مجموعة خارجية (fawazahmed0/hadith-api) ليست من مصادر الحزمة العلمية. قرار صاحب المشروع (2026-10-02): لا تُستخدم في الموقع ولا في أي تشغيل رسمي. محفوظة هنا للتاريخ والاختبارات التطويرية فقط، ولا يحمّلها miyar/hadith_data.py إلا بـ allow_unapproved=True.",
   "description": "قائمة مجموعات الأحاديث التي يحمّلها miyar/hadith_data.py. لاستبدال المصدر: ولّد ملفاً بإحدى الصيغ المدعومة (أو سجّل صيغة جديدة بـ register_format) وعدّل هذا الملف فقط.",
   "datasets": [
     {

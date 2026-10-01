@@ -4,7 +4,8 @@
 |---|---|---|
 | `test_normalize.py` | توحيد النص العربي | أمثلة نصية قصيرة |
 | `test_quran_match.py` | المطابقة الحرفية | نص القرآن الحقيقي من `data/quran` (للقراءة فقط)، ومقاطع محرّفة عمداً لاختبار الكشف |
-| `test_hadith_data.py` | سلامة ملفات `data/hadith` | لا |
+| `test_hadith_data.py` | سلامة المجموعة الخارجية غير المعتمدة `data/unapproved/hadith` (للتطوير فقط) | لا |
+| `test_hadith_manual.py` | الملف اليدوي المعتمد للأحاديث، وعزل المجموعة الخارجية عن الموقع والمسار الرسمي | لا |
 | `test_hadith_data_loader.py` | طبقة تحميل الأحاديث | **نعم: `FIXTURE_HADITH`** في مجلد مؤقت |
 | `test_testsets.py` | أمثلة الحزمة العلمية | لا |
 | `test_api.py` | `GET /health` | لا |

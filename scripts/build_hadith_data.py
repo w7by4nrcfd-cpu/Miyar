@@ -1,4 +1,4 @@
-"""توليد ملف الأحاديث المحلي data/hadith/sahihayn.jsonl.gz.
+"""توليد ملف الأحاديث المحلي data/unapproved/hadith/sahihayn.jsonl.gz (مجموعة غير معتمدة؛ انظر README المجلد).
 
 المصدر: fawazahmed0/hadith-api (ترخيص معلن: Unlicense؛ سلسلة المصادر غير واضحة — انظر SOURCES.md) بإصدار مثبّت برقم commit.
 الاستخدام:
@@ -22,7 +22,7 @@ COLLECTIONS = {
     "muslim": {"file": "ara-muslim.json", "name_ar": "صحيح مسلم"},
 }
 
-OUT = Path(__file__).resolve().parent.parent / "data" / "hadith" / "sahihayn.jsonl.gz"
+OUT = Path(__file__).resolve().parent.parent / "data" / "unapproved" / "hadith" / "sahihayn.jsonl.gz"
 
 
 def load(src: Path | None, filename: str) -> dict:

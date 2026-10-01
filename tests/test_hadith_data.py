@@ -1,3 +1,5 @@
+"""سلامة المجموعة الخارجية غير المعتمدة (data/unapproved/hadith/): محفوظة للتاريخ والتطوير فقط، لا للموقع ولا للتشغيل الرسمي."""
+
 import gzip
 import json
 from collections import Counter
@@ -10,7 +12,7 @@ REQUIRED = ("id", "collection", "collection_ar", "number", "text", "grade", "gra
 def test_hadith_data_integrity():
     counts: Counter[str] = Counter()
     ids = set()
-    with gzip.open(ROOT / "data/hadith/sahihayn.jsonl.gz", "rt", encoding="utf-8") as f:
+    with gzip.open(ROOT / "data/unapproved/hadith/sahihayn.jsonl.gz", "rt", encoding="utf-8") as f:
         for line in f:
             h = json.loads(line)
             assert all(h.get(k) for k in REQUIRED), h.get("id")
@@ -23,7 +25,7 @@ def test_hadith_data_integrity():
 
 
 def test_weak_fabricated_set():
-    doc = json.loads((ROOT / "data/hadith/weak_fabricated.json").read_text(encoding="utf-8"))
+    doc = json.loads((ROOT / "data/unapproved/hadith/weak_fabricated.json").read_text(encoding="utf-8"))
     items = doc["items"]
     assert doc["license_declared"] == "Unlicense" and doc["license_note"]
     assert doc["grade_display_policy"]

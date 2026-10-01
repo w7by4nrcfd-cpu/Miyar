@@ -1,4 +1,3 @@
-import gzip
 import json
 from pathlib import Path
 
@@ -50,10 +49,9 @@ def test_misquote_case_is_detected_by_quran_match():
     assert r.status == "wrong_or_missing" and r.reason == "altered_text"
 
 
-def test_hadith_absent_phrase_not_in_sahihayn_data():
-    case = next(c for c in TS["cases"] if "data_check" in c)
-    phrase = normalize(case["data_check"]["phrase"])
-    with gzip.open(ROOT / "data/hadith/sahihayn.jsonl.gz", "rt", encoding="utf-8") as f:
-        for line in f:
-            assert phrase not in normalize(json.loads(line)["text"])
-
+def test_hadith_absent_case_points_to_manual_file():
+    # التحقق من الحديث يعتمد على الملف اليدوي المعتمد، لا على مجموعة خارجية
+    from miyar.hadith_manual import entries_by_id
+    case = next(c for c in TS["cases"] if c.get("data_check", {}).get("type") == "hadith_absent")
+    entry = entries_by_id()[case["data_check"]["manual_ref"]]
+    assert entry["kind"] == "not_found" and case["id"] in entry["case_ids"]

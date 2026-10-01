@@ -1,4 +1,4 @@
-"""توليد data/hadith/weak_fabricated.json: مجموعة صغيرة من أحاديث حكم العلماء بأنها موضوعة.
+"""توليد data/unapproved/hadith/weak_fabricated.json (غير معتمدة): مجموعة صغيرة من أحاديث حكم العلماء بأنها موضوعة.
 
 المصدر: fawazahmed0/hadith-api (ترخيص معلن: Unlicense؛ سلسلة المصادر غير واضحة — انظر SOURCES.md)، سنن ابن ماجه بأحكام العلماء المرفقة فيه.
 قاعدة الاختيار (حتمية، لا انتقاء يدوي):
@@ -19,7 +19,7 @@ from pathlib import Path
 COMMIT = "df57907be35291c91ad6a6691180e22ca9920784"
 FILE = "ara-ibnmajah.json"
 URL = f"https://raw.githubusercontent.com/fawazahmed0/hadith-api/{COMMIT}/editions/{FILE}"
-OUT = Path(__file__).resolve().parent.parent / "data" / "hadith" / "weak_fabricated.json"
+OUT = Path(__file__).resolve().parent.parent / "data" / "unapproved" / "hadith" / "weak_fabricated.json"
 
 GRADE_AR = {
     "Mawdu": "موضوع",

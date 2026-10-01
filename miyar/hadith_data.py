@@ -8,6 +8,10 @@
   2. عدّل ``manifest.json`` فقط.
 
 لا تنزيل ولا اتصال بالشبكة هنا: الملفات محلية بالكامل.
+
+**الاعتماد:** manifest يحمل ``approved``. المجموعة الخارجية الحالية (``data/unapproved/hadith/``) غير معتمدة
+(خارج مصادر الحزمة العلمية)، فلا تُحمَّل إلا بـ ``allow_unapproved=True`` في الاختبارات والتطوير، ولا تُستخدم في
+الموقع ولا في أي تشغيل رسمي. التحقق من أحاديث حالات الاختبار يعتمد على ``miyar/hadith_manual.py``.
 """
 
 from __future__ import annotations
@@ -26,6 +30,11 @@ ROLES = {
 }
 
 DEFAULT_DATA_DIR = Path(os.environ.get("MIYAR_DATA_DIR", Path(__file__).resolve().parent.parent / "data"))
+UNAPPROVED_DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "unapproved"
+
+
+class UnapprovedSource(ValueError):
+    """مجموعة أحاديث غير معتمدة (خارج الحزمة العلمية) طُلب تحميلها دون allow_unapproved=True."""
 
 
 @dataclass(frozen=True)
@@ -139,9 +148,9 @@ class HadithStore:
             self._by_id[h.id] = h
 
     @classmethod
-    def load(cls, data_dir: str | Path | None = None) -> "HadithStore":
+    def load(cls, data_dir: str | Path | None = None, allow_unapproved: bool = False) -> "HadithStore":
         d = Path(data_dir) if data_dir else DEFAULT_DATA_DIR
-        return _load_cached(str(d.resolve()))
+        return _load_cached(str(d.resolve()), allow_unapproved)
 
     def __len__(self) -> int:
         return len(self._all)
@@ -159,8 +168,13 @@ class HadithStore:
         return self._by_id.get(hadith_id)
 
 
-def _parse_manifest(hadith_dir: Path) -> list[Dataset]:
+def _parse_manifest(hadith_dir: Path, allow_unapproved: bool = False) -> list[Dataset]:
     m = json.loads((hadith_dir / "manifest.json").read_text(encoding="utf-8"))
+    if m.get("approved") is False and not allow_unapproved:
+        raise UnapprovedSource(
+            f"مجموعة أحاديث غير معتمدة في {hadith_dir}: لا تُستخدم في الموقع ولا في التشغيلات الرسمية "
+            "(allow_unapproved=True للاختبارات والتطوير فقط)"
+        )
     out = []
     for e in m["datasets"]:
         if e["format"] not in _FORMATS:
@@ -194,9 +208,9 @@ def _validate(h: Hadith) -> None:
 
 
 @lru_cache(maxsize=4)
-def _load_cached(data_dir: str) -> HadithStore:
+def _load_cached(data_dir: str, allow_unapproved: bool = False) -> HadithStore:
     hadith_dir = Path(data_dir) / "hadith"
-    datasets = _parse_manifest(hadith_dir)
+    datasets = _parse_manifest(hadith_dir, allow_unapproved)
     hadiths: list[Hadith] = []
     for ds in datasets:
         for h in _FORMATS[ds.format](ds.path, ds):
@@ -205,5 +219,5 @@ def _load_cached(data_dir: str) -> HadithStore:
     return HadithStore(datasets, hadiths)
 
 
-def load_hadiths(data_dir: str | Path | None = None) -> HadithStore:
-    return HadithStore.load(data_dir)
+def load_hadiths(data_dir: str | Path | None = None, allow_unapproved: bool = False) -> HadithStore:
+    return HadithStore.load(data_dir, allow_unapproved)
