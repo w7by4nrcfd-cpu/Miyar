@@ -156,12 +156,15 @@ ABOUT = """
 
 <h2>المصادر</h2>
 <ul>
-  <li><strong>القرآن الكريم:</strong> نص <a href="https://tanzil.net">Tanzil.net</a> (الإصدار 1.0.2)،
-    بترخيص Creative Commons Attribution 3.0، منسوخ حرفياً دون تعديل.</li>
+  <li><strong>القرآن الكريم:</strong> النص المستخدم في مِعيار هو نص <a href="https://tanzil.net">Tanzil.net</a>
+    (Tanzil Quran Text، الإصدار 1.0.2، © 2008-2010 Tanzil.net)، بترخيص Creative Commons Attribution 3.0،
+    وبشروطه: يُسمح بنسخه وتوزيعه حرفياً ويُمنع تغييره، مع ذكر المصدر (Tanzil.net) ورابطه وإبقاء كتلة الحقوق.
+    منسوخ حرفياً دون تعديل. <strong>لم نتحقق بعد من مطابقته لطبعة مصحف مجمع الملك فهد</strong> المعتمدة في الحزمة العلمية للتحدي؛ وهذا بند مفتوح.</li>
   <li><strong>الحديث:</strong> صحيح البخاري وصحيح مسلم، و18 حديثاً حكم العلماء بوضعها من سنن ابن ماجه (للاختبار فقط)،
     من مستودع <a class="ltr" href="https://github.com/fawazahmed0/hadith-api">fawazahmed0/hadith-api</a>.
     ترخيصه المعلن Unlicense، لكن <strong>مصدر النص العربي الأصلي غير مذكور فيه، فسلسلة الترخيص غير واضحة</strong>؛ وهذا بند مفتوح.</li>
-  <li><strong>مراجع التحقق اليدوي:</strong> مصحف مجمع الملك فهد (quranpedia.net)، والدرر السنية، والمكتبة الشاملة.</li>
+  <li><strong>مراجع التحقق اليدوي</strong> (لا تُؤخذ منها بيانات): quranpedia.net، والدرر السنية، والمكتبة الشاملة.
+    ومصحف مجمع الملك فهد هو المرجع القرآني المعتمد في الحزمة العلمية للتحدي، وليس مصدر النص المستخدم في مِعيار.</li>
 </ul>
 <p>التفاصيل الكاملة والتراخيص في
 <a class="ltr" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/SOURCES.md">SOURCES.md</a>.</p>
