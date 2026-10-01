@@ -4,19 +4,105 @@
   "title": "سجل تشغيل رسمي لمِعيار (OFFICIAL_RUN)",
   "description": "ملف لكل تشغيل رسمي في evaluation/official/<run_id>.json. يفرضه tests/test_official_runs.py.",
   "type": "object",
-  "required": ["run_label", "run_id", "executed_at", "n_cases", "testsets", "assistant", "model", "cases"],
+  "required": [
+    "run_label",
+    "run_id",
+    "executed_at",
+    "n_cases",
+    "testsets",
+    "assistant",
+    "model",
+    "cases",
+    "human_reviewed"
+  ],
   "properties": {
-    "run_label": {"const": "OFFICIAL_RUN"},
-    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+$", "description": "يطابق اسم الملف دون .json"},
-    "executed_at": {"type": "string", "format": "date-time", "description": "ISO 8601 بمنطقة زمنية؛ داخل 4–6 أكتوبر 2026 بتوقيت الرياض"},
-    "n_cases": {"type": "integer", "minimum": 1, "description": "عدد الحالات N = len(cases)"},
-    "testsets": {"type": "array", "minItems": 1, "items": {"type": "string"}, "description": "مثل official_v0 وextended_v1"},
-    "assistant": {"type": "string", "minLength": 1},
-    "model": {"type": "string", "minLength": 1, "description": "النموذج الذي أجاب فعلاً"},
+    "run_label": {
+      "const": "OFFICIAL_RUN"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "description": "يطابق اسم الملف دون .json"
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 بمنطقة زمنية؛ داخل 4–6 أكتوبر 2026 بتوقيت الرياض"
+    },
+    "n_cases": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "عدد الحالات N = len(cases)"
+    },
+    "testsets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "مثل official_v0 وextended_v1"
+    },
+    "assistant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "description": "النموذج الذي أجاب فعلاً"
+    },
     "cases": {
       "type": "array",
       "minItems": 1,
-      "items": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string", "minLength": 1}}}
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "human_reviewed": {
+      "type": "object",
+      "required": [
+        "approved",
+        "total",
+        "by_role"
+      ],
+      "description": "المراجعة البشرية لحالات هذا التشغيل: total = n_cases، وapproved = by_role.specialist + by_role.source_check. source_check تحقق من المصادر بواسطة المشارك وليس مراجعة شرعية متخصصة.",
+      "properties": {
+        "approved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "by_role": {
+          "type": "object",
+          "required": [
+            "specialist",
+            "source_check"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "specialist": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "source_check": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
     }
   }
 }

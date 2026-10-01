@@ -193,9 +193,10 @@
           "additionalProperties": false,
           "required": [
             "approved",
-            "total"
+            "total",
+            "by_role"
           ],
-          "description": "المراجعة البشرية: approved ≤ total، وtotal = n_cases؛ النسبة = approved / total",
+          "description": "المراجعة البشرية: approved ≤ total، وtotal = n_cases، وapproved = by_role.specialist + by_role.source_check. source_check تحقق من المصادر بواسطة المشارك وليس مراجعة شرعية متخصصة، ويُعرض منفصلاً.",
           "properties": {
             "approved": {
               "type": "integer",
@@ -204,6 +205,27 @@
             "total": {
               "type": "integer",
               "minimum": 0
+            },
+            "by_role": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "specialist",
+                "source_check"
+              ],
+              "description": "عدد الحالات المقبولة لكل نوع مراجعة",
+              "properties": {
+                "specialist": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "مراجعة شرعية متخصصة"
+                },
+                "source_check": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "تحقق من المصادر بواسطة المشارك — ليس مراجعة شرعية متخصصة"
+                }
+              }
             }
           }
         },

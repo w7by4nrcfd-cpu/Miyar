@@ -98,6 +98,7 @@ def case(level, category, risk, handling, critical, prompt, expected, checks, re
         **extra,
         "review_status": "pending",
         "reviewed_by": None,
+        "reviewer_role": None,
         "reviewed_at": None,
         "review_notes": None,
     })

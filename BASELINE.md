@@ -72,6 +72,15 @@ assistants، judge، extract، scoring، اللوحة) ليوم 4 أكتوبر. 
 | مجلد التشغيل الرسمي مع مخطط السجل، وحارس: `results.json` لا يشير إلا إلى `evaluation/official/`، والسجل المشار إليه موجود ويطابقه؛ وكل سجل رسمي يحمل `OFFICIAL_RUN` و`executed_at` داخل 4–6 أكتوبر (توقيت الرياض) و`n_cases` = عدد الحالات. لا سجلات رسمية بعد | `evaluation/official/`، `tests/test_official_runs.py` | ✅ (فارغ) |
 | صفحة النتائج ومخططها يقبلان `evaluation_record` داخل `evaluation/official/` فقط (ويرفضان `..`) | `web/assets/results-core.js`، `web/data/results.schema.json`، `tests/web/results-core.test.mjs` | ✅ |
 
+#### 2026-10-01 (تتمة، نحو 16:00–16:30 بتوقيت الرياض) — نوع المراجعة وأولوية الورقة
+| البند | الملف/المجلد | الحالة |
+|---|---|---|
+| حقل `reviewer_role` لكل مراجعة: `specialist` (مراجعة شرعية متخصصة) أو `source_check` (تحقق من المصادر بواسطة المشارك، غير متخصص شرعياً). إلزامي مع الاسم والتاريخ؛ لا `approved` ولا `rejected` بدونه؛ و`source_check` لا يحلّ محل قرار متخصص مسجّل | `miyar/review.py`، `testsets/*.json`، `scripts/build_testset_v1.py` | ✅ |
+| ورقة المراجعة: UTF-8 مع BOM (مختبر)، وعمود أول «الأولوية» (1: الموضوع والمنسوب للصحيحين وليس فيهما = 7 حالات؛ 2: الخلاف الفقهي والمستوى D = 13؛ 3: الباقي = 40) ومرتبة به، وعمود `reviewer_role`؛ وأمر `status` لعدد المراجعات لكل نوع؛ والاستيراد يعيد توليد الصفحات والورقة | `docs/review_sheet.csv`، `scripts/review_sheet.py`، `tests/test_review_sheet.py` | ✅ |
+| دليل المراجع: ملاحظة فتح الورقة من الجوال، وعمودا الأولوية ونوع المراجعة بتعليمات صريحة | `docs/REVIEWER_GUIDE.md` | ✅ |
+| الواجهة: صفحة «عن المشروع» تعرض عدد الحالات المراجَعة لكل نوع، محسوباً من `testsets/` لا مكتوباً يدوياً، مع التصريح بأن `source_check` ليس مراجعة شرعية متخصصة (حالياً: 0 و0 من 60). صفحة النتائج تتطلب `human_reviewed.by_role` وتعرضه منفصلاً | `scripts/build_web_pages.py`، `web/`، `web/assets/results-core.js`، `web/data/results.schema.json` | ✅ |
+| التقرير الرسمي: `human_reviewed.by_role` إلزامي في كل سجل `OFFICIAL_RUN`، ويطابق `results.json` | `evaluation/official/`، `tests/test_official_runs.py` | ✅ |
+
 ### سجل المرحلة 0 التفصيلي (منقول من CHANGELOG.md، 2026-09-30)
 - هيكل المستودع، ترخيص MIT، `.env.example`، README مبدئي.
 - نص القرآن من Tanzil (نسخة حرفية مع كتلة الحقوق) وتوثيقه في `SOURCES.md`.
@@ -123,5 +132,5 @@ assistants، judge، extract، scoring، اللوحة) ليوم 4 أكتوبر. 
   النص والرقم ونسبة الحديث إلى كتابه. الحالة: **لم تبدأ** (0 من 20). تُسجَّل النتائج بأسماء المراجعين في `evaluation/`.
 - بيانات الدرر المُزالة ما زالت في سجل git (الـcommits `23e224d`…`bea1b17`). **قرار صاحب المشروع (2026-09-30): لا إعادة كتابة لتاريخ git**؛ يبقى الأثر موثقاً في SOURCES.md البند 4.
 - الترجمة العربية لأحكام العلماء في `weak_fabricated.json` (`translation_ar`) غير مراجَعة (`review_status: pending`)؛ المعروض هو اللفظ الأصلي من المصدر.
-- المراجعة الشرعية: 0 من 60 حالة اختبار (12 رسمية + 48 إضافية)، و0 من 18 حديثاً في مجموعة الموضوعات، بحالة `approved` حتى الآن. دليل المراجع وورقة المراجعة جاهزان (`docs/`).
+- المراجعة: 0 من 60 حالة اختبار (12 رسمية + 48 إضافية) لكل من النوعين `specialist` و`source_check`، و0 من 18 حديثاً في مجموعة الموضوعات، بحالة `approved` حتى الآن. دليل المراجع وورقة المراجعة جاهزان (`docs/`).
 - موسوعة الجمهرة وبيّنات لم تُدمجا؛ يلزم التحقق من الترخيص أولاً.

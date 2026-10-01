@@ -1,5 +1,5 @@
 // صفحة النتائج: تقرأ data/results.json وتعرض حالتها دون أي رقم مصطنع.
-import { interpretResults } from "./results-core.js";
+import { interpretResults, reviewSummaryText } from "./results-core.js";
 
 const RESULTS_URL = "data/results.json";
 
@@ -33,7 +33,8 @@ function renderOk(root, runs) {
   // لوحة الدرجات التفصيلية تُبنى خلال أيام التحدي؛ هنا تأكيد وجود تشغيلات صالحة فقط.
   const list = el("ul");
   for (const r of runs) {
-    list.append(el("li", {}, `${r.run_id} — ${r.assistant} — ${r.executed_at} — `, el("span", { class: "ltr" }, r.evaluation_record)));
+    list.append(el("li", {}, `${r.run_id} — ${r.assistant} — ${r.executed_at} — `, el("span", { class: "ltr" }, r.evaluation_record),
+      el("br"), `N = ${r.n_cases} — ${reviewSummaryText(r).join(" — ")}`));
   }
   root.replaceChildren(
     el("div", { class: "notice", role: "status" },

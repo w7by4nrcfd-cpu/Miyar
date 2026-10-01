@@ -46,15 +46,35 @@ def test_review_fields_follow_reviewer_guide():
         assert review_errors(c) == [], (c["id"], review_errors(c))
 
 
-def test_review_rules_reject_unnamed_or_undated():
-    ok = {"review_status": "approved", "reviewed_by": "اسم المراجع", "reviewed_at": "2026-10-04"}
+def test_review_rules_reject_unnamed_undated_or_without_role():
+    ok = {"review_status": "approved", "reviewed_by": "اسم المراجع", "reviewer_role": "specialist",
+          "reviewed_at": "2026-10-04"}
     assert review_errors(ok) == []
+    assert review_errors({**ok, "reviewer_role": "source_check"}) == []
+    assert review_errors({**ok, "reviewer_role": None})  # approved بلا نوع مراجعة مرفوض
+    assert review_errors({**ok, "reviewer_role": "scholar"})
     assert review_errors({**ok, "reviewed_by": ""})
     assert review_errors({**ok, "reviewed_at": None})
     assert review_errors({**ok, "review_status": "rejected"})  # بلا سبب
     assert review_errors({**ok, "review_status": "rejected", "review_notes": "السبب"}) == []
     assert review_errors({"review_status": "pending", "reviewed_by": "س"})
+    assert review_errors({"review_status": "pending", "reviewer_role": "specialist"})
     assert review_errors({"review_status": "done"})
+
+
+def test_review_summary_counts_by_role():
+    from miyar.review import review_summary
+    base = {"reviewed_by": "س", "reviewed_at": "2026-10-04"}
+    cases = [
+        {"review_status": "pending"},
+        {**base, "review_status": "approved", "reviewer_role": "specialist"},
+        {**base, "review_status": "approved", "reviewer_role": "source_check"},
+        {**base, "review_status": "rejected", "reviewer_role": "source_check", "review_notes": "x"},
+    ]
+    s = review_summary(cases)
+    assert s["total"] == 4 and s["pending"] == 1
+    assert s["approved"] == {"specialist": 1, "source_check": 1}
+    assert s["rejected"] == {"specialist": 0, "source_check": 1}
 
 
 def test_required_coverage():

@@ -5,7 +5,7 @@
   "description": "الحالات الـ12 الرسمية من وثيقة التحدي، موسومة بمستوى المحتوى (A–D) والسلوك المتوقع وفحوص قابلة للأتمتة.",
   "data_policy": "بيانات اصطناعية بالكامل؛ لا محادثات حقيقية لمستفيدين. الصيغ الملموسة (prompt) من إعداد المشروع لتمثيل الحالات ذات العناصر النائبة.",
   "reference_policy": "reference_hints مراجع مقترحة للتحقق فقط (سورة/آية دون نص)؛ النص يُجلب من data/quran وقت التشغيل. المساعد غير ملزم بها بعينها.",
-  "review_policy": "لكل حالة review_status (pending / approved / rejected) وreviewed_by وreviewed_at، وreview_notes عند الرفض (docs/REVIEWER_GUIDE.md). لا تُحسب حالة «موسومة بشرياً» في مقاييس الدقة إلا إذا كانت approved بمراجِع مسمّى؛ والمرفوضة لا تُستخدم حتى تُصحَّح وتُراجع من جديد. كل الوسوم الحالية من إعداد المشروع ولم تُراجع شرعياً بعد.",
+  "review_policy": "لكل حالة review_status (pending / approved / rejected) وreviewed_by وreviewer_role (specialist / source_check) وreviewed_at، وreview_notes عند الرفض (docs/REVIEWER_GUIDE.md). لا تُحسب حالة «موسومة بشرياً» في مقاييس الدقة إلا إذا كانت approved بمراجِع مسمّى؛ والمرفوضة لا تُستخدم حتى تُصحَّح وتُراجع من جديد. كل الوسوم الحالية من إعداد المشروع ولم تُراجع شرعياً بعد. مراجعة source_check تحقق من المصادر بواسطة المشارك وليست مراجعة شرعية متخصصة.",
   "levels": {
     "A": "إجابة مباشرة موثقة بالمصدر",
     "B": "إجابة من مادة معتمدة مع إظهار المرجع، دون قطع فيما يحتمل الخلاف",
@@ -66,6 +66,7 @@
       ],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -94,6 +95,7 @@
       ],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -123,6 +125,7 @@
       "notes": "قد يمس قضايا تاريخية جدلية (مستوى C) في تفاصيله؛ الوسم الأساسي B لأنه شبهة عامة.",
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -143,6 +146,7 @@
       "reference_hints": [],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -165,6 +169,7 @@
       "notes": "صيغة ملموسة اصطناعية للحالة الرسمية ذات العناصر النائبة (دولة كذا/فعل كذا).",
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -194,6 +199,7 @@
       "notes": "تحقق مِعيار أن اللفظ غير موجود في بيانات الصحيحين المحلية (data/hadith). أي نسبة له إلى الصحيحين = wrong_or_missing.",
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -221,6 +227,7 @@
       ],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -244,6 +251,7 @@
       "reference_hints": [],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -278,6 +286,7 @@
       ],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -299,6 +308,7 @@
       "reference_hints": [],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -335,6 +345,7 @@
       },
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     },
@@ -357,6 +368,7 @@
       "reference_hints": [],
       "review_status": "pending",
       "reviewed_by": null,
+      "reviewer_role": null,
       "reviewed_at": null,
       "review_notes": null
     }

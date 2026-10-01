@@ -5,6 +5,7 @@
 
 export const SCHEMA_VERSION = 1;
 export const LEVELS = ["A", "B", "C", "D"];
+export const REVIEWER_ROLES = ["specialist", "source_check"];
 
 const isInt = (v) => Number.isInteger(v);
 const isNonNegInt = (v) => isInt(v) && v >= 0;
@@ -68,6 +69,17 @@ function validateRun(run, i) {
       if (hr.approved > hr.total) at("human_reviewed.approved أكبر من total");
       if (isInt(run.n_cases) && hr.total !== run.n_cases) at("human_reviewed.total لا يساوي n_cases");
     }
+    // لكل نوع مراجعة عدده؛ وتحقق المصادر (source_check) ليس مراجعة شرعية متخصصة فيُعرض منفصلاً
+    const br = hr.by_role;
+    if (br === null || typeof br !== "object" || Array.isArray(br)) {
+      at("human_reviewed.by_role مفقود");
+    } else {
+      for (const k of Object.keys(br)) if (!REVIEWER_ROLES.includes(k)) at(`نوع مراجعة غير معروف: ${k}`);
+      if (!REVIEWER_ROLES.every((k) => isNonNegInt(br[k]))) at("human_reviewed.by_role غير صالح");
+      else if (isNonNegInt(hr.approved) && br.specialist + br.source_check !== hr.approved) {
+        at("مجموع by_role لا يساوي human_reviewed.approved");
+      }
+    }
   }
   return errors;
 }
@@ -112,6 +124,15 @@ export function interpretResults(response) {
   if (errors.length) return { state: "invalid", errors };
   if (data.runs.length === 0) return { state: "empty" };
   return { state: "ok", runs: data.runs };
+}
+
+/** عدد الحالات المقبولة لكل نوع مراجعة، مع نصّ عرضه. source_check ليس مراجعة شرعية متخصصة. */
+export function reviewSummaryText(run) {
+  const { total, by_role: r } = run.human_reviewed;
+  return [
+    `مراجعة شرعية متخصصة: ${r.specialist} من ${total}`,
+    `تحقق من المصادر بواسطة المشارك: ${r.source_check} من ${total} (ليس مراجعة شرعية متخصصة)`,
+  ];
 }
 
 /** نسبة الحالات المراجَعة بشرياً (0..1). */

@@ -4,9 +4,17 @@
 بعد تعديل المحتوى هنا: python scripts/build_web_pages.py
 """
 
+import json
+import sys
 from pathlib import Path
 
-WEB = Path(__file__).resolve().parent.parent / "web"
+ROOT = Path(__file__).resolve().parent.parent
+WEB = ROOT / "web"
+sys.path.insert(0, str(ROOT))
+
+from miyar.review import review_summary  # noqa: E402
+
+TESTSETS = [ROOT / "testsets/official_v0.json", ROOT / "testsets/extended_v1.json"]
 
 NAV = [("index.html", "الرئيسية"), ("results.html", "النتائج"), ("about.html", "عن المشروع")]
 
@@ -122,7 +130,7 @@ RESULTS = """
   <li>درجة كل مستوى (A–D) وعدد حالاته.</li>
   <li>عدد الحالات الكلي (N).</li>
   <li>عدد الإسنادات الخاطئة أو غير الموجودة.</li>
-  <li>نسبة الحالات التي راجعها إنسان مختص.</li>
+  <li>عدد الحالات المراجَعة لكل نوع: مراجعة شرعية متخصصة، وتحقق من المصادر بواسطة المشارك (وهذا ليس مراجعة شرعية متخصصة).</li>
 </ul>
 <p class="muted">المخطط الموثّق للملف: <a class="ltr" href="data/results.schema.json">data/results.schema.json</a>.</p>
 """
@@ -138,9 +146,8 @@ ABOUT = """
 
 <h2>حالة المراجعة الشرعية</h2>
 <div class="notice">
-  <p><strong>لم تُراجَع بعد.</strong> لم يراجع أي مختص شرعي حتى الآن:</p>
+{{REVIEW_STATUS}}
   <ul>
-    <li>حالات الاختبار: 0 من 60 مراجَعة (12 رسمية + 48 إضافية).</li>
     <li>الأحاديث الموضوعة المستخدمة في الاختبار: 0 من 18 مراجَعة، وكذلك ترجمة أحكامها إلى العربية.</li>
     <li>عيّنة التحقق من بيانات الصحيحين (20 حديثاً مقابل طبعة معتمدة): لم تبدأ.</li>
   </ul>
@@ -200,9 +207,34 @@ def nav_html(current: str) -> str:
     return "\n".join(items)
 
 
+def review_status_html() -> str:
+    """حالة مراجعة حالات الاختبار لكل نوع، محسوبة من testsets/ (لا أرقام مكتوبة يدوياً)."""
+    cases = [c for p in TESTSETS for c in json.loads(p.read_text(encoding="utf-8"))["cases"]]
+    s = review_summary(cases)
+    n, spec, src = s["total"], s["approved"]["specialist"], s["approved"]["source_check"]
+    n_off = len(json.loads(TESTSETS[0].read_text(encoding="utf-8"))["cases"])
+    head = ("  <p><strong>لم تُراجَع بعد.</strong> لم يراجع أي مختص شرعي حتى الآن:</p>" if spec == 0 else
+            "  <p><strong>المراجعة جارية.</strong> العدد الفعلي لكل نوع مراجعة:</p>")
+    return "\n".join([
+        head,
+        "  <ul>",
+        f"    <li>حالات الاختبار ({n}: {n_off} رسمية + {n - n_off} إضافية):",
+        "      <ul>",
+        f"        <li>مراجعة شرعية متخصصة (<span class=\"ltr\">specialist</span>): مقبولة {spec} من {n}، "
+        f"مرفوضة {s['rejected']['specialist']}.</li>",
+        f"        <li>تحقق من المصادر بواسطة المشارك (<span class=\"ltr\">source_check</span>): مقبولة {src} من {n}، "
+        f"مرفوضة {s['rejected']['source_check']}. <strong>هذا ليس مراجعة شرعية متخصصة</strong>؛ "
+        "المشارك غير متخصص شرعياً، ويقتصر تحققه على مطابقة النصوص لمصادرها.</li>",
+        "      </ul>",
+        "    </li>",
+    ])
+
+
 def render() -> dict[str, str]:
+    review = review_status_html()
     return {
-        name: LAYOUT.format(title=title, body=body.strip("\n"), head_extra=head_extra, nav=nav_html(name))
+        name: LAYOUT.format(title=title, body=body.strip("\n").replace("{{REVIEW_STATUS}}\n  <ul>", review),
+                            head_extra=head_extra, nav=nav_html(name))
         for name, (title, body, head_extra) in PAGES.items()
     }
 

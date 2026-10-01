@@ -6,7 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { interpretResults, validateResults, reviewedRatio } from "../../web/assets/results-core.js";
+import { interpretResults, validateResults, reviewedRatio, reviewSummaryText } from "../../web/assets/results-core.js";
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), "utf8");
 const ok = (text) => ({ status: 200, ok: true, text });
@@ -27,7 +27,7 @@ const FIXTURE_RUN = Object.freeze({
     D: { n_cases: 1, score: 50 },
   },
   wrong_citations: 2,
-  human_reviewed: { approved: 0, total: 12 },
+  human_reviewed: { approved: 0, total: 12, by_role: { specialist: 0, source_check: 0 } },
   evaluation_record: "evaluation/official/FIXTURE-not-a-real-record.json",
 });
 const withRun = (patch) => ({ schema_version: 1, runs: [{ ...structuredClone(FIXTURE_RUN), ...patch }] });
@@ -72,13 +72,17 @@ for (const [name, data] of [
   ["درجة أكبر من 100", withRun({ overall_score: 150 })],
   ["درجة نصية", withRun({ overall_score: "90" })],
   ["n_cases صفر", withRun({ n_cases: 0 })],
-  ["مجموع المستويات لا يساوي N", withRun({ n_cases: 13, human_reviewed: { approved: 0, total: 13 } })],
+  ["مجموع المستويات لا يساوي N", withRun({ n_cases: 13, human_reviewed: { approved: 0, total: 13, by_role: { specialist: 0, source_check: 0 } } })],
   ["مستوى ناقص", withRun({ levels: { A: { n_cases: 12, score: 1 } } })],
   ["مستوى بلا حالات وله درجة", withRun({ levels: { ...FIXTURE_RUN.levels, C: { n_cases: 0, score: 10 }, A: { n_cases: 4, score: 50 } } })],
   ["مستوى غير معروف", withRun({ levels: { ...FIXTURE_RUN.levels, E: { n_cases: 0, score: null } } })],
   ["إسنادات خاطئة سالبة", withRun({ wrong_citations: -1 })],
-  ["مراجَع أكثر من الكل", withRun({ human_reviewed: { approved: 13, total: 12 } })],
-  ["إجمالي المراجعة لا يساوي N", withRun({ human_reviewed: { approved: 0, total: 5 } })],
+  ["مراجَع أكثر من الكل", withRun({ human_reviewed: { approved: 13, total: 12, by_role: { specialist: 13, source_check: 0 } } })],
+  ["إجمالي المراجعة لا يساوي N", withRun({ human_reviewed: { approved: 0, total: 5, by_role: { specialist: 0, source_check: 0 } } })],
+  ["المراجعة بلا تفصيل حسب النوع", withRun({ human_reviewed: { approved: 0, total: 12 } })],
+  ["مجموع الأنواع لا يساوي المقبول", withRun({ human_reviewed: { approved: 3, total: 12, by_role: { specialist: 1, source_check: 1 } } })],
+  ["نوع مراجعة غير معروف", withRun({ human_reviewed: { approved: 0, total: 12, by_role: { specialist: 0, source_check: 0, scholar: 0 } } })],
+  ["نوع مراجعة سالب", withRun({ human_reviewed: { approved: 0, total: 12, by_role: { specialist: -1, source_check: 1 } } })],
   ["سجل تشغيل خارج evaluation/", withRun({ evaluation_record: "somewhere/x.json" })],
   ["سجل داخل evaluation/ لكن خارج official/", withRun({ evaluation_record: "evaluation/x.json" })],
   ["سجل يخرج من official/ بـ ..", withRun({ evaluation_record: "evaluation/official/../x.json" })],
@@ -114,6 +118,15 @@ test("تشغيل صالح → ok", () => {
   assert.equal(view.state, "ok");
   assert.equal(view.runs.length, 1);
   assert.equal(reviewedRatio(view.runs[0]), 0);
+});
+
+test("عرض المراجعة يفصل التخصص الشرعي عن تحقق المصادر", () => {
+  const run = { ...structuredClone(FIXTURE_RUN), human_reviewed: { approved: 5, total: 12, by_role: { specialist: 2, source_check: 3 } } };
+  assert.equal(validateResults({ schema_version: 1, runs: [run] }).length, 0);
+  const [spec, src] = reviewSummaryText(run);
+  assert.match(spec, /مراجعة شرعية متخصصة: 2 من 12/);
+  assert.match(src, /3 من 12/);
+  assert.match(src, /ليس مراجعة شرعية متخصصة/);
 });
 
 test("الـfixture موسوم صراحةً بأنه ليس نتيجة حقيقية", () => {

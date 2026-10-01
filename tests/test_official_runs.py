@@ -16,7 +16,8 @@ LABEL = "OFFICIAL_RUN"
 RIYADH = timezone(timedelta(hours=3))
 WINDOW = (datetime(2026, 10, 4, tzinfo=RIYADH), datetime(2026, 10, 7, tzinfo=RIYADH))  # [4 أكتوبر، 7 أكتوبر)
 NON_RECORDS = {"README.md", "official_run.schema.json"}
-REQUIRED = ("run_label", "run_id", "executed_at", "n_cases", "testsets", "assistant", "model", "cases")
+REQUIRED = ("run_label", "run_id", "executed_at", "n_cases", "testsets", "assistant", "model", "cases", "human_reviewed")
+ROLES = ("specialist", "source_check")  # source_check ليس مراجعة شرعية متخصصة
 
 
 def record_errors(rec: dict, filename: str) -> list[str]:
@@ -45,6 +46,12 @@ def record_errors(rec: dict, filename: str) -> list[str]:
         errs.append("معرّفات الحالات مكررة أو مفقودة")
     if not rec["testsets"] or not all(isinstance(t, str) and t for t in rec["testsets"]):
         errs.append("testsets فارغة")
+    hr = rec["human_reviewed"]
+    br = hr.get("by_role") if isinstance(hr, dict) else None
+    if not isinstance(br, dict) or set(br) != set(ROLES) or not all(isinstance(br[r], int) and br[r] >= 0 for r in ROLES):
+        errs.append("human_reviewed.by_role يجب أن يحمل specialist وsource_check")
+    elif hr.get("approved") != br["specialist"] + br["source_check"] or hr.get("total") != rec["n_cases"]:
+        errs.append("human_reviewed: approved ≠ مجموع الأنواع، أو total ≠ n_cases")
     return errs
 
 
@@ -67,6 +74,8 @@ def results_errors(results: dict, root: Path = ROOT) -> list[str]:
             errs.append(f"runs[{i}]: n_cases لا يطابق السجل")
         if rec.get("executed_at") != run.get("executed_at"):
             errs.append(f"runs[{i}]: executed_at لا يطابق السجل")
+        if rec.get("human_reviewed") != run.get("human_reviewed"):
+            errs.append(f"runs[{i}]: human_reviewed (لكل نوع مراجعة) لا يطابق السجل")
     return errs
 
 
@@ -103,10 +112,14 @@ def test_published_results_point_only_to_official_records():
 
 
 # ---------- اختبارات الحارس نفسه على سجلات اصطناعية ----------
+HR = {"approved": 1, "total": 2, "by_role": {"specialist": 0, "source_check": 1}}
+
+
 def _rec(**patch):
     rec = {
         "run_label": LABEL, "run_id": "r1", "executed_at": "2026-10-05T10:00:00+03:00", "n_cases": 2,
         "testsets": ["official_v0"], "assistant": "baseline", "model": "m", "cases": [{"id": "a"}, {"id": "b"}],
+        "human_reviewed": HR,
     }
     return {**rec, **patch}
 
@@ -121,6 +134,9 @@ def test_record_validator_accepts_valid_and_rejects_violations():
     assert record_errors(_rec(n_cases=3), "r1.json")
     assert record_errors(_rec(n_cases=0, cases=[]), "r1.json")
     assert record_errors(_rec(cases=[{"id": "a"}, {"id": "a"}]), "r1.json")
+    assert record_errors(_rec(human_reviewed={"approved": 1, "total": 2}), "r1.json")  # بلا تفصيل النوع
+    assert record_errors(_rec(human_reviewed={**HR, "approved": 2}), "r1.json")  # المجموع لا يطابق
+    assert record_errors(_rec(human_reviewed={**HR, "by_role": {"specialist": 1}}), "r1.json")
     rec = _rec()
     del rec["executed_at"]
     assert record_errors(rec, "r1.json")
@@ -129,10 +145,13 @@ def test_record_validator_accepts_valid_and_rejects_violations():
 def test_results_validator(tmp_path):
     (tmp_path / "evaluation/official").mkdir(parents=True)
     (tmp_path / "evaluation/official/r1.json").write_text(json.dumps(_rec()), encoding="utf-8")
-    run = {"evaluation_record": "evaluation/official/r1.json", "n_cases": 2, "executed_at": "2026-10-05T10:00:00+03:00"}
+    run = {"evaluation_record": "evaluation/official/r1.json", "n_cases": 2, "executed_at": "2026-10-05T10:00:00+03:00",
+           "human_reviewed": HR}
     assert results_errors({"runs": [run]}, tmp_path) == []
     assert results_errors({"runs": [{**run, "evaluation_record": "evaluation/r1.json"}]}, tmp_path)
     assert results_errors({"runs": [{**run, "evaluation_record": "evaluation/official/../official/r1.json"}]}, tmp_path)
     assert results_errors({"runs": [{**run, "evaluation_record": "evaluation/official/missing.json"}]}, tmp_path)
     assert results_errors({"runs": [{**run, "n_cases": 3}]}, tmp_path)
     assert results_errors({"runs": [{**run, "executed_at": "2026-10-05T11:00:00+03:00"}]}, tmp_path)
+    other = {"approved": 1, "total": 2, "by_role": {"specialist": 1, "source_check": 0}}
+    assert results_errors({"runs": [{**run, "human_reviewed": other}]}, tmp_path)

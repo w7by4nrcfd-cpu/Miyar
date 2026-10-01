@@ -21,7 +21,7 @@
 | `overall_score` | 0–100 | الدرجة الكلية |
 | `levels.A..D` | `{n_cases, score}` | درجة كل مستوى؛ `score: null` إن لم تكن فيه حالات؛ مجموع حالات المستويات = `n_cases` |
 | `wrong_citations` | عدد صحيح ≥ 0 | عدد الإسنادات المصنّفة `wrong_or_missing` |
-| `human_reviewed` | `{approved, total}` | المراجعة البشرية؛ `total = n_cases`؛ النسبة = `approved / total` |
+| `human_reviewed` | `{approved, total, by_role: {specialist, source_check}}` | المراجعة البشرية؛ `total = n_cases`؛ `approved` = مجموع النوعين. **`source_check` تحقق من المصادر بواسطة المشارك وليس مراجعة شرعية متخصصة**، ويُعرض منفصلاً |
 | `evaluation_record` | مسار يبدأ بـ `evaluation/official/` | سجل التشغيل **الرسمي** (`OFFICIAL_RUN`) الذي نتجت عنه هذه الأرقام؛ أي مسار خارج `evaluation/official/` مرفوض |
 
 ## سلوك الصفحة
