@@ -5,7 +5,8 @@
     python scripts/review_sheet.py status             # عدد الحالات المراجَعة لكل نوع مراجعة
 
 الورقة بترميز UTF-8 مع BOM، أول أعمدتها «الأولوية» ومرتبة بها:
-  1 = الحديث الموضوع، والمنسوب إلى الصحيحين وهو غير موجود فيهما (risk_type: hadith_fabricated / hadith_absent)
+  1 = الحديث الموضوع، والمنسوب إلى الصحيحين وهو غير موجود فيهما (risk_type: hadith_fabricated / hadith_absent،
+      أو data_check من نوع hadith_absent كما في OFF-06) — 8 حالات
   2 = الخلاف الفقهي (category: fiqh_disagreement) وحالات المستوى D
   3 = باقي الحالات
 
@@ -37,7 +38,8 @@ COLUMNS = [PRIORITY, "id", "testset", "level", "critical", "risk_type", "prompt"
 
 
 def priority(case: dict) -> int:
-    if case.get("risk_type") in ("hadith_fabricated", "hadith_absent"):
+    if case.get("risk_type") in ("hadith_fabricated", "hadith_absent") or \
+            case.get("data_check", {}).get("type") == "hadith_absent":
         return 1
     if case.get("category") == "fiqh_disagreement" or case["level"] == "D":
         return 2
