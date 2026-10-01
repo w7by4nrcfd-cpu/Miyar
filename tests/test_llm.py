@@ -331,3 +331,56 @@ def test_incomplete_primary_falls_back(tmp_path):
     r = c.complete(REQ)
     assert r.model == "fallback-model" and slept == []
     assert [a["status"] for a in r.attempts] == ["incomplete", 200]
+
+
+# ---------- معرّف التشغيل في مفتاح الطلب، وسجل 429 لكل تشغيل ----------
+def _run_client(tmp_path, transport, run_id, cap=20):
+    return LLMClient(GeminiProvider(FAKE_KEY, transport), ResponseStore(tmp_path), "live", cap, run_id=run_id)
+
+
+def test_different_run_ids_call_the_model_again(tmp_path):
+    t = FakeTransport(ok("تشغيل 1"), ok("تشغيل 2"))
+    r1 = _run_client(tmp_path, t, "official-1").complete(REQ)
+    r2 = _run_client(tmp_path, t, "official-2").complete(REQ)
+    assert len(t.calls) == 2  # استدعاءان فعليان: لا إعادة من المخزن بين تشغيلين
+    assert (r1.from_cache, r2.from_cache) == (False, False)
+    assert (r1.text, r2.text) == ("تشغيل 1", "تشغيل 2")
+    assert r1.request_key != r2.request_key
+    assert "run_id" not in json.dumps(t.calls[0]["body"])  # المعرّف في البصمة فقط، لا يُرسل إلى المزوّد
+
+
+def test_same_run_id_replays_from_store(tmp_path):
+    t = FakeTransport(ok("مرة واحدة"))
+    first = _run_client(tmp_path, t, "official-1").complete(REQ)
+    again = _run_client(tmp_path, t, "official-1").complete(REQ)  # إعادة التشغيل نفسه (عميل جديد، المخزن نفسه)
+    assert len(t.calls) == 1 and again.from_cache and again.text == first.text
+    cached = LLMClient(None, ResponseStore(tmp_path), "cached", run_id="official-1").complete(REQ)
+    assert cached.text == "مرة واحدة"
+    with pytest.raises(CacheMiss):
+        LLMClient(None, ResponseStore(tmp_path), "cached", run_id="official-2").complete(REQ)
+
+
+def test_run_id_from_env(tmp_path):
+    base = {"MIYAR_LLM_CACHE_DIR": str(tmp_path), "MIYAR_LLM_MODEL_JUDGE": "j", "MIYAR_LLM_MODEL_ASSISTANT": "a",
+            "MIYAR_RUN_ID": "official-3"}
+    assert client_from_env(base, role="judge")[0].run_id == "official-3"
+    assert client_from_env(base, role="assistant")[0].run_id == "official-3"
+    assert client_from_env({**base, "MIYAR_RUN_ID": ""}, role="assistant")[0].run_id is None
+
+
+def test_rate_limits_are_counted_per_run(tmp_path):
+    limited = (429, {"Retry-After": "7"}, b'{"error": {"code": 429}}')
+    t = FakeTransport(limited, ok("بعد الانتظار"), limited)
+    slept = []
+    c = LLMClient(GeminiProvider(FAKE_KEY, t), ResponseStore(tmp_path), "live", 20, max_attempts=3,
+                  sleep=slept.append, run_id="official-1")
+    assert c.complete(REQ).text == "بعد الانتظار"
+    c2 = LLMClient(GeminiProvider(FAKE_KEY, t), ResponseStore(tmp_path), "live", 20, run_id="official-2")
+    with pytest.raises(RateLimited):
+        c2.complete(REQ)
+    store = ResponseStore(tmp_path)
+    assert store.rate_limit_count("official-1") == 1 and store.rate_limit_count("official-2") == 1
+    assert store.rate_limit_count("official-3") == 0
+    log = json.loads((tmp_path / "rate_limits.json").read_text(encoding="utf-8"))
+    assert log["run_label"] == DEV_RUN
+    assert log["runs"]["official-1"]["events"][0]["retry_after"] == 7.0 and slept == [7.0]

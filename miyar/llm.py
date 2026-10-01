@@ -15,6 +15,9 @@
   لعائلة 2.5) حتى لا يستهلك التفكيرُ السقفَ قبل الإجابة. كل استجابة تحمل ``finish_reason`` و``thoughts_tokens``
   و``output_tokens``.
 - **لا أسرار في الملفات:** المفتاح يُقرأ من متغير بيئة ولا يُكتب في المخزن ولا في رسائل الخطأ.
+- **معرّف التشغيل في المفتاح:** ``run_id`` جزء من بصمة الطلب، فلا يعيد المخزن إجابة تشغيل إلى تشغيل آخر
+  (التشغيلات الرسمية المتكررة تستدعي النموذج فعلاً)؛ وإعادة التشغيل بالمعرّف نفسه تقرأ من المخزن.
+- **سجل حدود الاستخدام:** كل رد 429 يُسجَّل لكل تشغيل (العدد والوقت والنموذج ومدة الانتظار) في ``rate_limits.json``.
 - **وسم التشغيل:** كل ملف في المخزن يحمل ``run_label`` (افتراضياً ``DEV_RUN``)، ومخزن التطوير في ``evaluation/dev/``.
 
 المزوّدات المنفّذة: Gemini (REST ``generateContent``). Anthropic وواجهات OpenAI المتوافقة تُضاف عند الحاجة.
@@ -90,6 +93,7 @@ class LLMRequest:
     thinking_level: str | None = None  # Gemini 3: minimal/low/medium/high
     thinking_budget: int | None = None  # Gemini 2.5: عدد رموز التفكير
     response_mime_type: str | None = None  # مثل application/json
+    run_id: str | None = None  # معرّف التشغيل: جزء من البصمة فقط، ولا يُرسل إلى المزوّد
 
     def key(self) -> str:
         fields = {k: v for k, v in asdict(self).items() if v is not None}
@@ -278,6 +282,27 @@ class ResponseStore:
         u = json.loads(p.read_text(encoding="utf-8"))
         return u.get("live_calls", 0) if u.get("date") == _today() else 0
 
+    # سجل 429 لكل تشغيل
+    def _rate_limits_path(self) -> Path:
+        return self.dir / "rate_limits.json"
+
+    def _rate_limits(self) -> dict:
+        p = self._rate_limits_path()
+        return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"run_label": self.run_label, "runs": {}}
+
+    def record_rate_limit(self, run_id: str | None, model: str, retry_after: float | None) -> None:
+        self.dir.mkdir(parents=True, exist_ok=True)
+        data = self._rate_limits()
+        run = data["runs"].setdefault(run_id or "(بلا معرّف)", {"count": 0, "events": []})
+        run["count"] += 1
+        run["events"].append({
+            "at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "model": model, "retry_after": retry_after,
+        })
+        self._rate_limits_path().write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    def rate_limit_count(self, run_id: str | None) -> int:
+        return self._rate_limits()["runs"].get(run_id or "(بلا معرّف)", {}).get("count", 0)
+
     def record_live_call(self) -> None:
         self.dir.mkdir(parents=True, exist_ok=True)
         u = {"run_label": self.run_label, "date": _today(), "live_calls": self.live_calls_today() + 1}
@@ -308,6 +333,7 @@ class LLMClient:
         sleep: Callable[[float], None] = time.sleep,
         min_output_tokens: int = 0,
         thinking: dict | None = None,
+        run_id: str | None = None,
     ):
         if mode not in MODES:
             raise ValueError(f"وضع غير معروف: {mode}")
@@ -322,9 +348,12 @@ class LLMClient:
         self.backoff_seconds = backoff_seconds
         self.sleep = sleep
         self.min_output_tokens = min_output_tokens
+        self.run_id = run_id  # يُطبَّق على كل طلب لم يحدد معرّفه
         self.thinking = thinking  # دالة النموذج ← إعداد التفكير، تُطبَّق إن لم يحدده الطلب
 
     def _prepare(self, req: LLMRequest) -> LLMRequest:
+        if self.run_id is not None and req.run_id is None:
+            req = replace(req, run_id=self.run_id)
         if req.max_output_tokens < self.min_output_tokens:
             req = replace(req, max_output_tokens=self.min_output_tokens)
         if self.thinking is not None and req.thinking_level is None and req.thinking_budget is None:
@@ -374,6 +403,8 @@ class LLMClient:
                 resp = self.provider.call(req)
             except RETRYABLE as e:
                 attempts.append({"model": req.model, "status": 429 if isinstance(e, RateLimited) else 503})
+                if isinstance(e, RateLimited):
+                    self.store.record_rate_limit(req.run_id, req.model, e.retry_after)
                 if n == self.max_attempts:
                     raise
                 wait = self.backoff_seconds * 2 ** (n - 1)
@@ -440,11 +471,12 @@ def client_from_env(
     elif mode == "live":
         raise MissingCredentials("GEMINI_API_KEY غير مضبوط")
     max_calls = int(env.get("MIYAR_LIVE_MAX_CALLS_PER_DAY", "0") or 0)
+    run_id = env.get("MIYAR_RUN_ID") or None
     if role == "judge":
         fallback = env.get(JUDGE_FALLBACK_VAR, DEFAULT_JUDGE_FALLBACK)
         fallbacks = tuple(m for m in [fallback] if m)
         return LLMClient(
             provider, store, mode, max_calls, fallbacks, DEFAULT_MAX_ATTEMPTS,
-            min_output_tokens=JUDGE_MIN_OUTPUT_TOKENS, thinking=JUDGE_THINKING,
+            min_output_tokens=JUDGE_MIN_OUTPUT_TOKENS, thinking=JUDGE_THINKING, run_id=run_id,
         ), model
-    return LLMClient(provider, store, mode, max_calls), model
+    return LLMClient(provider, store, mode, max_calls, run_id=run_id), model
