@@ -49,27 +49,29 @@ def _mini_data(tmp_path: Path, manifest_entries: list[dict], files: dict[str, st
 
 
 def _entry(**kw):
-    base = {"name": "alt", "path": "alt.jsonl", "format": "flat_jsonl", "role": "corpus", "source": "test"}
+    base = {"name": "FIXTURE", "path": "alt.jsonl", "format": "flat_jsonl", "role": "corpus", "source": "FIXTURE"}
     base.update(kw)
     return base
 
 
-REC = {
-    "id": "alt:1",
-    "collection": "alt",
-    "collection_ar": "مصدر بديل",
+# ⚠️ FIXTURE — سجل حديث مصطنع لاختبار طبقة التحميل فقط. ليس حديثاً ولا نصاً شرعياً ولا بيانات حقيقية،
+# ويُكتب في مجلد مؤقت (tmp_path) لا في data/.
+FIXTURE_HADITH = {
+    "id": "FIXTURE:1",
+    "collection": "FIXTURE",
+    "collection_ar": "FIXTURE — مصدر وهمي للاختبار",
     "number": "1",
-    "text": "نص",
-    "grade": "صحيح",
+    "text": "FIXTURE — نص وهمي للاختبار وليس حديثاً",
+    "grade": "FIXTURE-grade",
     "grade_basis": "collection",
-    "source": "test",
+    "source": "FIXTURE (test only, not real data)",
 }
 
 
 def test_swap_source_by_manifest_only(tmp_path):
-    data = _mini_data(tmp_path, [_entry()], {"alt.jsonl": json.dumps(REC, ensure_ascii=False) + "\n"})
+    data = _mini_data(tmp_path, [_entry()], {"alt.jsonl": json.dumps(FIXTURE_HADITH, ensure_ascii=False) + "\n"})
     s = load_hadiths(data)
-    assert len(s) == 1 and s.get("alt:1").collection_ar == "مصدر بديل"
+    assert len(s) == 1 and s.get("FIXTURE:1").collection_ar == FIXTURE_HADITH["collection_ar"]
 
 
 def test_register_new_format(tmp_path):
@@ -77,9 +79,9 @@ def test_register_new_format(tmp_path):
     def _read(path, ds):
         for line in path.read_text(encoding="utf-8").splitlines():
             hid, text = line.split("\t")
-            yield Hadith(hid, ds.name, ds.role, "x", "كتاب", "1", text, (), "test")
+            yield Hadith(hid, ds.name, ds.role, "FIXTURE", "FIXTURE", "1", text, (), "FIXTURE")
 
-    data = _mini_data(tmp_path, [_entry(path="a.tsv", format="test_tsv")], {"a.tsv": "x:1\tنص"})
+    data = _mini_data(tmp_path, [_entry(path="a.tsv", format="test_tsv")], {"a.tsv": "FIXTURE:tsv\tFIXTURE — نص وهمي"})
     with pytest.raises(ValueError, match="لا حكم"):  # التحقق يرفض حديثاً بلا حكم
         load_hadiths(data)
 
@@ -93,13 +95,13 @@ def test_register_new_format(tmp_path):
     ],
 )
 def test_manifest_validation(tmp_path, entry, msg):
-    data = _mini_data(tmp_path, [entry], {"alt.jsonl": json.dumps(REC) + "\n"})
+    data = _mini_data(tmp_path, [entry], {"alt.jsonl": json.dumps(FIXTURE_HADITH) + "\n"})
     with pytest.raises(ValueError, match=msg):
         load_hadiths(data)
 
 
 def test_duplicate_ids_rejected(tmp_path):
-    line = json.dumps(REC) + "\n"
+    line = json.dumps(FIXTURE_HADITH) + "\n"
     data = _mini_data(tmp_path, [_entry()], {"alt.jsonl": line + line})
     with pytest.raises(ValueError, match="معرّف مكرر"):
         load_hadiths(data)

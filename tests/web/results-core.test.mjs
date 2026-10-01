@@ -1,5 +1,8 @@
-// اختبارات منطق صفحة النتائج: node --test tests/web/
-// تنبيه: VALID_RUN بيانات اختبار وهمية داخل الاختبار فقط، ولا تُكتب في web/data/ أبداً.
+// اختبارات منطق صفحة النتائج: node --test tests/web/*.test.mjs
+//
+// ⚠️ FIXTURE — بيانات اختبار مصطنعة، ليست نتائج حقيقية.
+// FIXTURE_RUN أدناه كائن وهمي لاختبار المتحقق فقط: لم يُشغَّل أي مساعد ولم يُستدعَ أي نموذج.
+// قيمه موسومة بـ FIXTURE، ولا تُنسخ إلى web/data/ أبداً (يتحقق من ذلك tests/test_fixtures.py).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -9,11 +12,11 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), "utf8")
 const ok = (text) => ({ status: 200, ok: true, text });
 const json = (obj) => ok(JSON.stringify(obj));
 
-const VALID_RUN = Object.freeze({
-  run_id: "fixture-1",
-  executed_at: "2026-10-05T10:00:00Z",
-  assistant: "baseline",
-  model: "fixture-model",
+const FIXTURE_RUN = Object.freeze({
+  run_id: "FIXTURE-not-a-real-result",
+  executed_at: "2000-01-01T00:00:00Z", // تاريخ وهمي عمداً
+  assistant: "FIXTURE-assistant",
+  model: "FIXTURE-model-not-called",
   testset: "official_v0",
   n_cases: 12,
   overall_score: 50,
@@ -25,9 +28,9 @@ const VALID_RUN = Object.freeze({
   },
   wrong_citations: 2,
   human_reviewed: { approved: 0, total: 12 },
-  evaluation_record: "evaluation/runs/fixture-1.json",
+  evaluation_record: "evaluation/FIXTURE-not-a-real-record.json",
 });
-const withRun = (patch) => ({ schema_version: 1, runs: [{ ...structuredClone(VALID_RUN), ...patch }] });
+const withRun = (patch) => ({ schema_version: 1, runs: [{ ...structuredClone(FIXTURE_RUN), ...patch }] });
 
 // ---------- الحالة الفارغة ----------
 test("الملف غير موجود أو تعذّر الوصول → فارغ", () => {
@@ -71,14 +74,14 @@ for (const [name, data] of [
   ["n_cases صفر", withRun({ n_cases: 0 })],
   ["مجموع المستويات لا يساوي N", withRun({ n_cases: 13, human_reviewed: { approved: 0, total: 13 } })],
   ["مستوى ناقص", withRun({ levels: { A: { n_cases: 12, score: 1 } } })],
-  ["مستوى بلا حالات وله درجة", withRun({ levels: { ...VALID_RUN.levels, C: { n_cases: 0, score: 10 }, A: { n_cases: 4, score: 50 } } })],
-  ["مستوى غير معروف", withRun({ levels: { ...VALID_RUN.levels, E: { n_cases: 0, score: null } } })],
+  ["مستوى بلا حالات وله درجة", withRun({ levels: { ...FIXTURE_RUN.levels, C: { n_cases: 0, score: 10 }, A: { n_cases: 4, score: 50 } } })],
+  ["مستوى غير معروف", withRun({ levels: { ...FIXTURE_RUN.levels, E: { n_cases: 0, score: null } } })],
   ["إسنادات خاطئة سالبة", withRun({ wrong_citations: -1 })],
   ["مراجَع أكثر من الكل", withRun({ human_reviewed: { approved: 13, total: 12 } })],
   ["إجمالي المراجعة لا يساوي N", withRun({ human_reviewed: { approved: 0, total: 5 } })],
   ["سجل تشغيل خارج evaluation/", withRun({ evaluation_record: "somewhere/x.json" })],
   ["تاريخ غير صالح", withRun({ executed_at: "أمس" })],
-  ["run_id مكرر", { schema_version: 1, runs: [VALID_RUN, VALID_RUN] }],
+  ["run_id مكرر", { schema_version: 1, runs: [FIXTURE_RUN, FIXTURE_RUN] }],
 ]) {
   test(`مخالف للمخطط: ${name} → غير صالح`, () => {
     const view = interpretResults(json(data));
@@ -93,17 +96,23 @@ test("كل حقل إلزامي في المخطط الموثّق يرفضه ال�
   const required = schema.$defs.run.required;
   assert.ok(required.length >= 11);
   for (const key of required) {
-    const run = structuredClone(VALID_RUN);
+    const run = structuredClone(FIXTURE_RUN);
     delete run[key];
     assert.ok(validateResults({ schema_version: 1, runs: [run] }).length > 0, `لم يُرفض غياب ${key}`);
   }
-  assert.deepEqual(Object.keys(VALID_RUN).sort(), [...required].sort());
+  assert.deepEqual(Object.keys(FIXTURE_RUN).sort(), [...required].sort());
 });
 
 // ---------- الحالة الصالحة ----------
 test("تشغيل صالح → ok", () => {
-  const view = interpretResults(json({ schema_version: 1, runs: [VALID_RUN] }));
+  const view = interpretResults(json({ schema_version: 1, runs: [FIXTURE_RUN] }));
   assert.equal(view.state, "ok");
   assert.equal(view.runs.length, 1);
   assert.equal(reviewedRatio(view.runs[0]), 0);
+});
+
+test("الـfixture موسوم صراحةً بأنه ليس نتيجة حقيقية", () => {
+  for (const key of ["run_id", "assistant", "model", "evaluation_record"]) {
+    assert.match(FIXTURE_RUN[key], /FIXTURE/);
+  }
 });
