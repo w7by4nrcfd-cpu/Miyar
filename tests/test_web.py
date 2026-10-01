@@ -9,7 +9,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
-PAGES = ["index.html", "results.html", "about.html"]
+PAGES = ["index.html", "levels.html", "sources.html", "transparency.html", "status.html", "results.html"]
 
 
 def _load_builder():
@@ -55,21 +55,72 @@ def test_published_results_are_empty():
     assert data == {"schema_version": 1, "runs": []}
 
 
-def test_about_page_disclosures():
-    html = (WEB / "about.html").read_text(encoding="utf-8")
-    for needle in (
-        "لا تُصدر فتاوى",
-        "لا يُصدر فتوى",
-        "لم تُراجَع بعد",
-        "Claude Code",
-        "Gemini",
-        "Quranpedia.net",
-        "لا تُستخدم أي مجموعة أحاديث خارجية",
-        "لا يستدعي حالياً أي نموذج لغوي",
-        "لم يُستدعَ بعد",
-        "استُخدم فعلاً",
-    ):
-        assert needle in html, needle
+def _page(name):
+    return (WEB / name).read_text(encoding="utf-8")
+
+
+def _text(name):
+    """نص الصفحة المرئي تقريباً (بلا وسوم)."""
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", _page(name)))
+
+
+def test_old_about_page_removed_and_nav_complete():
+    assert not (WEB / "about.html").exists()
+    for page in PAGES:
+        html = _page(page)
+        assert "about.html" not in html
+        for other in PAGES:
+            assert f'href="{other}"' in html, (page, other)
+        assert html.count('aria-current="page"') == 1
+
+
+def test_home_defines_miyar_in_one_sentence_and_track_four():
+    t = _text("index.html")
+    assert "يختبر المساعد الذكي نفسه ويحكم على إجاباته" in t
+    assert "ولا يجيب هو" in t
+    assert "المسار الرابع: أدوات المعرفة والتحقق" in t
+
+
+def test_levels_page_has_four_levels_with_behaviour():
+    t = _text("levels.html")
+    for code, short in (("A", "إجابة موثقة"), ("B", "شرح مع مرجع"), ("C", "بيان الخلاف أو إحالة"), ("D", "لا فتوى")):
+        assert re.search(rf"\b{code}\b {short}", t), code
+    for behaviour in ("إجابة مباشرة موثقة بالمصدر", "لا حكم مستقل؛ معلومة عامة + إحالة لجهة مؤهلة"):
+        assert behaviour in t
+
+
+def test_sources_page_nine_domains_only_quran_and_hadith_used():
+    html = _page("sources.html")
+    rows = re.findall(r'<tr><th scope="row">(.*?)</th>.*?</tr>', html)
+    assert len(rows) == 9
+    used = re.findall(r'<tr><th scope="row">([^<]*)</th>(?:(?!</tr>).)*class="yes"', html)
+    assert used == ["القرآن الكريم", "الحديث"]
+    assert html.count('class="no"') == 7
+    assert "Quranpedia" in html and "ملف يدوي" in html
+
+
+def test_transparency_page_disclosures():
+    t = _text("transparency.html")
+    for needle in ("مدعومة بالذكاء الاصطناعي", "ليس عالماً ولا مفتياً", "لا تُصدر فتوى", "لا نجمع بياناتك الشخصية",
+                   "Claude Code", "Gemini", "لا يستدعيه الموقع", "استُخدم فعلاً"):
+        assert needle in t, needle
+
+
+def test_status_page_is_honest():
+    t = _text("status.html")
+    assert "لا توجد نتائج تقييم رسمية بعد" in t
+    assert "المراجعة الشرعية لم تكتمل" in t
+    assert "ما تمّ فعلاً" in t and "ما لم يتم بعد" in t
+
+
+def test_site_free_of_external_hadith_set_and_secrets():
+    banned = ("fawazahmed", "hadith-api", "sahihayn", "unapproved", "ابن ماجه", "مجموعة أحاديث خارجية", "Tanzil")
+    for p in WEB.rglob("*"):
+        if p.is_file() and p.suffix in (".html", ".js", ".css", ".json", ".md", ""):
+            s = p.read_text(encoding="utf-8", errors="ignore")
+            for b in banned:
+                assert b not in s, (p.name, b)
+            assert not re.search(r"AIza[0-9A-Za-z_\-]{20,}|sk-[A-Za-z0-9]{20,}|API_KEY\s*=", s), p.name
 
 
 def test_cloudflare_headers_file():

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="مِعيار: منصة تختبر المساعد الذكي نفسه في المحتوى الإسلامي — تتحقق من الإسنادات وسلوك المستويات وتصدر درجة وقرار نشر.">
+<meta name="description" content="مِعيار يختبر المساعد الذكي نفسه في المحتوى الإسلامي ويحكم على إجاباته، ولا يجيب هو عن الأسئلة. المسار الرابع: أدوات المعرفة والتحقق.">
 <title>النتائج — مِعيار</title>
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
@@ -24,37 +24,31 @@
     <a class="brand" href="index.html">مِعيار</a>
     <nav aria-label="التنقل الرئيسي"><ul>
       <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="levels.html">مستويات المحتوى</a></li>
+      <li><a href="sources.html">المصادر والمنهجية</a></li>
+      <li><a href="transparency.html">الشفافية والخصوصية</a></li>
+      <li><a href="status.html">الحدود والحالة</a></li>
       <li><a href="results.html" aria-current="page">النتائج</a></li>
-      <li><a href="about.html">عن المشروع</a></li>
     </ul></nav>
   </div>
 </header>
-<main id="main" class="wrap">
+<main id="main" class="wrap" tabindex="-1">
 <h1>النتائج</h1>
-<p>تعرض هذه الصفحة نتائج التشغيلات الفعلية فقط، من الملف <span class="ltr">data/results.json</span>.
-كل رقم يجب أن يكون ناتجاً عن تشغيل مسجّل في <span class="ltr">evaluation/</span> مع عدد الحالات.</p>
+<p>تعرض هذه الصفحة نتائج التشغيلات الفعلية فقط، من الملف <span class="ltr" lang="en">data/results.json</span>.
+كل رقم يجب أن يكون ناتجاً عن تشغيل مسجّل في <span class="ltr" lang="en">evaluation/</span> مع عدد الحالات.</p>
 <div id="results" aria-live="polite">
   <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
 </div>
 <noscript><div class="notice empty"><strong>لم يُشغَّل أي اختبار بعد</strong>
 <span>(تحتاج هذه الصفحة إلى JavaScript لقراءة ملف النتائج.)</span></div></noscript>
-
-<h2>ما ستعرضه الصفحة عند وجود نتائج</h2>
-<ul>
-  <li>الدرجة الكلية لكل مساعد مُختبَر.</li>
-  <li>درجة كل مستوى (A–D) وعدد حالاته.</li>
-  <li>عدد الحالات الكلي (N).</li>
-  <li>عدد الإسنادات الخاطئة أو غير الموجودة.</li>
-  <li>عدد الحالات المراجَعة لكل نوع: مراجعة شرعية متخصصة، وتحقق من المصادر بواسطة المشارك (وهذا ليس مراجعة شرعية متخصصة).</li>
-</ul>
-<p class="muted">المخطط الموثّق للملف: <a class="ltr" href="data/results.schema.json">data/results.schema.json</a>.</p>
+<p>انظر <a href="status.html">الحدود والحالة</a> لما تمّ وما لم يتم.</p>
 </main>
 <footer class="site">
   <div class="wrap">
-    <p>مِعيار أداة اختبار للمساعدات الذكية، <strong>لا تُصدر فتاوى</strong>. نص القرآن من تنزيلات
-    <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة 2026-10-01). المصادر والتراخيص في
-    <a href="about.html">عن المشروع</a>.</p>
-    <p>الكود مفتوح المصدر (MIT): <a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr">github.com/w7by4nrcfd-cpu/Miyar</a></p>
+    <p>مِعيار أداة مدعومة بالذكاء الاصطناعي لاختبار المساعدات الذكية، <strong>ليست مختصاً شرعياً ولا تُصدر فتاوى</strong>.
+    نص القرآن من تنزيلات <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة 2026-10-01).
+    انظر <a href="sources.html">المصادر والمنهجية</a> و<a href="transparency.html">الشفافية والخصوصية</a>.</p>
+    <p>الكود مفتوح المصدر (MIT): <a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a></p>
   </div>
 </footer>
 </body>

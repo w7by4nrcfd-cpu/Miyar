@@ -91,3 +91,30 @@ th { background: var(--surface); }
 footer.site { border-top: 1px solid var(--border); padding-block: 16px; font-size: 0.95rem; color: var(--muted); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 footer.site a { overflow-wrap: anywhere; }
+
+/* صفحات المستويات والمصادر والحالة */
+nav a:hover { background: var(--surface); }
+main:focus { outline: none; }
+caption { caption-side: top; text-align: start; font-weight: 700; padding: 0 0 8px; }
+.table-wrap:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.badge { display: inline-grid; place-items: center; min-width: 2em; padding: 0 8px; margin-inline-end: 6px;
+  border-radius: 6px; background: var(--primary); color: var(--primary-text); font-weight: 700; }
+.level ul { margin: 0; }
+.yes { color: var(--ok-fg); font-weight: 700; }
+.no { color: var(--muted); }
+.ltr-mixed { unicode-bidi: plaintext; overflow-wrap: anywhere; }
+ul.links li { margin-bottom: 6px; }
+@media (max-width: 480px) {
+  body { font-size: 1.0625rem; }
+  h1 { font-size: 1.5rem; }
+  nav a { padding: 8px 10px; }
+}
+/* الجداول على الشاشات الضيقة: كل صف بطاقة، وكل خلية بعنوانها */
+@media (max-width: 600px) {
+  table.stack, table.stack caption, table.stack tbody, table.stack tr, table.stack th, table.stack td { display: block; width: 100%; }
+  table.stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  table.stack tr { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+  table.stack th, table.stack td { border: 0; border-bottom: 1px solid var(--border); }
+  table.stack td:last-child { border-bottom: 0; }
+  table.stack td[data-label]::before { content: attr(data-label); display: block; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
+}

@@ -17,6 +17,10 @@
 5. **Save and Deploy**. بعد دقيقة يظهر رابط مثل `https://miyar.pages.dev`.
 6. كل دفع إلى `main` يعيد النشر تلقائياً.
 
+الصفحات: `index.html` (الرئيسية)، `levels.html` (مستويات المحتوى)، `sources.html` (المصادر والمنهجية)،
+`transparency.html` (الشفافية والخصوصية)، `status.html` (الحدود والحالة)، `results.html` (النتائج).
+تُولَّد من `scripts/build_web_pages.py`؛ بعد أي تعديل شغّله وادفع الناتج.
+
 ملاحظات:
 - `web/_headers` يضبط رؤوس الأمان ويمنع التخزين المؤقت لملفات `web/data/`.
 - الموقع لا يحمّل أي خط أو مكتبة خارجية (سياسة CSP: `default-src 'self'`).
