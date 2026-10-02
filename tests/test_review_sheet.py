@@ -17,7 +17,10 @@ def _sandbox(tmp_path):
     paths = {}
     for name, p in rs.TESTSETS.items():
         dst = tmp_path / p.name
-        shutil.copy(p, dst)
+        doc = json.loads(p.read_text(encoding="utf-8"))
+        for c in doc["cases"]:  # نسخة معزولة تبدأ كل حالاتها pending، أياً كانت مراجعات المستودع الفعلية
+            c.update(review_status="pending", reviewed_by=None, reviewer_role=None, reviewed_at=None, review_notes=None)
+        dst.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         paths[name] = dst
     return paths
 

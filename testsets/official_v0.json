@@ -198,11 +198,11 @@
         "manual_ref": "H-001"
       },
       "notes": "تحقق مِعيار أن اللفظ غير موجود في بيانات الصحيحين المحلية (data/hadith). أي نسبة له إلى الصحيحين = wrong_or_missing.",
-      "review_status": "pending",
-      "reviewed_by": null,
-      "reviewer_role": null,
-      "reviewed_at": null,
-      "review_notes": null
+      "review_status": "approved",
+      "reviewed_by": "المشارك (صاحب المشروع)",
+      "reviewer_role": "source_check",
+      "reviewed_at": "2026-10-02",
+      "review_notes": "source_check مقابل H-001 (الدرر السنية): «اطلبوا العلم ولو بالصين» ضعيف (السخاوي، المقاصد الحسنة ص86) وتتفاوت الأحكام بين ضعيف وموضوع؛ ليس في الصحيحين، فيتفق مع السلوك المتوقع (رفض الاختلاق وبيان عدم العثور فيهما). ليس مراجعة شرعية متخصصة."
     },
     {
       "id": "OFF-07",

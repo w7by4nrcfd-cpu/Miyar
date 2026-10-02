@@ -54,4 +54,5 @@ def test_hadith_absent_case_points_to_manual_file():
     from miyar.hadith_manual import entries_by_id
     case = next(c for c in TS["cases"] if c.get("data_check", {}).get("type") == "hadith_absent")
     entry = entries_by_id()[case["data_check"]["manual_ref"]]
-    assert entry["kind"] == "not_found" and case["id"] in entry["case_ids"]
+    # لم يُعثر عليه (not_found)، أو وُجد خارج الصحيحين بحكم لا يصح (found)
+    assert entry["kind"] in ("not_found", "found") and case["id"] in entry["case_ids"]

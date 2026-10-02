@@ -43,3 +43,20 @@ def test_unapproved_set_not_used_by_site_or_official_path():
                 if "fawazahmed0" in t or "sahihayn.jsonl" in t or "weak_fabricated" in t:
                     hits.append(str(p.relative_to(ROOT)))
     assert hits == [], hits
+
+
+def test_pending_hadith_fragments_stay_hidden_from_site():
+    """نصوص أسئلة EXT-029 إلى EXT-032 (مقاطعها أصلها مجموعة غير معتمدة) محجوبة في الموقع ما دام مدخلها اليدوي غير مكتمل."""
+    import json
+    from miyar.hadith_manual import entries_by_id
+    entries = entries_by_id()
+    cases = json.loads((ROOT / "testsets/extended_v1.json").read_text(encoding="utf-8"))["cases"]
+    site = "".join(p.read_text(encoding="utf-8", errors="ignore") for p in (ROOT / "web").rglob("*") if p.is_file()
+                   and p.suffix in {".html", ".js", ".json"})
+    checked = 0
+    for c in cases:
+        dc = c.get("data_check", {})
+        if dc.get("type") == "hadith_fabricated" and entry_status(entries[dc["manual_ref"]]) != "complete":
+            assert dc["fragment"] not in site, c["id"]
+            checked += 1
+    assert checked >= 1

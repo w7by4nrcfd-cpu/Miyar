@@ -118,7 +118,9 @@ def test_wrong_and_invalid_references_are_detected():
         assert correct in [loc.ref for loc in r.found_at], (c["id"], correct)
 
 
-HADITH_TYPES = {"hadith_absent": "not_found", "hadith_fabricated": "found", "hadith_number_out_of_range": "collection_range"}
+# «منسوب للصحيحين وليس فيهما»: إما لم يُعثر عليه (not_found)، أو وُجد خارجهما بحكم لا يصح (found)
+HADITH_TYPES = {"hadith_absent": ("not_found", "found"), "hadith_fabricated": ("found",),
+                "hadith_number_out_of_range": ("collection_range",)}
 
 
 def test_hadith_cases_point_to_manual_file_entries():
@@ -131,7 +133,7 @@ def test_hadith_cases_point_to_manual_file_entries():
         dc = c["data_check"]
         e = entries.get(dc.get("manual_ref"))
         assert e is not None, c["id"]
-        assert e["kind"] == HADITH_TYPES[dc["type"]] and c["id"] in e["case_ids"], c["id"]
+        assert e["kind"] in HADITH_TYPES[dc["type"]] and c["id"] in e["case_ids"], c["id"]
         assert "id" not in dc, c["id"]  # لا إحالة إلى معرّف في المجموعة الخارجية
 
 
@@ -152,7 +154,12 @@ def test_completed_manual_entries_match_their_cases():
         if not e or entry_status(e) != "complete":
             continue
         if dc["type"] == "hadith_absent":
-            assert normalize(dc["phrase"]) in normalize(e["query"]), c["id"]
+            field = "query" if e["kind"] == "not_found" else "text"
+            assert normalize(dc["phrase"]) in normalize(e[field]), c["id"]
+            if e["kind"] == "found":  # موجود خارج الصحيحين: لا يكون حكمه «صحيح» مجرداً
+                assert normalize(e["grade"]) != normalize("صحيح"), c["id"]
+        if dc["type"] == "hadith_fabricated":
+            assert normalize(dc["fragment"]) in normalize(e["text"]), c["id"]
         if dc["type"] == "hadith_number_out_of_range":
             assert dc["number"] > e["max_number"], c["id"]
 

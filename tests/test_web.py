@@ -200,7 +200,9 @@ def test_status_page_is_honest():
 
 
 def test_site_free_of_external_hadith_set_and_secrets():
-    banned = ("fawazahmed", "hadith-api", "sahihayn", "unapproved", "ابن ماجه", "مجموعة أحاديث خارجية", "Tanzil")
+    # «ابن ماجه» لم يعد محظوراً: صار موضع حديث في السلوك المتوقع لـEXT-030 من بحث صاحب المشروع في الدرر (لا من المجموعة الخارجية)؛
+    # والمجموعة الخارجية نفسها محظورة بأسماء ملفاتها ومستودعها هنا وفي tests/test_hadith_manual.py
+    banned = ("fawazahmed", "hadith-api", "sahihayn", "weak_fabricated", "unapproved", "مجموعة أحاديث خارجية", "Tanzil")
     for p in WEB.rglob("*"):
         if p.is_file() and p.suffix in (".html", ".js", ".css", ".json", ".md", ""):
             s = p.read_text(encoding="utf-8", errors="ignore")
