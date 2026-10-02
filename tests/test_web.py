@@ -107,9 +107,9 @@ def test_sources_registry_nine_domains_only_quran_and_hadith_used():
         assert 'href="https://' in body and "github.com/w7by4nrcfd-cpu/Miyar/blob/main/" in body, name
 
 
-def test_sources_proof_links_point_to_existing_files():
-    html = _page("sources.html")
-    for path in re.findall(r'github\.com/w7by4nrcfd-cpu/Miyar/blob/main/([^"]+)"', html):
+@pytest.mark.parametrize("page", PAGES)
+def test_repo_links_point_to_existing_files(page):
+    for path in re.findall(r'github\.com/w7by4nrcfd-cpu/Miyar/blob/main/([^"]+)"', _page(page)):
         assert (ROOT / path).exists(), path
 
 

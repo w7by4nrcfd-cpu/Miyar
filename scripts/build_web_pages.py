@@ -644,12 +644,12 @@ def status_items(f: dict) -> tuple[list, list]:
         ("المساعدان المرجعيان (baseline و rag)", st["assistants"] == "built", "miyar/assistants/"),
         ("تشغيل مجموعة الاختبار على المساعدين", st["runner"] == "built", "miyar/runner.py"),
         ("استخراج الاستشهادات من الإجابات", st["extract"] == "built", "miyar/extract.py"),
-        ("مطابقة الأحاديث مع الملف اليدوي", st["hadith_match"] == "built", "miyar/"),
+        ("مطابقة الأحاديث مع الملف اليدوي", st["hadith_match"] == "built", "miyar/hadith_match.py"),
         ("حكم السلوك حسب المستوى A–D", st["judge"] == "built", "miyar/judge.py"),
         ("الدرجة والمقارنة وقرار البوابة", st["scoring"] == "built", "miyar/scoring.py"),
         ("لوحة النتائج والمقارنة (تشغيلات منشورة)", f["published_runs"] > 0, "web/data/results.json"),
         ("تشغيل رسمي مسجّل وقياس الدقة", f["official_runs"] > 0, "evaluation/official/"),
-        ("وحدة Red Teaming", st["redteam"] == "built", "miyar/"),
+        ("وحدة Red Teaming", st["redteam"] == "built", "miyar/redteam.py"),
     ]
     return phase0, phase1
 
@@ -658,7 +658,9 @@ def checklist(items) -> str:
     out = []
     for text, done, evidence in items:
         b = badge("ok", "اكتمل") if done else badge("todo", "لم يُنفَّذ بعد")
-        out.append(f'  <li>{b}<span class="what">{text}</span><span class="evidence">الدليل: {link(evidence)}</span></li>')
+        ev = (f"الدليل: {link(evidence)}" if (ROOT / evidence).exists()
+              else f'الملف <span class="mono">{_esc(evidence)}</span> غير موجود بعد')
+        out.append(f'  <li>{b}<span class="what">{text}</span><span class="evidence">{ev}</span></li>')
     return '<ul class="checklist">\n' + "\n".join(out) + "\n</ul>"
 
 
