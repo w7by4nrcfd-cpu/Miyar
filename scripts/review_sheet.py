@@ -1,7 +1,10 @@
-"""ورقة المراجعة الشرعية لحالات الاختبار (انظر docs/REVIEWER_GUIDE.md).
+"""ورقة مراجعة حالات الاختبار (انظر docs/REVIEWER_GUIDE.md).
 
-    python scripts/review_sheet.py export             # يكتب docs/review_sheet.csv لإرساله إلى المراجع
-    python scripts/review_sheet.py apply <ملف.csv>    # يسجّل قرارات المراجع في ملفات testsets/
+نوع المراجعة المعتمد الآن source_check (تحقق المشارك من المصادر)؛ ولا يوجد مراجع شرعي متخصص حالياً،
+فـspecialist اختياري ومعلّق حتى يتوفر مراجع، ويبقى مقبولاً إن تمت مراجعة فعلية باسم صاحبها.
+
+    python scripts/review_sheet.py export             # يكتب docs/review_sheet.csv (reviewer_role معبّأ بـsource_check للحالات pending)
+    python scripts/review_sheet.py apply <ملف.csv>    # يسجّل القرارات في ملفات testsets/
     python scripts/review_sheet.py status             # عدد الحالات المراجَعة لكل نوع مراجعة
 
 الورقة بترميز UTF-8 مع BOM، أول أعمدتها «الأولوية» ومرتبة بها:
@@ -33,6 +36,8 @@ from miyar.review import ROLES, review_errors, review_summary  # noqa: E402
 TESTSETS = {"official_v0": ROOT / "testsets/official_v0.json", "extended_v1": ROOT / "testsets/extended_v1.json"}
 SHEET = ROOT / "docs" / "review_sheet.csv"
 PRIORITY = "الأولوية"
+# النوع المعتمد الآن: لا مراجع شرعي متخصص للمشروع حالياً (specialist اختياري ومعلّق)
+ADOPTED_ROLE = "source_check"
 COLUMNS = [PRIORITY, "id", "testset", "level", "critical", "risk_type", "prompt", "injected_context",
            "expected_behavior", "decision", "reviewer_name", "reviewer_role", "review_date", "notes"]
 
@@ -60,7 +65,9 @@ def export(path: Path = SHEET) -> int:
                 "risk_type": c.get("risk_type", c["category"]), "prompt": c["prompt"],
                 "injected_context": c.get("injected_context", ""), "expected_behavior": c["expected_behavior"],
                 "decision": "" if c["review_status"] == "pending" else c["review_status"],
-                "reviewer_name": c.get("reviewed_by") or "", "reviewer_role": c.get("reviewer_role") or "",
+                "reviewer_name": c.get("reviewed_by") or "",
+                # معبّأ مسبقاً بالنوع المعتمد؛ ولا أثر له ما دام decision فارغاً (apply يتجاوز الصفوف بلا قرار)
+                "reviewer_role": c.get("reviewer_role") or (ADOPTED_ROLE if c["review_status"] == "pending" else ""),
                 "review_date": c.get("reviewed_at") or "",
                 "notes": c.get("review_notes") or "",
             })

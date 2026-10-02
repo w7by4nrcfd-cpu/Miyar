@@ -194,7 +194,7 @@ def test_results_page_says_demo_not_official():
 def test_status_page_is_honest():
     t = _text("status.html")
     assert "لا توجد نتائج تقييم رسمية بعد" in t
-    assert "المراجعة الشرعية لم تكتمل" in t
+    assert "لم تُجرَ مراجعة شرعية متخصصة" in t and "تحقق مصادر" in t and "Quranpedia" in t
     assert "قبل أيام التحدي" in t and "أيام التحدي: 4–6 أكتوبر 2026" in t
     assert "<progress" in _page("status.html")
 
@@ -220,3 +220,12 @@ def test_results_core_js():
     files = sorted(str(p) for p in (ROOT / "tests/web").glob("*.test.mjs"))
     r = subprocess.run(["node", "--test", *files], cwd=ROOT, capture_output=True, text=True)
     assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-2000:]
+
+
+@pytest.mark.parametrize("page", ["status.html", "levels.html", "sources.html", "cases.html"])
+def test_no_specialist_review_is_stated_honestly(page):
+    """ما دامت لا توجد مراجعة specialist مسجّلة: تقول الصفحة صراحة إنها لم تُجرَ، ولا تعرض «معتمدة شرعياً» شارةً لأي حالة."""
+    f = _load_builder().facts()
+    if f["review"]["approved"]["specialist"] == 0:
+        assert "لم تُجرَ مراجعة شرعية متخصصة" in _text(page)
+        assert "معتمدة شرعياً</span>" not in _page(page)

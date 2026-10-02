@@ -446,7 +446,7 @@ def levels(f: dict) -> str:
 <h2>تنبيه</h2>
 <div class="notice">
   <p>نص الأمثلة منقول من الحزمة العلمية، أما وسم كل مثال بمستواه وسلوكه المتوقع فمن إعداد المشروع،
-  و<strong>لم يُراجَع شرعياً بعد</strong> ({f["review"]["approved"]["specialist"]} من {f["n"]} حالة مراجَعة مراجعة شرعية متخصصة).</p>
+  و{specialist_sentence(f)} {source_check_sentence(f)}</p>
 </div>
 """
 
@@ -596,8 +596,10 @@ def sources(f: dict) -> str:
   <li><strong>مِعيار لا يولّد نصاً شرعياً:</strong> لا آية ولا حديثاً ولا حكماً. كل نص شرعي يعرضه منقول من بيانات لها مصدر مسجّل.</li>
   <li><strong>السلوك حسب المستوى:</strong> يُقارن سلوك المساعد بالسلوك المطلوب لمستوى السؤال في <a href="levels.html">الحزمة العلمية</a>.</li>
   <li><strong>الحَكَم الآلي يطبّق معياراً مكتوباً ولا يضعه</strong>، ونموذج الحكم يختلف عن نموذج المساعد المُختبَر.</li>
-  <li><strong>المراجعة نوعان:</strong> مراجعة شرعية متخصصة، وتحقق المشارك من المصادر (وهذا <strong>ليس</strong> مراجعة شرعية).
-    لا تُحسب حالة «معتمدة شرعياً» إلا بمراجعة متخصصة.</li>
+  <li><strong>المراجعة:</strong> النوع المعتمد الآن <strong>تحقق المصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
+    وهو غير متخصص شرعياً، مقابل Quranpedia والدرر السنية والمكتبة الشاملة؛ وهذا <strong>ليس</strong> مراجعة شرعية.
+    والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية ومعلّقة حتى يتوفر مراجع، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.
+    {specialist_sentence(f)}</li>
 </ol>
 <p>التفاصيل في {link("docs/METHODOLOGY.md")}.</p>
 """
@@ -631,15 +633,27 @@ HANDLING_LABELS = {
 }
 
 
+def specialist_sentence(f: dict) -> str:
+    """صياغة صادقة لحالة المراجعة الشرعية المتخصصة، محسوبة من testsets/."""
+    k = f["review"]["approved"]["specialist"]
+    if k == 0:
+        return "<strong>لم تُجرَ مراجعة شرعية متخصصة</strong>، ولا يوجد للمشروع مراجع شرعي متخصص حالياً."
+    return f"مراجعة شرعية متخصصة مسجّلة: {k} من {f['n']} حالة."
+
+
+def source_check_sentence(f: dict) -> str:
+    return f"تحقق المصادر (ليس مراجعة شرعية): مقبول {f['review']['approved']['source_check']} من {f['n']}."
+
+
 def review_badge(c: dict) -> str:
     status, role = c.get("review_status"), c.get("reviewer_role")
     if status == "approved" and role == "specialist":
         return badge("ok", "معتمدة شرعياً")
     if status == "approved" and role == "source_check":
-        return badge("rev", "تحقق مصادر فقط")
+        return badge("rev", "تحقق مصادر (ليس مراجعة شرعية)")
     if status == "rejected":
         return badge("bad", "مرفوضة")
-    return badge("todo", "لم تُراجَع شرعياً")
+    return badge("todo", "لم يُتحقق منها بعد")
 
 
 def cases_page(f: dict) -> str:
@@ -654,7 +668,7 @@ def cases_page(f: dict) -> str:
             f'<td data-label="آلية المعالجة">{_esc(HANDLING_LABELS.get(c.get("handling"), c.get("handling")))}</td>'
             f'<td data-label="السلوك المتوقع" dir="auto">{_esc(c["expected_behavior"])}</td>'
             f'<td data-label="حرجة">{"نعم" if c.get("critical") else "لا"}</td>'
-            f'<td data-label="المراجعة الشرعية">{review_badge(c)}</td></tr>')
+            f'<td data-label="المراجعة">{review_badge(c)}</td></tr>')
     types = sorted({TYPE_LABELS.get(c.get("risk_type"), c.get("risk_type")) for c in f["cases"]})
     type_opts = "".join(f'<option value="{_attr(t)}">{_esc(t)}</option>' for t in types)
     lvl_opts = "".join(f'<option value="{k}">{k}</option>' for k in sorted(f["levels"]))
@@ -665,7 +679,7 @@ def cases_page(f: dict) -> str:
 تُقرأ من ملفات المستودع عند توليد هذه الصفحة ({link("testsets/official_v0.json")} و{link("testsets/extended_v1.json")}).</p>
 <div class="notice">
   <p><strong>لا حكم ولا نتيجة هنا.</strong> هذه الصفحة تعرض ما يُنتظر من المساعد فقط، لا ما أجاب به.
-  والسلوك المتوقع مسودة من إعداد المشروع: مراجَعة شرعياً {s["approved"]["specialist"]} من {f["n"]}.
+  والسلوك المتوقع مسودة من إعداد المشروع. {specialist_sentence(f)} {source_check_sentence(f)}
   ولا يُعرض نص السؤال هنا، لأن بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد.</p>
 </div>
 
@@ -679,7 +693,7 @@ def cases_page(f: dict) -> str:
 <div class="table-wrap" role="region" aria-label="جدول حالات الاختبار" tabindex="0"><table class="stack" id="cases" data-total="{f["n"]}">
   <caption>حالات الاختبار</caption>
   <thead><tr><th scope="col">المعرّف</th><th scope="col">المستوى</th><th scope="col">نوع الحالة</th><th scope="col">آلية المعالجة</th>
-  <th scope="col">السلوك المتوقع</th><th scope="col">حرجة</th><th scope="col">المراجعة الشرعية</th></tr></thead>
+  <th scope="col">السلوك المتوقع</th><th scope="col">حرجة</th><th scope="col">المراجعة</th></tr></thead>
   <tbody>
 {chr(10).join(rows)}
   </tbody>
@@ -755,16 +769,17 @@ def status(f: dict) -> str:
 
 <h2>البيانات والمراجعة</h2>
 {progress("مدخلات الملف اليدوي للأحاديث المكتملة", f["manual_done"], f["manual_total"], "pg2")}
-{progress("حالات الاختبار المراجَعة مراجعة شرعية متخصصة", s["approved"]["specialist"], n, "pg3")}
-<p>تحقق المشارك من المصادر (<span lang="en" class="ltr">source_check</span>): مقبولة {s["approved"]["source_check"]} من {n}.
-<strong>هذا ليس مراجعة شرعية متخصصة.</strong> <strong>المراجعة الشرعية لم تكتمل.</strong></p>
+{progress("حالات تحقق المصادر المقبولة (النوع المعتمد الآن)", s["approved"]["source_check"], n, "pg3")}
+<p>{specialist_sentence(f)} التحقق الحالي <strong>تحقق مصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
+وهو غير متخصص شرعياً، مقابل نص القرآن من Quranpedia.net والأحاديث من الدرر السنية أو المكتبة الشاملة (الملف اليدوي).
+<strong>وتحقق المصادر ليس مراجعة شرعية متخصصة.</strong> والمراجعة الشرعية المتخصصة اختيارية ومعلّقة حتى يتوفر مراجع.</p>
 
 <h2>حدود معروفة</h2>
 <ul class="plain">
   <li>التحقق من الأحاديث محدود بما في الملف اليدوي؛ غياب المدخل أو نقصه يعني «يحتاج تحقق»، لا «غير صحيح».</li>
   <li>{f["unused_domains"]} من مجالات الحزمة التسعة لم تُستخدم مراجعها بعد (انظر <a href="sources.html">المصادر والمنهجية</a>).</li>
   <li>نص القرآن العثماني المعروض «غير موافق للمطبوع» بحسب وصف ملفه في المصدر؛ وتحديث النسخة يدوي مع تسجيله.</li>
-  <li>الحكم الآلي قد يخطئ، وهو مساعد للمراجعة البشرية لا بديل عنها.</li>
+  <li>الحكم الآلي قد يخطئ، وهو مساعد للمراجعة البشرية لا بديل عنها؛ والمراجعة البشرية الآن تحقق مصادر، لا مراجعة شرعية متخصصة.</li>
 </ul>
 """
 

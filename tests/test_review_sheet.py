@@ -51,7 +51,8 @@ def test_apply_records_named_decisions_and_rejects_bad_rows(tmp_path):
             "OFF-01": {"decision": "approved", "reviewer_name": "", "reviewer_role": "specialist", "review_date": "2026-10-04"},  # بلا اسم
             "EXT-001": {"decision": "rejected", "reviewer_name": "المراجع", "reviewer_role": "specialist",
                         "review_date": "2026-10-04"},  # بلا سبب
-            "EXT-002": {"decision": "approved", "reviewer_name": "المراجع", "review_date": "2026-10-04"},  # بلا نوع
+            "EXT-002": {"decision": "approved", "reviewer_name": "المراجع", "reviewer_role": "",
+                        "review_date": "2026-10-04"},  # نوع المراجعة مُسح من الورقة
         })
         count, errors = rs.apply(bad)
         assert count == 0 and len(errors) == 3
@@ -109,3 +110,11 @@ def test_priority_is_first_column_and_sorted():
     for r in rows:
         if r["level"] == "D" or r["risk_type"] == "fiqh_disagreement":
             assert r["الأولوية"] in ("1", "2"), r["id"]
+
+
+def test_pending_rows_prefilled_with_adopted_role_source_check():
+    """لا مراجع شرعي متخصص حالياً: النوع المعتمد source_check معبّأ مسبقاً، ولا أثر له ما دام القرار فارغاً."""
+    assert rs.ADOPTED_ROLE == "source_check"
+    for r in _rows():
+        if not r["decision"]:
+            assert r["reviewer_role"] == "source_check", r["id"]
