@@ -12,8 +12,12 @@ CSS = (ROOT / "web/assets/style.css").read_text(encoding="utf-8")
 PAIRS = [
     ("text", "bg"), ("text", "surface"), ("text", "surface-2"),
     ("muted", "bg"), ("muted", "surface"), ("muted", "surface-2"),
-    ("primary", "bg"), ("primary", "surface"), ("primary", "surface-2"),
-    ("primary-text", "primary"), ("accent", "bg"),
+    ("text", "bg-side"), ("muted", "bg-side"),
+    ("accent", "bg"), ("accent", "surface"), ("accent", "surface-2"), ("accent", "bg-side"),
+    ("accent-ink", "accent"),
+    ("rev-fg", "rev-bg"),
+    # رسم مسار العمل (SVG): نصوص الصناديق على surface-2، والرقم على دائرة accent
+    ("ok-fg", "surface-2"), ("rev-fg", "surface-2"), ("todo-fg", "surface-2"),
     ("ok-fg", "ok-bg"), ("rev-fg", "rev-bg"), ("bad-fg", "bad-bg"), ("todo-fg", "todo-bg"),
 ]
 
@@ -23,9 +27,10 @@ def _tokens(block: str) -> dict:
 
 
 def _themes():
-    light = _tokens(CSS.split("@media (prefers-color-scheme: dark)", 1)[0])
-    dark_block = CSS.split("@media (prefers-color-scheme: dark)", 1)[1].split("\n}\n", 1)[0]
-    return {"light": light, "dark": {**light, **_tokens(dark_block)}}
+    """الداكن هو الافتراضي في :root، والفاتح في @media (prefers-color-scheme: light)."""
+    dark = _tokens(CSS.split("@media (prefers-color-scheme: light)", 1)[0])
+    light_block = CSS.split("@media (prefers-color-scheme: light)", 1)[1].split("\n}\n", 1)[0]
+    return {"dark": dark, "light": {**dark, **_tokens(light_block)}}
 
 
 def _lum(hex_):
@@ -57,5 +62,11 @@ def test_no_external_fonts_or_imports():
     assert not list((ROOT / "web").rglob("*.woff*")) and not list((ROOT / "web").rglob("*.ttf"))
 
 
-def test_dark_mode_defined():
-    assert set(_themes()["dark"]) == set(_themes()["light"])
+def test_light_mode_redefines_every_colour():
+    light_block = CSS.split("@media (prefers-color-scheme: light)", 1)[1].split("\n}\n", 1)[0]
+    assert set(_tokens(light_block)) == set(_themes()["dark"])
+
+
+def test_two_font_weights_only():
+    weights = set(re.findall(r"font-weight:\s*(\d+|bold|normal)", CSS))
+    assert weights <= {"400", "700"}, weights

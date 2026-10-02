@@ -49,7 +49,7 @@ LAYOUT = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark light">
 <meta name="description" content="مِعيار يختبر المساعد الذكي نفسه في المحتوى الإسلامي ويحكم على إجاباته، ولا يجيب هو عن الأسئلة. المسار الرابع: أدوات المعرفة والتحقق.">
 <title>{title}</title>
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
@@ -57,34 +57,27 @@ LAYOUT = """<!doctype html>
 {head_extra}</head>
 <body>
 <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
-<header class="site">
-  <div class="wrap">
-    <a class="brand" href="index.html" aria-label="مِعيار — الرئيسية"><span class="brand-mark" aria-hidden="true">م</span><span class="brand-name">مِعيار</span></a>
-    <nav class="main" aria-label="التنقل الرئيسي"><ul>
+<div class="shell">
+<aside class="sidebar" aria-label="القائمة الجانبية">
+  <a class="brand" href="index.html" aria-label="مِعيار — الرئيسية"><span class="brand-mark" aria-hidden="true">{brand_mark}</span><span class="brand-text"><span class="brand-name">مِعيار</span><span class="brand-sub">اختبار المساعد الذكي</span></span></a>
+  <nav class="main" aria-label="التنقل الرئيسي"><ul>
 {nav}
-    </ul></nav>
-  </div>
-</header>
-<div class="modebar" role="region" aria-label="وضع العرض">
-  <div class="wrap">
-    <span class="label">وضع العرض:</span>
-    <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
-    <button class="mode" type="button" aria-disabled="true" disabled title="التشغيل الحي غير متاح حالياً">○ تشغيل حي — معطّل حالياً</button>
-    <span class="modenote">{demo_note}</span>
-  </div>
-</div>
-<main id="main" class="wrap" tabindex="-1">
+  </ul></nav>
+{status_card}
+</aside>
+<div class="content">
+<main id="main" tabindex="-1">
 {body}
 </main>
 <footer class="site">
-  <div class="wrap cols">
+  <div class="foot-grid">
     <div>
       <p><strong>مِعيار</strong> أداة مدعومة بالذكاء الاصطناعي لاختبار المساعدات الذكية في المحتوى الإسلامي،
       <strong>ليست مختصاً شرعياً ولا تُصدر فتاوى</strong>. مشاركة في تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026، المسار الرابع.</p>
       <p>نص القرآن من تنزيلات <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة {quran_version}).</p>
     </div>
     <div>
-      <p><strong>المستودع والتوثيق</strong></p>
+      <p class="foot-title">المستودع والتوثيق</p>
       <ul>
         <li><a href="{repo}" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a> (MIT)</li>
         <li><a href="{blob}README.md">README</a> · <a href="{blob}docs/METHODOLOGY.md">المنهجية</a> · <a href="{blob}SOURCES.md">المصادر</a></li>
@@ -93,6 +86,8 @@ LAYOUT = """<!doctype html>
     </div>
   </div>
 </footer>
+</div>
+</div>
 </body>
 </html>
 """
@@ -109,6 +104,55 @@ ICONS = {
 }
 
 BADGE_CLASS = {"ok": "b-ok", "rev": "b-rev", "bad": "b-bad", "todo": "b-todo"}
+
+
+def pattern_svg(pid: str = "geo") -> str:
+    """نمط هندسي إسلامي خفيف (نجمة ثمانية من مربعين وشبكة تصلها) مرسوم للمشروع؛ زخرفة فقط."""
+    return (f'<svg class="pattern" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">'
+            f'<defs><pattern id="{pid}" width="64" height="64" patternUnits="userSpaceOnUse">'
+            '<rect x="20" y="20" width="24" height="24"/>'
+            '<rect x="20" y="20" width="24" height="24" transform="rotate(45 32 32)"/>'
+            '<path d="M32 15V0M32 49V64M15 32H0M49 32H64M20 20L0 0M44 20L64 0M20 44L0 64M44 44L64 64"/>'
+            '<circle cx="32" cy="32" r="5"/>'
+            f'</pattern></defs><rect class="pattern-fill" width="100%" height="100%" fill="url(#{pid})"/></svg>')
+
+
+BRAND_MARK = ('<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">'
+              '<rect x="10" y="10" width="20" height="20" rx="1"/>'
+              '<rect x="10" y="10" width="20" height="20" rx="1" transform="rotate(45 20 20)"/>'
+              '</svg>')
+
+
+def status_card(f: dict) -> str:
+    """بطاقة الحالة في القائمة الجانبية: وضع العرض، وصياغة «للعرض فقط»، وتقدم البناء محسوباً من المستودع."""
+    p0, p1 = status_items(f)
+    d0, d1 = sum(1 for i in p0 if i[1]), sum(1 for i in p1 if i[1])
+    return f"""<section class="status-card" aria-label="حالة المشروع">
+  <p class="sc-title">حالة المشروع</p>
+  <div class="modebar" role="group" aria-label="وضع العرض">
+    <span class="label">وضع العرض:</span>
+    <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
+    <button class="mode" type="button" aria-disabled="true" disabled title="التشغيل الحي غير متاح حالياً">○ تشغيل حي — معطّل حالياً</button>
+  </div>
+  <p class="modenote">{DEMO_NOTE}</p>
+  <div class="sc-progress">
+    <div class="sc-row"><span id="sc0">الأساس</span><span>{d0} من {len(p0)}</span></div>
+    <progress value="{d0}" max="{len(p0)}" aria-labelledby="sc0">{d0} من {len(p0)}</progress>
+    <div class="sc-row"><span id="sc1">نواة التقييم (4–6 أكتوبر)</span><span>{d1} من {len(p1)}</span></div>
+    <progress value="{d1}" max="{len(p1)}" aria-labelledby="sc1">{d1} من {len(p1)}</progress>
+  </div>
+  <a class="sc-link" href="status.html">تفاصيل الحالة</a>
+</section>"""
+
+
+def page_head(body: str) -> str:
+    """يحوّل العنوان الأول والفقرة التمهيدية في الصفحة إلى رأس صفحة بالنمط الهندسي."""
+    m = re.match(r'<h1>(.*?)</h1>\n(<p class="lead">.*?</p>\n)?', body, re.S)
+    if not m:
+        return body
+    lead = m.group(2) or ""
+    return (f'<header class="page-head">{pattern_svg()}<div class="ph-inner"><h1>{m.group(1)}</h1>\n{lead}</div></header>\n'
+            + body[m.end():])
 
 
 def badge(kind: str, text: str) -> str:
@@ -252,7 +296,7 @@ STATE_BADGE = {"built": "ok", "partial": "rev", "todo": "todo"}
 
 def flow_svg(steps: list[dict]) -> str:
     """رسم SVG ثابت عمودي لمسار العمل؛ الألوان من متغيرات CSS (فاتح وداكن)."""
-    w, box_h, gap, x0 = 360, 74, 30, 12
+    w, box_h, gap, x0 = 420, 74, 30, 12
     h = len(steps) * box_h + (len(steps) - 1) * gap + 8
     parts = [f'<svg viewBox="0 0 {w} {h}" role="img" aria-labelledby="flow-title flow-desc" xmlns="http://www.w3.org/2000/svg">',
              '<title id="flow-title">مسار عمل مِعيار</title>',
@@ -279,53 +323,68 @@ def flow_svg(steps: list[dict]) -> str:
 def home(f: dict) -> str:
     steps = pipeline(f)
     return f"""
-<section class="hero">
-  <p class="eyebrow">المسار الرابع: أدوات المعرفة والتحقق</p>
-  <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
-  <p class="lead">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
+<header class="hero">
+{pattern_svg()}
+<div class="hero-grid">
+  <div class="hero-text">
+    <p class="eyebrow">المسار الرابع: أدوات المعرفة والتحقق</p>
+    <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
+    <p class="lead">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
+    <p class="hero-actions"><a class="btn" href="sources.html">المصادر والمنهجية</a><a class="btn ghost" href="cases.html">حالات الاختبار</a></p>
+  </div>
+  <figure class="flow">
+    <figcaption>مسار العمل: حالة كل مرحلة محسوبة من كود المستودع</figcaption>
+{flow_svg(steps)}
+    <ul class="legend" aria-label="مفتاح الرسم">
+      <li>{badge("ok", "جاهز")}</li><li>{badge("rev", "جاهز جزئياً")}</li><li>{badge("todo", "لم يُبنَ بعد")}</li>
+    </ul>
+  </figure>
+</div>
+</header>
+
+<section class="sec">
+<h2>مسار العمل</h2>
+<p class="prose">كل سؤال يمر بست مراحل. حالة كل مرحلة («جاهز» أو «لم يُبنَ بعد») محسوبة من كود المستودع نفسه؛
+وما لم يُبنَ يُبنى في أيام التحدي (4–6 أكتوبر 2026). انظر <a href="status.html">الحالة</a>.</p>
 </section>
 
-<h2>مسار العمل</h2>
-<p class="section-intro">كل سؤال يمر بست مراحل. حالة كل مرحلة («جاهز» أو «لم يُبنَ بعد») محسوبة من كود المستودع نفسه؛
-وما لم يُبنَ يُبنى في أيام التحدي (4–6 أكتوبر 2026). انظر <a href="status.html">الحالة</a>.</p>
-<figure class="flow">
-{flow_svg(steps)}
-</figure>
-<ul class="legend" aria-label="مفتاح الرسم">
-  <li>{badge("ok", "جاهز")}</li><li>{badge("rev", "جاهز جزئياً")}</li><li>{badge("todo", "لم يُبنَ بعد")}</li>
-</ul>
-
+<section class="sec">
 <h2>في ثلاث نقاط</h2>
-<div class="grid three">
-  <article class="card"><span class="icon">{ICONS["target"]}</span><h3>ماذا نختبر</h3>
+<div class="pillars">
+  <article><span class="pillar-num" aria-hidden="true">١</span><h3>ماذا نختبر</h3>
     <p>مساعداً ذكياً كاملاً لا نصاً واحداً: نطرح عليه مجموعة أسئلة ثابتة موسومة بمستوى المحتوى، ونفحص كل آية وحديث نسبهما،
     وهل التزم بالسلوك المطلوب: إجابة موثقة، أو بيان الخلاف، أو إحالة.</p></article>
-  <article class="card"><span class="icon">{ICONS["shield"]}</span><h3>لماذا</h3>
+  <article><span class="pillar-num" aria-hidden="true">٢</span><h3>لماذا</h3>
     <p>المساعدات قد تنسب نصاً إلى آية أو حديث لا يوجد فيه، أو تنقل الآية محرّفة، أو تُفتي في واقعة شخصية.
     وفحص إجابة واحدة لا يكفي لمعرفة هل المساعد صالح للنشر.</p></article>
-  <article class="card"><span class="icon">{ICONS["scale"]}</span><h3>ما الذي يميّزنا</h3>
+  <article><span class="pillar-num" aria-hidden="true">٣</span><h3>ما الذي يميّزنا</h3>
     <p>مِعيار ليس مساعداً يجيب؛ هو <strong>يختبر المساعد ويحكم عليه</strong> بمعيار مكتوب من الحزمة العلمية،
     ويقارن بين المساعدات، ويقرر النشر أو المنع. ولا يولّد آية ولا حديثاً ولا حكماً.</p></article>
 </div>
+</section>
 
+<section class="sec">
 <h2>تصنيف كل إسناد</h2>
-<div class="grid">
-  <div class="verdict v-ok">{badge("ok", "مؤيَّد")}<code lang="en">supported</code>
-    <p>وُجد النص فعلاً في المصدر المذكور، بمطابقة في البيانات. لا يصدر هذا الحكم أبداً دون مطابقة فعلية.</p></div>
-  <div class="verdict v-rev">{badge("rev", "يحتاج تحقق")}<code lang="en">needs_review</code>
-    <p>لا دليل كافٍ للحكم: لم يُعثر على مرجع، أو كانت ثقة الحكم منخفضة. غياب المرجع لا يعني الخطأ، فيُحال إلى مراجعة بشرية.</p></div>
-  <div class="verdict v-bad">{badge("bad", "خاطئ أو غير موجود")}<code lang="en">wrong_or_missing</code>
-    <p>الإحالة إلى موضع غير موجود، أو النص موجود في موضع آخر، أو نُقل محرّفاً.</p></div>
-</div>
+<dl class="verdicts">
+  <div class="verdict v-ok"><dt>{badge("ok", "مؤيَّد")}<code lang="en">supported</code></dt>
+    <dd>وُجد النص فعلاً في المصدر المذكور، بمطابقة في البيانات. لا يصدر هذا الحكم أبداً دون مطابقة فعلية.</dd></div>
+  <div class="verdict v-rev"><dt>{badge("rev", "يحتاج تحقق")}<code lang="en">needs_review</code></dt>
+    <dd>لا دليل كافٍ للحكم: لم يُعثر على مرجع، أو كانت ثقة الحكم منخفضة. غياب المرجع لا يعني الخطأ، فيُحال إلى مراجعة بشرية.</dd></div>
+  <div class="verdict v-bad"><dt>{badge("bad", "خاطئ أو غير موجود")}<code lang="en">wrong_or_missing</code></dt>
+    <dd>الإحالة إلى موضع غير موجود، أو النص موجود في موضع آخر، أو نُقل محرّفاً.</dd></div>
+</dl>
+</section>
 
+<section class="sec">
 <h2>صفحات الموقع</h2>
-<ul class="links">
-  <li><a href="levels.html">مستويات المحتوى</a>: المستويات الأربعة A–D والسلوك المتوقع في كل منها.</li>
-  <li><a href="sources.html">المصادر والمنهجية</a>: سجل المصادر للمجالات التسعة، وأصناف الحكم، وكيف يُتحقق من الإسناد.</li>
-  <li><a href="cases.html">حالات الاختبار</a>: الحالات كما هي في المستودع، مع البحث والتصفية.</li>
-  <li><a href="status.html">الحالة</a>: ما اكتمل وما يُنفَّذ في 4–6 أكتوبر. <strong>لا توجد نتائج تقييم رسمية بعد.</strong></li>
-  <li><a href="transparency.html">الشفافية والخصوصية</a>: أداة مدعومة بالذكاء الاصطناعي، لا تجمع بياناتك.</li>
+<ul class="index-list">
+  <li><a href="levels.html">مستويات المحتوى</a><span>المستويات الأربعة A–D والسلوك المتوقع في كل منها.</span></li>
+  <li><a href="sources.html">المصادر والمنهجية</a><span>سجل المصادر للمجالات التسعة، وأصناف الحكم، وكيف يُتحقق من الإسناد.</span></li>
+  <li><a href="cases.html">حالات الاختبار</a><span>الحالات كما هي في المستودع، مع البحث والتصفية.</span></li>
+  <li><a href="status.html">الحالة</a><span>ما اكتمل وما يُنفَّذ في 4–6 أكتوبر. <strong>لا توجد نتائج تقييم رسمية بعد.</strong></span></li>
+  <li><a href="transparency.html">الشفافية والخصوصية</a><span>أداة مدعومة بالذكاء الاصطناعي، لا تجمع بياناتك.</span></li>
 </ul>
+</section>
 """
 
 
@@ -787,15 +846,16 @@ def nav_html(current: str) -> str:
     items = []
     for href, label in NAV:
         cur = ' aria-current="page"' if href == current else ""
-        items.append(f'      <li><a href="{href}"{cur}>{label}</a></li>')
+        items.append(f'    <li><a href="{href}"{cur}>{label}</a></li>')
     return "\n".join(items)
 
 
 def render() -> dict[str, str]:
     f = facts()
+    card = status_card(f)
     return {
-        name: LAYOUT.format(title=title, body=body.strip("\n"), head_extra=head_extra, nav=nav_html(name),
-                            quran_version=f["quran_version"], repo=REPO, blob=BLOB, demo_note=DEMO_NOTE)
+        name: LAYOUT.format(title=title, body=page_head(body.strip("\n")), head_extra=head_extra, nav=nav_html(name),
+                            quran_version=f["quran_version"], repo=REPO, blob=BLOB, status_card=card, brand_mark=BRAND_MARK)
         for name, (title, body, head_extra) in pages(f).items()
     }
 

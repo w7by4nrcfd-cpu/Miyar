@@ -1,4 +1,4 @@
-// اختبار التخطيط في متصفح حقيقي (Chromium عبر Playwright): لكل صفحة على عرض 360px بالوضعين الفاتح والداكن:
+// اختبار التخطيط في متصفح حقيقي (Chromium عبر Playwright): لكل صفحة على عروض 360 و768 و1440px بالوضعين الفاتح والداكن:
 // لا تمرير أفقي، وتباين كل نص مرئي ≥ 4.5:1، وأول Tab إلى «تخطَّ إلى المحتوى»، وروابط التنقل كلها قابلة للوصول بلوحة المفاتيح،
 // ولا أخطاء JavaScript، ولا مفاتيح في الصفحات. وبحث صفحة الحالات يصفّي الصفوف.
 import { test } from "node:test";
@@ -36,14 +36,14 @@ test("تخطيط الصفحات في المتصفح", { skip: !pw && !required ?
   const base = `http://127.0.0.1:${server.address().port}/`;
   const browser = await pw.chromium.launch();
   try {
-    for (const scheme of ["light", "dark"]) {
-      const ctx = await browser.newContext({ viewport: { width: 360, height: 780 }, colorScheme: scheme, reducedMotion: "reduce" });
+    for (const [width, scheme] of [360, 768, 1440].flatMap((w) => [[w, "dark"], [w, "light"]])) {
+      const ctx = await browser.newContext({ viewport: { width, height: 800 }, colorScheme: scheme, reducedMotion: "reduce" });
       const page = await ctx.newPage();
       const errors = [];
       page.on("pageerror", (e) => errors.push(e.message));
       page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
       for (const p of PAGES) {
-        await t.test(`${scheme} ${p}`, async () => {
+        await t.test(`${width} ${scheme} ${p}`, async () => {
           const res = await page.goto(base + p, { waitUntil: "networkidle" });
           assert.equal(res.status(), 200);
           const info = await page.evaluate(() => {
@@ -61,7 +61,7 @@ test("تخطيط الصفحات في المتصفح", { skip: !pw && !required ?
             const low = [];
             for (const el of document.querySelectorAll("body *")) {
               if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
-              if (el.closest(".sr, .skip, noscript, [hidden]")) continue;
+              if (el.closest(".sr, .skip, noscript, [hidden], svg")) continue; // نصوص SVG تُلوَّن بـ fill: أزواجها مختبرة من متغيرات CSS
               const st = getComputedStyle(el);
               if (st.display === "none" || st.visibility === "hidden") continue;
               const a = lum(st.color), b = lum(bgOf(el));
@@ -71,6 +71,19 @@ test("تخطيط الصفحات في المتصفح", { skip: !pw && !required ?
             return { scroll: document.documentElement.scrollWidth, width: innerWidth, dir: document.dir, low, html: document.documentElement.outerHTML };
           });
           assert.equal(info.dir, "rtl");
+          if (p === "index.html") {
+            // نصوص رسم مسار العمل داخل صناديقها
+            const spill = await page.evaluate(() => {
+              const svg = document.querySelector("figure.flow > svg");
+              const texts = [...svg.querySelectorAll("text")];
+              return [...svg.querySelectorAll("rect.node")].flatMap((r) => {
+                const rb = r.getBBox();
+                return texts.filter((t) => { const tb = t.getBBox(); return tb.y >= rb.y && tb.y < rb.y + rb.height && (tb.x < rb.x || tb.x + tb.width > rb.x + rb.width); })
+                  .map((t) => t.textContent);
+              });
+            });
+            assert.deepEqual(spill, [], "نص يخرج من صندوقه في رسم مسار العمل");
+          }
           assert.ok(info.scroll <= info.width, `تمرير أفقي: ${info.scroll} > ${info.width}`);
           assert.deepEqual(info.low, [], "نص بتباين أقل من 4.5:1");
           assert.ok(!/AIza[0-9A-Za-z_-]{20,}|sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}/.test(info.html), "نمط مفتاح في الصفحة");

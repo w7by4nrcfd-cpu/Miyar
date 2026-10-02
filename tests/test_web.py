@@ -162,7 +162,7 @@ def test_status_items_are_computed_from_repo():
 
 def test_home_flow_svg_marks_built_and_unbuilt():
     html = _page("index.html")
-    svg = html.split("<svg viewBox", 1)[1].split("</svg>", 1)[0]
+    svg = html.split('aria-labelledby="flow-title flow-desc"', 1)[1].split("</svg>", 1)[0]
     for step in ("سؤال موسوم", "إجابة المساعد", "استخراج الاستشهاد", "مطابقة المصدر", "حكم", "درجة وقرار"):
         assert step in svg
     assert "لم يُبنَ بعد" in svg and "جاهز" in svg
