@@ -11,6 +11,20 @@
 </head>
 <body>
 <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="مِعيار — الرئيسية"><span class="brand-mark" aria-hidden="true">م</span><span class="brand-name">مِعيار</span></a>
+    <nav class="main" aria-label="التنقل الرئيسي"><ul>
+      <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="levels.html">مستويات المحتوى</a></li>
+      <li><a href="sources.html">المصادر والمنهجية</a></li>
+      <li><a href="cases.html">حالات الاختبار</a></li>
+      <li><a href="status.html">الحالة</a></li>
+      <li><a href="transparency.html" aria-current="page">الشفافية والخصوصية</a></li>
+      <li><a href="results.html">النتائج</a></li>
+    </ul></nav>
+  </div>
+</header>
 <div class="modebar" role="region" aria-label="وضع العرض">
   <div class="wrap">
     <span class="label">وضع العرض:</span>
@@ -19,19 +33,6 @@
     <span class="modenote">للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026.</span>
   </div>
 </div>
-<header class="site">
-  <div class="wrap">
-    <a class="brand" href="index.html">مِعيار</a>
-    <nav aria-label="التنقل الرئيسي"><ul>
-      <li><a href="index.html">الرئيسية</a></li>
-      <li><a href="levels.html">مستويات المحتوى</a></li>
-      <li><a href="sources.html">المصادر والمنهجية</a></li>
-      <li><a href="transparency.html" aria-current="page">الشفافية والخصوصية</a></li>
-      <li><a href="status.html">الحدود والحالة</a></li>
-      <li><a href="results.html">النتائج</a></li>
-    </ul></nav>
-  </div>
-</header>
 <main id="main" class="wrap" tabindex="-1">
 <h1>الشفافية والخصوصية</h1>
 
@@ -42,7 +43,7 @@
 </div>
 
 <h2>حدود الأداة</h2>
-<ul>
+<ul class="plain">
   <li>لا يولّد آية ولا حديثاً ولا حكماً، ولا يصحح نصاً من عنده.</li>
   <li>لا يرجّح في مسائل الخلاف، ولا يحكم على حديث بالصحة أو الضعف.</li>
   <li>المطابقة الحرفية تكشف النقل المحرّف والإحالة الخاطئة، لكنها لا تحكم على صحة التفسير أو المعنى.</li>
@@ -62,8 +63,9 @@
 <p>هذا الموقع ثابت ولا يستدعي أي نموذج لغوي. ومطابقة الآيات برمجية حرفية دون أي نموذج لغوي.</p>
 
 <h2>الخصوصية</h2>
-<ul>
-  <li><strong>لا نجمع بياناتك الشخصية:</strong> لا حسابات، ولا نماذج إدخال، ولا ملفات تعريف ارتباط، ولا أدوات تحليلات أو تتبع.</li>
+<ul class="plain">
+  <li><strong>لا نجمع بياناتك الشخصية:</strong> لا حسابات، ولا نماذج إرسال، ولا ملفات تعريف ارتباط، ولا أدوات تحليلات أو تتبع.
+    مربع البحث في صفحة الحالات يعمل داخل متصفحك فقط ولا يُرسل شيئاً.</li>
   <li>لا خطوط ولا مكتبات من مواقع خارجية؛ سياسة أمان المحتوى تمنع تحميل أي مورد من خارج الموقع.</li>
   <li>الموقع مستضاف على Cloudflare Workers، وقد يعالج مزوّد الاستضافة بيانات تقنية لازمة لتقديم الصفحات (مثل عنوان IP) وفق سياسته؛ ولم نفعّل أي أداة تحليلات.</li>
   <li>حالات الاختبار اصطناعية، ولا تُستخدم محادثات حقيقية لأي مستفيد.</li>
@@ -71,11 +73,20 @@
 </ul>
 </main>
 <footer class="site">
-  <div class="wrap">
-    <p>مِعيار أداة مدعومة بالذكاء الاصطناعي لاختبار المساعدات الذكية، <strong>ليست مختصاً شرعياً ولا تُصدر فتاوى</strong>.
-    نص القرآن من تنزيلات <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة 2026-10-01).
-    انظر <a href="sources.html">المصادر والمنهجية</a> و<a href="transparency.html">الشفافية والخصوصية</a>.</p>
-    <p>الكود مفتوح المصدر (MIT): <a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a></p>
+  <div class="wrap cols">
+    <div>
+      <p><strong>مِعيار</strong> أداة مدعومة بالذكاء الاصطناعي لاختبار المساعدات الذكية في المحتوى الإسلامي،
+      <strong>ليست مختصاً شرعياً ولا تُصدر فتاوى</strong>. مشاركة في تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026، المسار الرابع.</p>
+      <p>نص القرآن من تنزيلات <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة 2026-10-01).</p>
+    </div>
+    <div>
+      <p><strong>المستودع والتوثيق</strong></p>
+      <ul>
+        <li><a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a> (MIT)</li>
+        <li><a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/README.md">README</a> · <a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/docs/METHODOLOGY.md">المنهجية</a> · <a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/SOURCES.md">المصادر</a></li>
+        <li><a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/SOURCES_LICENSES.md">المكتبات والتراخيص</a> · <a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/BASELINE.md">نسخة البداية</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
 </body>

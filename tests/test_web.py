@@ -9,7 +9,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
-PAGES = ["index.html", "levels.html", "sources.html", "transparency.html", "status.html", "results.html"]
+PAGES = ["index.html", "levels.html", "sources.html", "cases.html", "status.html", "transparency.html", "results.html"]
 
 
 def _load_builder():
@@ -89,14 +89,85 @@ def test_levels_page_has_four_levels_with_behaviour():
         assert behaviour in t
 
 
-def test_sources_page_nine_domains_only_quran_and_hadith_used():
+def _registry_rows():
     html = _page("sources.html")
-    rows = re.findall(r'<tr><th scope="row">(.*?)</th>.*?</tr>', html)
+    table = html.split('class="stack registry"', 1)[1].split("</table>", 1)[0]
+    return re.findall(r'<tr><th scope="row">([^<]*)</th>(.*?)</tr>', table, re.S)
+
+
+def test_sources_registry_nine_domains_only_quran_and_hadith_used():
+    rows = _registry_rows()
     assert len(rows) == 9
-    used = re.findall(r'<tr><th scope="row">([^<]*)</th>(?:(?!</tr>).)*class="yes"', html)
+    used = [name for name, body in rows if "b-todo" not in body.split('data-label="الحالة">', 1)[1].split("</td>", 1)[0]]
     assert used == ["القرآن الكريم", "الحديث"]
-    assert html.count('class="no"') == 7
-    assert "Quranpedia" in html and "ملف يدوي" in html
+    for name, body in rows:
+        # كل صف: رابط رسمي للمرجع ورابط إثبات في المستودع، والأعمدة السبعة
+        for label in ("المرجع المعتمد في الحزمة", "الحالة", "كيف استُخدم", "كيف يُتحقق منه", "الترخيص والحقوق", "القيود والحدود", "الإثبات في المستودع"):
+            assert f'data-label="{label}"' in body, (name, label)
+        assert 'href="https://' in body and "github.com/w7by4nrcfd-cpu/Miyar/blob/main/" in body, name
+
+
+def test_sources_proof_links_point_to_existing_files():
+    html = _page("sources.html")
+    for path in re.findall(r'github\.com/w7by4nrcfd-cpu/Miyar/blob/main/([^"]+)"', html):
+        assert (ROOT / path).exists(), path
+
+
+def test_sources_used_claims_backed_by_repo():
+    mod = _load_builder()
+    f = mod.facts()
+    for d in mod.domains(f):
+        if d["used"]:
+            assert all((ROOT / p).exists() for p, _ in d["proof"]), d["name"]
+
+
+def test_sources_page_has_judgements_and_attribution():
+    t = _text("sources.html")
+    mod = _load_builder()
+    cats = mod.judgement_categories()
+    assert len(cats) == 6
+    for name, _ in cats:
+        assert name in t
+    for needle in ("تحديد النص المنسوب", "المطابقة مع المصدر", "متى يمتنع النظام أو يُحيل"):
+        assert needle in t
+
+
+def test_cases_page_lists_every_case_from_repo():
+    html = _page("cases.html")
+    cases = [c for f in ("official_v0.json", "extended_v1.json")
+             for c in json.loads((ROOT / "testsets" / f).read_text(encoding="utf-8"))["cases"]]
+    body = html.split('id="cases"', 1)[1]
+    assert len(re.findall(r"<tr data-level=", body)) == len(cases)
+    for c in cases:
+        assert f'<span class="mono">{c["id"]}</span>' in body
+    # لا نص سؤال (بعض الأسئلة فيها آيات منقولة بخطأ أو أحاديث لا تصح عمداً)، ولا حكم ولا نتيجة
+    for c in cases:
+        for q in re.findall(r"«([^»]{8,})»", c["prompt"]):
+            if q not in c["expected_behavior"]:
+                assert q not in html, (c["id"], q)
+    assert 'id="q"' in html and 'id="lv"' in html and 'id="ty"' in html
+    assert 'src="assets/cases.js"' in html
+
+
+def test_status_items_are_computed_from_repo():
+    mod = _load_builder()
+    f = mod.facts()
+    p0, p1 = mod.status_items(f)
+    # قبل 4 أكتوبر: نواة التقييم كلها لم تُبنَ
+    assert not any(done for _, done, _ in p1)
+    assert all(done for _, done, _ in p0)
+    assert f["state"]["runner"] == f["state"]["judge"] == f["state"]["scoring"] == "todo"
+    assert f["state"]["quran_match"] == "built"
+
+
+def test_home_flow_svg_marks_built_and_unbuilt():
+    html = _page("index.html")
+    svg = html.split("<svg viewBox", 1)[1].split("</svg>", 1)[0]
+    for step in ("سؤال موسوم", "إجابة المساعد", "استخراج الاستشهاد", "مطابقة المصدر", "حكم", "درجة وقرار"):
+        assert step in svg
+    assert "لم يُبنَ بعد" in svg and "جاهز" in svg
+    for card in ("ماذا نختبر", "لماذا", "ما الذي يميّزنا"):
+        assert card in _text("index.html")
 
 
 def test_transparency_page_disclosures():
@@ -124,7 +195,8 @@ def test_status_page_is_honest():
     t = _text("status.html")
     assert "لا توجد نتائج تقييم رسمية بعد" in t
     assert "المراجعة الشرعية لم تكتمل" in t
-    assert "ما تمّ فعلاً" in t and "ما لم يتم بعد" in t
+    assert "قبل أيام التحدي" in t and "أيام التحدي: 4–6 أكتوبر 2026" in t
+    assert "<progress" in _page("status.html")
 
 
 def test_site_free_of_external_hadith_set_and_secrets():

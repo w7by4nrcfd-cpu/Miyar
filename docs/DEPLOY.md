@@ -14,7 +14,7 @@ npx wrangler deploy --assets=./web --name miyar --compatibility-date=2026-10-01
 - بعد أي تعديل في `web/` يُعاد تشغيل أمر النشر؛ ولا تفترض أن الدفع إلى `main` ينشر تلقائياً.
 
 الصفحات: `index.html` (الرئيسية)، `levels.html` (مستويات المحتوى)، `sources.html` (المصادر والمنهجية)،
-`transparency.html` (الشفافية والخصوصية)، `status.html` (الحدود والحالة)، `results.html` (النتائج).
+`cases.html` (حالات الاختبار)، `status.html` (الحالة)، `transparency.html` (الشفافية والخصوصية)، `results.html` (النتائج).
 تُولَّد من `scripts/build_web_pages.py`؛ بعد أي تعديل شغّله وادفع الناتج.
 
 ملاحظات:

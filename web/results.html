@@ -12,6 +12,20 @@
 </head>
 <body>
 <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="مِعيار — الرئيسية"><span class="brand-mark" aria-hidden="true">م</span><span class="brand-name">مِعيار</span></a>
+    <nav class="main" aria-label="التنقل الرئيسي"><ul>
+      <li><a href="index.html">الرئيسية</a></li>
+      <li><a href="levels.html">مستويات المحتوى</a></li>
+      <li><a href="sources.html">المصادر والمنهجية</a></li>
+      <li><a href="cases.html">حالات الاختبار</a></li>
+      <li><a href="status.html">الحالة</a></li>
+      <li><a href="transparency.html">الشفافية والخصوصية</a></li>
+      <li><a href="results.html" aria-current="page">النتائج</a></li>
+    </ul></nav>
+  </div>
+</header>
 <div class="modebar" role="region" aria-label="وضع العرض">
   <div class="wrap">
     <span class="label">وضع العرض:</span>
@@ -20,19 +34,6 @@
     <span class="modenote">للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026.</span>
   </div>
 </div>
-<header class="site">
-  <div class="wrap">
-    <a class="brand" href="index.html">مِعيار</a>
-    <nav aria-label="التنقل الرئيسي"><ul>
-      <li><a href="index.html">الرئيسية</a></li>
-      <li><a href="levels.html">مستويات المحتوى</a></li>
-      <li><a href="sources.html">المصادر والمنهجية</a></li>
-      <li><a href="transparency.html">الشفافية والخصوصية</a></li>
-      <li><a href="status.html">الحدود والحالة</a></li>
-      <li><a href="results.html" aria-current="page">النتائج</a></li>
-    </ul></nav>
-  </div>
-</header>
 <main id="main" class="wrap" tabindex="-1">
 <h1>النتائج</h1>
 <div class="notice demo" role="note">
@@ -40,21 +41,30 @@
   وضع «نتائج محفوظة» يعرض ملف نتائج محفوظاً مسبقاً دون أي استدعاء لنموذج لغوي، وهو <strong>فارغ حالياً</strong>:
   لا نتائج تقييم رسمية فيه، ولا بيانات تجريبية مصطنعة.</p>
   <p><strong>التقييم الرسمي يبدأ 4 أكتوبر 2026</strong> (أيام التحدي 4–6 أكتوبر)، ولا يُعرض هنا بعده إلا ناتج تشغيل رسمي
-  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N).</p>
+  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N). صفحات النتائج والمقارنة تُبنى في أيام التحدي.</p>
 </div>
 <div id="results" aria-live="polite">
   <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
 </div>
 <noscript><div class="notice empty"><strong>لم يُشغَّل أي تقييم رسمي بعد</strong>
 <span>(تحتاج هذه الصفحة إلى JavaScript لقراءة ملف النتائج.)</span></div></noscript>
-<p>انظر <a href="status.html">الحدود والحالة</a> لما تمّ وما لم يتم.</p>
+<p>انظر <a href="status.html">الحالة</a> لما تمّ وما لم يتم.</p>
 </main>
 <footer class="site">
-  <div class="wrap">
-    <p>مِعيار أداة مدعومة بالذكاء الاصطناعي لاختبار المساعدات الذكية، <strong>ليست مختصاً شرعياً ولا تُصدر فتاوى</strong>.
-    نص القرآن من تنزيلات <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة 2026-10-01).
-    انظر <a href="sources.html">المصادر والمنهجية</a> و<a href="transparency.html">الشفافية والخصوصية</a>.</p>
-    <p>الكود مفتوح المصدر (MIT): <a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a></p>
+  <div class="wrap cols">
+    <div>
+      <p><strong>مِعيار</strong> أداة مدعومة بالذكاء الاصطناعي لاختبار المساعدات الذكية في المحتوى الإسلامي،
+      <strong>ليست مختصاً شرعياً ولا تُصدر فتاوى</strong>. مشاركة في تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026، المسار الرابع.</p>
+      <p>نص القرآن من تنزيلات <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة 2026-10-01).</p>
+    </div>
+    <div>
+      <p><strong>المستودع والتوثيق</strong></p>
+      <ul>
+        <li><a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a> (MIT)</li>
+        <li><a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/README.md">README</a> · <a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/docs/METHODOLOGY.md">المنهجية</a> · <a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/SOURCES.md">المصادر</a></li>
+        <li><a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/SOURCES_LICENSES.md">المكتبات والتراخيص</a> · <a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/BASELINE.md">نسخة البداية</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
 </body>

@@ -7,3 +7,4 @@ venv/
 *.sqlite
 *.db
 runs/
+node_modules/
