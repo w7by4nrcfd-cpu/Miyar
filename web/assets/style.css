@@ -302,3 +302,44 @@ footer.site a { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- تفصيل الحالة (case.html) ---------- */
+.back { margin: 0 0 var(--s3); font-size: 0.9375rem; }
+.case-link { font-weight: 700; }
+.small { font-size: 0.875rem; }
+#case { display: grid; gap: var(--s3); }
+.case-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--s3); min-width: 0; }
+.case-card > h2 { margin: 0 0 var(--s2); padding-top: 0; border-top: 0; font-size: 1.25rem; }
+.case-card > h2::before { display: none; }
+.case-card h3, .case-card h4 { margin: var(--s3) 0 var(--s1); font-size: 1.0625rem; }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--s1) var(--s2); margin: 0; }
+.kv dt { color: var(--muted); font-weight: 700; }
+.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 479px) { .kv { grid-template-columns: minmax(0, 1fr); gap: 2px; } .kv dd { margin-bottom: var(--s1); } }
+blockquote.prompt { margin: 0; padding: var(--s2) var(--s3); background: var(--surface-2); border-inline-start: 4px solid var(--accent); border-radius: var(--radius-sm); font-size: 1.125rem; overflow-wrap: anywhere; }
+.notice.trap { margin: 0 0 var(--s2); }
+.masked { margin: 0; padding: var(--s2); border: 1px dashed var(--line); border-radius: var(--radius-sm); color: var(--muted); }
+.refs { display: grid; gap: var(--s2); margin-top: var(--s2); }
+.ref-card { margin: 0; padding: var(--s2) var(--s3); border: 1px solid var(--ok-bd); border-radius: var(--radius-sm); background: var(--bg); }
+.ref-card figcaption { font-weight: 700; color: var(--ok-fg); margin-bottom: var(--s1); }
+.ref-card blockquote { margin: 0 0 var(--s1); font-size: 1.1875rem; line-height: 2.1; }
+.ref-card > :last-child { margin-bottom: 0; }
+ul.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s1); }
+ul.checks li { overflow-wrap: anywhere; }
+.answers { display: grid; gap: var(--s3); }
+@media (min-width: 1024px) { .answers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.answer-card { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--s3); background: var(--bg); min-width: 0; }
+.answer-card header h3 { margin: 0; }
+.answer-card header p { margin: 0 0 var(--s1); }
+.frame-label { display: inline-block; margin: 0 0 var(--s1); padding: 0 var(--s1); border: 1px solid var(--rev-bd); border-radius: var(--radius-sm); background: var(--rev-bg); color: var(--rev-fg); font-size: 0.875rem; font-weight: 700; }
+.answer { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 28rem; overflow-y: auto; padding: var(--s2); background: var(--surface-2); border-radius: var(--radius-sm); }
+.verdict-line { margin: 0 0 var(--s1); }
+.verdict-line .badge { white-space: normal; text-align: start; }
+table.cits td { vertical-align: top; overflow-wrap: anywhere; }
+/* الاستشهادات داخل بطاقة الإجابة: صفوف بطاقات دائماً (العمود ضيق حتى على الحاسوب) */
+.answer-card table.cits, .answer-card table.cits tbody, .answer-card table.cits tr, .answer-card table.cits td { display: block; width: 100%; }
+.answer-card table.cits { background: transparent; border: 0; }
+.answer-card table.cits thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.answer-card table.cits tr { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); margin-bottom: var(--s1); padding: var(--s1) 0; }
+.answer-card table.cits td { border: 0; padding: 4px var(--s2); }
+.answer-card table.cits td[data-label]::before { content: attr(data-label); display: block; font-weight: 700; color: var(--muted); font-size: 0.8125rem; }

@@ -703,7 +703,7 @@ def cases_page(f: dict) -> str:
         t = c.get("risk_type")
         tl = TYPE_LABELS.get(t, t)
         rows.append(
-            f'    <tr data-level="{_attr(c["level"])}" data-type="{_attr(tl)}"><th scope="row"><span class="mono">{_esc(c["id"])}</span></th>'
+            f'    <tr data-level="{_attr(c["level"])}" data-type="{_attr(tl)}"><th scope="row"><a class="mono case-link" href="case.html?id={_attr(c["id"])}">{_esc(c["id"])}</a></th>'
             f'<td data-label="المستوى"><span class="badge b-level" lang="en">{_esc(c["level"])}</span></td>'
             f'<td data-label="نوع الحالة">{_esc(tl)}</td>'
             f'<td data-label="آلية المعالجة">{_esc(HANDLING_LABELS.get(c.get("handling"), c.get("handling")))}</td>'
@@ -721,7 +721,8 @@ def cases_page(f: dict) -> str:
 <div class="notice">
   <p><strong>لا حكم ولا نتيجة هنا.</strong> هذه الصفحة تعرض ما يُنتظر من المساعد فقط، لا ما أجاب به.
   والسلوك المتوقع مسودة من إعداد المشروع. {specialist_sentence(f)} {source_check_sentence(f)}
-  ولا يُعرض نص السؤال هنا، لأن بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد.</p>
+  ولا يُعرض نص السؤال في هذا الجدول، لأن بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد؛
+  واضغط معرّف الحالة لصفحتها: السؤال مع تنبيه الفخ والنص الصحيح من البيانات، وما سُجّل لها في تشغيل رسمي إن وُجد.</p>
 </div>
 
 <form class="filters" role="search" aria-label="بحث وتصفية الحالات">
@@ -739,6 +740,102 @@ def cases_page(f: dict) -> str:
 {chr(10).join(rows)}
   </tbody>
 </table></div>
+"""
+
+
+# ---------- تفصيل الحالة (S2) ----------
+CASES_JSON = WEB / "data/testcases.json"
+# فخاخ مقصودة: يُسبق نص السؤال بتنبيه، ويُعرض بجانبه النص الصحيح من البيانات (BUILD_SPEC S2)
+TRAP_TYPES = {"misquoted_verse", "wrong_reference", "invalid_reference", "hadith_absent", "hadith_fabricated"}
+TRAP_WARNING = "هذا السؤال يتضمن عمداً نصاً محرّفاً أو لا يصح، لاختبار المساعد."
+CITATION_STATUS_LABELS = {"supported": "مؤيَّد", "needs_review": "يحتاج تحقق", "wrong_or_missing": "خاطئ أو غير موجود"}
+
+
+def _quran_reference(ref: dict, index) -> dict | None:
+    if ref.get("type") != "quran":
+        return None
+    verses = index.verses_range(ref["sura"], ref["aya"], ref.get("aya_end") or ref["aya"])
+    if not verses:
+        return None
+    aya = str(ref["aya"]) if not ref.get("aya_end") or ref["aya_end"] == ref["aya"] else f'{ref["aya"]}–{ref["aya_end"]}'
+    # الرسم الإملائي المضبوط (mushafs-1) للعرض هنا: علامات الرسم العثماني الصغيرة لا تظهر في كثير من خطوط الجوال
+    return {"kind": "quran", "ref": f'{verses[0].sura_name} {ref["sura"]}:{aya}', "text": " ".join(v.text_simple for v in verses),
+            "source": "Quranpedia.net (النسخة 2026-10-01، mushafs-1 بالرسم الإملائي)"}
+
+
+def _hadith_reference(entry_id: str, manual: dict) -> dict:
+    e = manual.get(entry_id) or {}
+    if not e or entry_status(e) != "complete":
+        return {"kind": "hadith", "ref": entry_id, "pending": True,
+                "note": "مدخل الملف اليدوي ناقص؛ لا يُعرض نص ولا حكم حتى يكتمل من الدرر السنية أو المكتبة الشاملة."}
+    out = {"kind": "hadith", "ref": entry_id, "pending": False, "entry_kind": e["kind"], "link": e.get("link")}
+    if e["kind"] == "found":
+        out.update(text=e["text"], source=e["source"], grade=e["grade"], grade_by=e["grade_by"])
+    elif e["kind"] == "not_found":
+        out.update(query=e["query"], searched_in=e["searched_in"])
+    else:
+        out.update(source=e["source"], max_number=e["max_number"])
+    return out
+
+
+def case_records(f: dict) -> dict:
+    """بيانات صفحة تفصيل الحالة: من testsets/ والبيانات المعتمدة فقط، بلا أي نتيجة (النتائج من web/data/cases/ وحدها)."""
+    from miyar.hadith_match import pending_entries_for_case
+    from miyar.judge import CATEGORIES
+    from miyar.publish import MASK_WHILE_PENDING, MASKED_TEXT
+    from miyar.quran_match import QuranIndex
+
+    index = QuranIndex.load()
+    manual_doc = load_manual()
+    manual = {e["id"]: e for e in manual_doc["entries"]}
+    check_desc, level_desc = {}, {}
+    for p in TESTSETS:
+        doc = json.loads(p.read_text(encoding="utf-8"))
+        check_desc.update(doc.get("checks", {}))
+        level_desc.update(doc.get("levels", {}))
+    cases = []
+    for c in f["cases"]:
+        masked = c["id"] in MASK_WHILE_PENDING and bool(pending_entries_for_case(c["id"], manual_doc))
+        refs = []
+        if c.get("misquote"):
+            refs.append(_quran_reference(c["misquote"]["correct_ref"], index))
+        elif c.get("risk_type") in ("wrong_reference",):
+            refs += [_quran_reference(r, index) for r in c.get("reference_hints", [])]
+        if (c.get("data_check") or {}).get("manual_ref"):
+            refs.append(_hadith_reference(c["data_check"]["manual_ref"], manual))
+        cases.append({
+            "id": c["id"], "testset": "official_v0" if c["id"].startswith("OFF-") else "extended_v1",
+            "level": c["level"], "level_behavior": level_desc.get(c["level"], ""),
+            "type": TYPE_LABELS.get(c.get("risk_type"), c.get("risk_type")),
+            "handling": HANDLING_LABELS.get(c.get("handling"), c.get("handling")),
+            "critical": bool(c.get("critical")),
+            "prompt": None if masked else c["prompt"], "prompt_masked": masked,
+            "trap": bool({c.get("risk_type"), c.get("category"), (c.get("data_check") or {}).get("type")} & TRAP_TYPES),
+            "injected_context": c.get("injected_context"),
+            "expected_behavior": c["expected_behavior"],
+            "checks": [{"name": k, "description": check_desc.get(k, "")} for k in c.get("checks", [])],
+            "review": {"status": c.get("review_status"), "role": c.get("reviewer_role")},
+            "references": [r for r in refs if r],
+        })
+    return {
+        "schema_version": 1,
+        "note": "حالات الاختبار كما في testsets/، والنص الصحيح من البيانات المعتمدة؛ لا نتائج هنا.",
+        "trap_warning": TRAP_WARNING, "masked_text": MASKED_TEXT,
+        "specialist_reviews": f["review"]["approved"]["specialist"],
+        "citation_status_labels": CITATION_STATUS_LABELS, "categories": dict(CATEGORIES),
+        "cases": cases,
+    }
+
+
+CASE_PAGE = """
+<h1>تفصيل الحالة</h1>
+<p class="lead">السؤال كما يُطرح على المساعد، والسلوك المتوقع، وما سجّله التشغيل الرسمي لهذه الحالة إن وُجد.
+كل نص شرعي هنا منقول من البيانات المعتمدة، وكل حكم من سجل رسمي.</p>
+<p class="back"><a href="cases.html">← كل الحالات</a> · <a href="results.html">النتائج والمقارنة</a></p>
+<div id="case" aria-live="polite">
+  <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
+</div>
+<noscript><div class="notice empty"><strong>تحتاج هذه الصفحة إلى JavaScript لقراءة بيانات الحالة.</strong></div></noscript>
 """
 
 
@@ -911,6 +1008,7 @@ def pages(f: dict) -> dict:
         "status.html": ("الحالة — مِعيار", status(f), ""),
         "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f), ""),
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
+        "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
     }
 
 
@@ -926,13 +1024,19 @@ def render() -> dict[str, str]:
     f = facts()
     card = status_card(f)
     return {
-        name: LAYOUT.format(title=title, body=page_head(body.strip("\n")), head_extra=head_extra, nav=nav_html(name),
+        name: LAYOUT.format(title=title, body=page_head(body.strip("\n")), head_extra=head_extra,
+                            nav=nav_html("cases.html" if name == "case.html" else name),
                             quran_version=f["quran_version"], repo=REPO, blob=BLOB, status_card=card, brand_mark=BRAND_MARK)
         for name, (title, body, head_extra) in pages(f).items()
     }
 
 
+def render_case_data() -> str:
+    return json.dumps(case_records(facts()), ensure_ascii=False, indent=2) + "\n"
+
+
 def build() -> None:
+    CASES_JSON.write_text(render_case_data(), encoding="utf-8")
     rendered = render()
     for name, page in rendered.items():
         (WEB / name).write_text(page, encoding="utf-8")
