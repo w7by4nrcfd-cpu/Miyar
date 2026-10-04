@@ -89,11 +89,11 @@ def test_collection_names_match_whole_words():
 
 # ---------- الملف اليدوي الحقيقي (قراءة فقط) ----------
 def test_real_manual_entries_linked_to_cases():
-    # كل حالة مرتبطة بمدخل مكتمل تجد مدخلها من نص سؤالها؛ والمدخلان الناقصان يحيلان حالتيهما
+    # كل حالة مرتبطة بمدخل مكتمل تجد مدخلها من نص سؤالها؛ والمدخل الناقص (H-009) يحيل حالته
     for e in MANUAL["entries"]:
         for cid in e["case_ids"]:
             assert cid in CASES
-    assert hadith_match.pending_entries_for_case("EXT-028", MANUAL) == ["H-004"]
+    assert hadith_match.pending_entries_for_case("EXT-028", MANUAL) == []  # H-004 اكتمل (2026-10-04)
     assert hadith_match.pending_entries_for_case("EXT-042", MANUAL) == ["H-009"]
     assert hadith_match.pending_entries_for_case("OFF-06", MANUAL) == []
 

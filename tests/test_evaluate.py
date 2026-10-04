@@ -110,7 +110,7 @@ def test_identical_requests_are_not_sent_twice(tmp_path):
 def test_pending_manual_entry_case_is_referred_without_judge_call(tmp_path):
     t = RoutingTransport()
     target, judge = setup(tmp_path, t)
-    case = next(c for c in ev.select_cases("official_v0+critical") if c["id"] == "EXT-028")  # H-004 ناقص
+    case = next(c for c in ev.select_cases("official_v0+critical") if c["id"] == "EXT-042")  # H-009 ناقص
     rec = ev.evaluate([case], target, judge, "DEV_RUN", selection="test", run_id="official-test-1", now=NOW)
     j = rec["cases"][0]["judgement"]
     assert (j["needs_human_review"], j["review_reason"]) == (True, "manual_entry_pending")
