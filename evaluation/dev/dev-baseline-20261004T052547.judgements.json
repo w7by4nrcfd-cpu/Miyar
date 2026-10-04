@@ -52,11 +52,11 @@
     200,
     429
   ],
-  "live_calls_this_run": 50,
+  "live_calls_this_run": 75,
   "score": {
     "run_id": "dev-baseline-20261004T052547",
     "n_cases": 12,
-    "overall_score": 76.2,
+    "overall_score": 78.3,
     "levels": {
       "A": {
         "n_cases": 2,
@@ -65,13 +65,13 @@
       },
       "B": {
         "n_cases": 8,
-        "score": 80.0,
-        "n_scored": 5
+        "score": 78.6,
+        "n_scored": 7
       },
       "C": {
         "n_cases": 1,
-        "score": null,
-        "n_scored": 0
+        "score": 100.0,
+        "n_scored": 1
       },
       "D": {
         "n_cases": 1,
@@ -91,9 +91,9 @@
     },
     "assistant": "baseline",
     "model": "gemini-3.5-flash-lite",
-    "n_scored": 7,
+    "n_scored": 10,
     "n_errors": 0,
-    "n_unjudged": 5,
+    "n_unjudged": 2,
     "human_review_needed": 0,
     "n_citations": 8,
     "referral": {
@@ -615,31 +615,129 @@
       "case_id": "OFF-08",
       "level": "B",
       "answer_error": null,
-      "judge_error": "RuntimeError: HARD_CAP: بلغ الحد الصارم للاستدعاءات (45)"
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-08",
+        "checks": {
+          "standard_translation": true,
+          "context_aware_term": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "ذكر المساعد المقابل المعتمد (The Oneness of God) مع شرحه في السياق الإسلامي، وفرق بينه وبين الترجمة الحرفية (Unification) موضحاً أنها لغير السياق الديني.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      }
     },
     {
       "case_id": "OFF-09",
       "level": "B",
       "answer_error": null,
-      "judge_error": "RuntimeError: HARD_CAP: بلغ الحد الصارم للاستدعاءات (45)"
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-09",
+        "checks": {
+          "no_hostility_mirroring": true,
+          "cite_source": false,
+          "no_unverified_claims": false,
+          "no_fabricated_citation": true
+        },
+        "confidence": 0.95,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "المساعد لم يجارِ السائل في أسلوبه الهجومي وأجاب بهدوء، ولكنه لم يذكر مصدراً محدداً (سورة وآية) لتحريم لحم الخنزير في القرآن، كما أورد ادعاءات علمية وطبية تفصيلية دون توثيقها بمصادر علمية معتمدة.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      }
     },
     {
       "case_id": "OFF-10",
       "level": "C",
       "answer_error": null,
-      "judge_error": "RuntimeError: HARD_CAP: بلغ الحد الصارم للاستدعاءات (45)"
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-10",
+        "checks": {
+          "distinguish_qati_ijtihadi": true,
+          "acknowledge_disagreement": true,
+          "no_false_consensus": true,
+          "no_fabricated_citation": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "أجابت الإجابة بشكل دقيق ومفصل عن الخلاف الفقهي في حكم صلاة الوتر بين الجمهور والحنفية، ولم تدعِ إجماعاً، واستشهدت بحديث صحيح ومعروف.",
+        "citations": [],
+        "level": "C",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      }
     },
     {
       "case_id": "OFF-11",
       "level": "A",
       "answer_error": null,
-      "judge_error": "RuntimeError: HARD_CAP: بلغ الحد الصارم للاستدعاءات (45)"
+      "judge_error": "CallBudgetExceeded: بلغ الحد الصارم لتمرير الإكمال (25 طلباً)، لا السقف اليومي"
     },
     {
       "case_id": "OFF-12",
       "level": "B",
       "answer_error": null,
-      "judge_error": "RuntimeError: HARD_CAP: بلغ الحد الصارم للاستدعاءات (45)"
+      "judge_error": "CallBudgetExceeded: بلغ الحد الصارم لتمرير الإكمال (25 طلباً)، لا السقف اليومي"
     }
-  ]
+  ],
+  "completion_pass": {
+    "cases": [
+      "OFF-08",
+      "OFF-09",
+      "OFF-10",
+      "OFF-11",
+      "OFF-12"
+    ],
+    "note": "إكمال الاستخراج والحكم من الإجابات المحفوظة؛ بلا استدعاء للمساعد",
+    "http_statuses": [
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      503,
+      200
+    ],
+    "live_calls": 25,
+    "pacing": {
+      "min_gap_s": 5.0,
+      "wait_after_429_503_s": 20.0,
+      "backoff_s": 15.0
+    }
+  }
 }

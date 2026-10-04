@@ -2,7 +2,7 @@
   "run_label": "DEV_RUN",
   "runs": {
     "(بلا معرّف)": {
-      "count": 11,
+      "count": 29,
       "events": [
         {
           "at": "2026-10-04T02:26:44+00:00",
@@ -58,6 +58,96 @@
           "at": "2026-10-04T02:33:26+00:00",
           "model": "gemini-3.8-flash",
           "retry_after": 77193.0
+        },
+        {
+          "at": "2026-10-04T02:41:15+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76724.0
+        },
+        {
+          "at": "2026-10-04T02:42:15+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76664.0
+        },
+        {
+          "at": "2026-10-04T02:43:16+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76603.0
+        },
+        {
+          "at": "2026-10-04T02:43:42+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76577.0
+        },
+        {
+          "at": "2026-10-04T02:44:43+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76516.0
+        },
+        {
+          "at": "2026-10-04T02:45:43+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76456.0
+        },
+        {
+          "at": "2026-10-04T02:46:11+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76428.0
+        },
+        {
+          "at": "2026-10-04T02:47:12+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76367.0
+        },
+        {
+          "at": "2026-10-04T02:48:12+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76307.0
+        },
+        {
+          "at": "2026-10-04T02:48:39+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76280.0
+        },
+        {
+          "at": "2026-10-04T02:49:39+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76220.0
+        },
+        {
+          "at": "2026-10-04T02:50:40+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76159.0
+        },
+        {
+          "at": "2026-10-04T02:51:07+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76132.0
+        },
+        {
+          "at": "2026-10-04T02:52:08+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76071.0
+        },
+        {
+          "at": "2026-10-04T02:53:08+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 76011.0
+        },
+        {
+          "at": "2026-10-04T02:53:35+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 75984.0
+        },
+        {
+          "at": "2026-10-04T02:54:35+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 75924.0
+        },
+        {
+          "at": "2026-10-04T02:55:36+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 75863.0
         }
       ]
     }
