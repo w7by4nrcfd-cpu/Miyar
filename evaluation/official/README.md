@@ -18,6 +18,8 @@
    في `executed_at` و`n_cases` و`human_reviewed` (لكل نوع مراجعة).
 3. لا يُنقل إلى هنا أي سجل من تشغيلات التطوير، ولا يُعدَّل سجل رسمي بعد كتابته؛ أي إعادة تشغيل = سجل جديد بمعرّف جديد.
 4. لا مفاتيح ولا ترويسات طلبات في أي سجل.
-5. **للنشر:** لكل حالة حقل `judgement` اختياري بصيغة `miyar.publish.judgement_to_dict` (حكم السلوك والثقة وأحكام الإسناد).
+5. **الكاتب:** `python -m miyar.evaluate --label OFFICIAL_RUN --assistant baseline|rag --cases <الاختيار>` مع `MIYAR_RUN_ID` جديد.
+   يكتب السجل بالحقول أعلاه، ومعها لكل حالة `judgement` أو `judge_error`، و`commit` و`case_selection` و`judge_model` و`min_confidence`.
+6. **للنشر:** لكل حالة حقل `judgement` اختياري بصيغة `miyar.publish.judgement_to_dict` (حكم السلوك والثقة وأحكام الإسناد).
    الدرجة لا تُكتب في السجل يدوياً؛ يحسبها `python scripts/publish_results.py` من هذه الأحكام بـ `scoring.score_run`،
    ويكتب `web/data/results.json` و`web/data/cases/<id>.json`، ويرفض أي سجل يخالف القواعد أعلاه أو يحمل وسماً غير وسم التشغيل الرسمي.
