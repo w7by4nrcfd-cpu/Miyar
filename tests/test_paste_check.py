@@ -230,12 +230,12 @@ def test_one_letter_deletion_fuzz_over_all_entries_never_supported():
             e = entries[r["near"]["entry_id"]]
             assert r["near"]["similarity"] >= pc.NEAR_MIN_RATIO and len(r["near"]["q_word"]) >= 3
             assert r["near"]["entry_word"] in pc.normalize(e["text"]).split()
-        elif r["entry_id"]:
-            literal += 1  # حذف الحرف الأول أو الأخير يبقى ضمن النص حرفياً (احتواء حرفي قائم في hadith_match)
         else:
+            # لا مطابقة حرفية أبداً: حذف الحرف الأول أو الأخير لم يعد «احتواءً حرفياً» (حدود الكلمات في hadith_match)
+            assert not r["entry_id"], f"عُدّ مطابقاً حرفياً: {text}"
             rest += 1
-            assert r["near"] is None
-    assert near > 150 and near + literal + rest > 200
+            assert r["near"] is None and r["reason"] == "no_manual_entry"
+    assert literal == 0 and near > 200 and near + rest == len(pc.near_fuzz_texts(manual)) == 238
 
 
 def test_word_diff_and_quran_diff():

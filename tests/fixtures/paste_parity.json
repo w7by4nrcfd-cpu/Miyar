@@ -1995,11 +1995,11 @@
   {
    "text": "قال رسول الله ﷺ: «طلبوا العلم ولو بالصين»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-001",
+   "q_word": "طلبوا",
+   "entry_word": "اطلبوا",
+   "similarity": 0.978
   },
   {
    "text": "قال رسول الله ﷺ: «البوا العلم ولو بالصين»",
@@ -2166,16 +2166,16 @@
   {
    "text": "قال رسول الله ﷺ: «اطلبوا العلم ولو بالصي»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-001",
+   "q_word": "بالصي",
+   "entry_word": "بالصين",
+   "similarity": 0.978
   },
   {
    "text": "قال رسول الله ﷺ: «ب الوطن من الايمان»",
    "status": "needs_review",
-   "reason": "location_not_stated",
+   "reason": "no_manual_entry",
    "near_id": null,
    "q_word": null,
    "entry_word": null,
@@ -2310,20 +2310,20 @@
   {
    "text": "قال رسول الله ﷺ: «حب الوطن من الايما»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-002",
+   "q_word": "الايما",
+   "entry_word": "الايمان",
+   "similarity": 0.973
   },
   {
    "text": "قال رسول الله ﷺ: «ختلاف امتي رحمه»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-003",
+   "q_word": "ختلاف",
+   "entry_word": "اختلاف",
+   "similarity": 0.968
   },
   {
    "text": "قال رسول الله ﷺ: «اتلاف امتي رحمه»",
@@ -2436,20 +2436,20 @@
   {
    "text": "قال رسول الله ﷺ: «اختلاف امتي رحم»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-003",
+   "q_word": "رحم",
+   "entry_word": "رحمه",
+   "similarity": 0.968
   },
   {
    "text": "قال رسول الله ﷺ: «عمل لدنياك كانك تعيش ابدا واعمل لاخرتك كانك تموت غدا»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-004",
+   "q_word": "عمل",
+   "entry_word": "اعمل",
+   "similarity": 0.99
   },
   {
    "text": "قال رسول الله ﷺ: «امل لدنياك كانك تعيش ابدا واعمل لاخرتك كانك تموت غدا»",
@@ -2832,7 +2832,7 @@
   {
    "text": "قال رسول الله ﷺ: «اعمل لدنياك كانك تعيش ابدا واعمل لاخرتك كانك تموت غد»",
    "status": "needs_review",
-   "reason": "location_not_stated",
+   "reason": "no_manual_entry",
    "near_id": null,
    "q_word": null,
    "entry_word": null,
@@ -2841,11 +2841,11 @@
   {
    "text": "قال رسول الله ﷺ: «لايمان معرفه بالقلب وقول باللسان وعمل بالاركان»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-005",
+   "q_word": "لايمان",
+   "entry_word": "الايمان",
+   "similarity": 0.989
   },
   {
    "text": "قال رسول الله ﷺ: «اايمان معرفه بالقلب وقول باللسان وعمل بالاركان»",
@@ -3201,16 +3201,16 @@
   {
    "text": "قال رسول الله ﷺ: «الايمان معرفه بالقلب وقول باللسان وعمل بالاركا»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-005",
+   "q_word": "بالاركا",
+   "entry_word": "بالاركان",
+   "similarity": 0.989
   },
   {
    "text": "قال رسول الله ﷺ: «نه سياتيكم اقوام من بعدي يطلبون العلم فرحبوا»",
    "status": "needs_review",
-   "reason": "location_not_stated",
+   "reason": "no_manual_entry",
    "near_id": null,
    "q_word": null,
    "entry_word": null,
@@ -3543,16 +3543,16 @@
   {
    "text": "قال رسول الله ﷺ: «انه سياتيكم اقوام من بعدي يطلبون العلم فرحبو»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-006",
+   "q_word": "فرحبو",
+   "entry_word": "فرحبوا",
+   "similarity": 0.989
   },
   {
    "text": "قال رسول الله ﷺ: «ن صلي بين المغرب والعشاء عشرين ركعه بني الله له»",
    "status": "needs_review",
-   "reason": "location_not_stated",
+   "reason": "no_manual_entry",
    "near_id": null,
    "q_word": null,
    "entry_word": null,
@@ -3894,7 +3894,7 @@
   {
    "text": "قال رسول الله ﷺ: «من صلي بين المغرب والعشاء عشرين ركعه بني الله ل»",
    "status": "needs_review",
-   "reason": "location_not_stated",
+   "reason": "no_manual_entry",
    "near_id": null,
    "q_word": null,
    "entry_word": null,
@@ -3903,11 +3903,11 @@
   {
    "text": "قال رسول الله ﷺ: «كذب الناس الصباغون والصواغون»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-008",
+   "q_word": "كذب",
+   "entry_word": "اكذب",
+   "similarity": 0.982
   },
   {
    "text": "قال رسول الله ﷺ: «اذب الناس الصباغون والصواغون»",
@@ -4128,11 +4128,11 @@
   {
    "text": "قال رسول الله ﷺ: «اكذب الناس الصباغون والصواغو»",
    "status": "needs_review",
-   "reason": "location_not_stated",
-   "near_id": null,
-   "q_word": null,
-   "entry_word": null,
-   "similarity": null
+   "reason": "near_match_not_literal",
+   "near_id": "H-008",
+   "q_word": "والصواغو",
+   "entry_word": "والصواغون",
+   "similarity": 0.982
   }
  ]
 }

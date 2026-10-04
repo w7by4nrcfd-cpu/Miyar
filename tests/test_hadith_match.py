@@ -7,8 +7,10 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from miyar import hadith_match
-from miyar.hadith_manual import load_manual
+from miyar.hadith_manual import entry_status, load_manual
 from miyar.judge import Citation, judge_behavior, judge_citation, judge_citations
 from miyar.llm import client_from_env
 from miyar.quran_match import NEEDS_REVIEW, SUPPORTED, WRONG_OR_MISSING
@@ -186,3 +188,55 @@ def test_quran_cite_line_is_unchanged():
     from miyar.judge import CitationJudgement, _cite_line
     j = CitationJudgement(Citation("quran", "نص FIXTURE", "البقرة: 1"), NEEDS_REVIEW, "r")
     assert _cite_line(j) == "- «نص FIXTURE» (البقرة: 1): needs_review / r"
+
+
+# ---------- الاحتواء بحدود الكلمات لا الأحرف ----------
+H1 = "اطلبوا العلم ولو بالصين"
+
+
+@pytest.mark.parametrize("quote", [
+    "طلبوا العلم ولو بالصين",  # حذف الحرف الأول من الكلمة الأولى
+    "اطلبوا العلم ولو بالصي",  # حذف الحرف الأخير من الكلمة الأخيرة
+    "اطلبوا العلم ولو بالص",  # بتر أكثر من حرف
+    "ولو بالصين اطلبوا العلم",  # ترتيب مختلف
+])
+def test_cut_letters_at_the_edges_are_not_literal_matches(quote):
+    assert hadith_match.find_entries(quote, MANUAL) == []
+    assert hadith_match.verify(quote, None, MANUAL).reason == "no_manual_entry"
+
+
+@pytest.mark.parametrize("quote", [
+    H1,
+    "العلم ولو بالصين",  # مقطع من آخر النص بحدود كلمات
+    "اطلبوا العلم ولو",  # مقطع من أوله بحدود كلمات
+    "قال النبي اطلبوا العلم ولو بالصين رواه",  # النص داخل نص أطول بحدود كلمات
+])
+def test_whole_word_sub_quotes_and_longer_quotes_still_match(quote):
+    assert [e["id"] for e in hadith_match.find_entries(quote, MANUAL)] == ["H-001"]
+
+
+def test_edge_cut_with_a_correct_location_is_not_supported():
+    """الثغرة المغلقة: بتر حرف الطرف مع موضع يطابق مصدر المدخل كان يصير «مؤيَّداً»."""
+    doc = {"entries": [_found("F-T1", "اطلبوا العلم ولو بالصين", "سنن ابن ماجه 248")]}
+    assert hadith_match.verify(H1, "رواه ابن ماجه 248", doc).status == SUPPORTED  # سليم
+    cut = hadith_match.verify("طلبوا العلم ولو بالصين", "رواه ابن ماجه 248", doc)
+    assert (cut.status, cut.reason) == (NEEDS_REVIEW, "no_manual_entry")
+    cut = hadith_match.verify("اطلبوا العلم ولو بالصي", "رواه ابن ماجه 248", doc)
+    assert (cut.status, cut.reason) == (NEEDS_REVIEW, "no_manual_entry")
+
+
+def test_all_one_letter_deletions_at_word_edges_over_all_real_entries_are_not_literal():
+    """كل حذف لحرف أول أو أخير من أي كلمة في أي مدخل found حقيقي: لا مطابقة حرفية (والمجموع الكلي 238 في test_paste_check)."""
+    from miyar.normalize import normalize
+
+    n = 0
+    for e in MANUAL["entries"]:
+        if e["kind"] != "found" or entry_status(e) != "complete":
+            continue
+        words = normalize(e["text"]).split()
+        for k, w in enumerate(words):
+            for mutated in (w[1:], w[:-1]):
+                q = " ".join(words[:k] + [mutated] + words[k + 1:])
+                n += 1
+                assert hadith_match.find_entries(q, MANUAL) == [], q
+    assert n >= 100
