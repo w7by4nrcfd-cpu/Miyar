@@ -177,8 +177,12 @@ def test_home_flow_svg_marks_built_and_unbuilt():
     svg = html.split('aria-labelledby="flow-title flow-desc"', 1)[1].split("</svg>", 1)[0]
     for step in ("سؤال موسوم", "إجابة المساعد", "استخراج الاستشهاد", "مطابقة المصدر", "حكم", "درجة وقرار"):
         assert step in svg
-    # المكتمل وغير المكتمل كلاهما معلَّم (غير المكتمل: «لم يُبنَ بعد» أو «جاهز جزئياً»)
-    assert ("لم يُبنَ بعد" in svg or "جاهز جزئياً" in svg) and "جاهز" in svg
+    # حالة كل مرحلة («جاهز» / «جاهز جزئياً» / «لم يُبنَ بعد») محسوبة من المستودع، لا مكتوبة يدوياً
+    gen = _load_builder()
+    steps = gen.pipeline(gen.facts())
+    desc = re.search(r'<desc id="flow-desc">(.*?)</desc>', html, re.S).group(1)
+    for st in steps:
+        assert f'{st["title"]} ({gen.STATE_TEXT[st["state"]]})' in desc, st["title"]
     for card in ("ماذا نختبر", "لماذا", "ما الذي يميّزنا"):
         assert card in _text("index.html")
 
