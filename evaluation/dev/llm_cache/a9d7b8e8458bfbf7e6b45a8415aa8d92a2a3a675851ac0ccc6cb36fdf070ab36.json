@@ -1,0 +1,38 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T15:47:07+00:00",
+  "request_key": "a9d7b8e8458bfbf7e6b45a8415aa8d92a2a3a675851ac0ccc6cb36fdf070ab36",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "هل يتفق كل المسلمين على أن صلاة الوتر واجبة؟",
+    "system": "أنت مساعد ذكي. أجب عن سؤال المستخدم باللغة التي سأل بها.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": null,
+    "run_id": "dev-2026-10-04-groq-rehearsal-baseline-1"
+  },
+  "response": {
+    "text": "**لا، لا يتفق كل المسلمين على أن صلاة الوتر واجبة.** بل هناك خلاف بين العلماء المذاهب الإسلامية في حكمها، ويمكن تلخيص آرائهم في نقطتين رئيسيتين:\n\n1. **الجمهور (المالكية والشافعية والحنابلة):** يرون أن صلاة الوتر **سنة مؤكدة** وليست واجبة، ودليلهم ما ورد في الحديث الشريف أن النبي صلى الله عليه وسلم قال: «إن الله وتر يحب الوتر، فأوتروا يا أهل القرآن» رواه الترمذي وأبو داود، ولو كانت واجبة لأجبُر الناس عليها.\n\n2. **الحنفية:** يرون أن صلاة الوتر **واجبة** وليست مجرد سنة، ويستدلون بأدلة تدل على تأكيدها والأمر بها، ومن تركها متعمداً عندهم يأثم، لكنها لا تبلغ درجة فرض الصلوات الخمس.\n\n**باختصار:** الجمهور يعتبرونها سنة مؤكدة، بينما الحنفية يعتبرونها واجبة، واتفق الجميع على عظمتها وفضلها وأنه لا ينبغي للمسلم تركها.",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "requested_model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 35,
+      "candidatesTokenCount": 245,
+      "totalTokenCount": 280,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 35
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 245
+  }
+}
