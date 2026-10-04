@@ -111,7 +111,7 @@ def test_page_states_its_limits_and_is_secondary():
                    "«يحتاج تحقق»", "لا يُرسل النص إلى أي خادم", "Quranpedia.net"):
         assert needle in page, needle
     assert 'src="assets/check.js"' in page
-    assert ("check.html", "تحقق من نص") == b.NAV[-1]  # آخر القائمة: ليست الميزة الرئيسية
+    assert ("check.html", "تحقق من نص") == b.NAV[0]  # أول القائمة (بقرار صاحب المشروع)، والصفحة نفسها تبقى معنونة «وضع ثانوي»
 
 
 def test_browser_code_has_no_inner_html_or_external_fetch():
@@ -119,3 +119,25 @@ def test_browser_code_has_no_inner_html_or_external_fetch():
         src = (WEB / "assets" / name).read_text(encoding="utf-8")
         assert ".innerHTML" not in src and "insertAdjacentHTML" not in src
         assert "http://" not in src and "https://" not in src
+
+
+def test_check_link_is_first_in_nav_on_every_page_and_home_has_try_button():
+    pages = sorted(WEB.glob("*.html"))
+    assert len(pages) >= 9
+    for page in pages:
+        html = page.read_text(encoding="utf-8")
+        nav = html[html.index('<nav class="main"'):html.index("</nav>")]
+        assert nav.index('href="check.html"') < nav.index('href="index.html"'), page.name
+        assert nav.count("<li>") == len(b.NAV), page.name
+    home = (WEB / "index.html").read_text(encoding="utf-8")
+    assert '<a class="btn btn-try" href="check.html">جرّب مِعيار بنفسك</a>' in home
+    hero = home[home.index('<header class="hero">'):home.index("</header>")]
+    assert hero.index("btn-try") < hero.index("<h1>"), "الزر قبل عنوان الصفحة في أعلاها"
+    assert "وضع ثانوي" in home and "ليس تقييماً لمساعد" in home  # الصدق عند باب الدخول نفسه
+    check = (WEB / "check.html").read_text(encoding="utf-8")
+    assert "وضع ثانوي" in check and "ليست تقييماً لمساعد" in check  # وسم الصفحة وحدودها باقيان
+
+
+def test_try_button_only_links_and_adds_no_external_resource():
+    home = (WEB / "index.html").read_text(encoding="utf-8")
+    assert "http://" not in home.replace("http://www.w3.org/2000/svg", "")

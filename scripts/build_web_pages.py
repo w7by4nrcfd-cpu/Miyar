@@ -33,6 +33,7 @@ REPO = "https://github.com/w7by4nrcfd-cpu/Miyar"
 BLOB = f"{REPO}/blob/main/"
 
 NAV = [
+    ("check.html", "تحقق من نص"),
     ("index.html", "الرئيسية"),
     ("levels.html", "مستويات المحتوى"),
     ("sources.html", "المصادر والمنهجية"),
@@ -40,7 +41,6 @@ NAV = [
     ("status.html", "الحالة"),
     ("transparency.html", "الشفافية والخصوصية"),
     ("results.html", "النتائج"),
-    ("check.html", "تحقق من نص"),
 ]
 
 DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026."
@@ -367,10 +367,14 @@ def home(f: dict) -> str:
 {pattern_svg()}
 <div class="hero-grid">
   <div class="hero-text">
+    <div class="try-box">
+      <a class="btn btn-try" href="check.html">جرّب مِعيار بنفسك</a>
+      <p class="muted small try-note">«جرّب» وضع ثانوي: يفحص آيات وأحاديث في نص تلصقه، داخل متصفحك، وليس تقييماً لمساعد.</p>
+    </div>
     <p class="eyebrow">المسار الرابع: أدوات المعرفة والتحقق</p>
     <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
     <p class="lead">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
-    <p class="hero-actions"><a class="btn" href="sources.html">المصادر والمنهجية</a><a class="btn ghost" href="cases.html">حالات الاختبار</a></p>
+    <p class="hero-actions"><a class="btn ghost" href="sources.html">المصادر والمنهجية</a><a class="btn ghost" href="cases.html">حالات الاختبار</a></p>
   </div>
   <figure class="flow">
     <figcaption>مسار العمل: حالة كل مرحلة محسوبة من كود المستودع</figcaption>

@@ -364,3 +364,9 @@ table.cits td { vertical-align: top; overflow-wrap: anywhere; }
 .ref-card.ref-neutral figcaption { color: var(--text); }
 .suggestions { display: grid; gap: var(--s1); }
 @media (max-width: 479px) { .check-card { padding: var(--s2); } }
+
+/* زر «جرّب مِعيار بنفسك» في أعلى الرئيسية */
+.btn-try { min-height: 56px; padding: 0 var(--s4); font-size: 1.1875rem; box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+.try-box { margin: 0 0 var(--s3); }
+.try-note { margin: var(--s1) 0 0; max-width: 46ch; }
+@media (max-width: 479px) { .try-box .btn-try { width: 100%; justify-content: center; box-sizing: border-box; } }
