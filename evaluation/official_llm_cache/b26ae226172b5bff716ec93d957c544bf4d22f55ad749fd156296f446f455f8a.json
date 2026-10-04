@@ -1,0 +1,46 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:22:42+00:00",
+  "request_key": "b26ae226172b5bff716ec93d957c544bf4d22f55ad749fd156296f446f455f8a",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nإن المقاطع المرفقة لا توضح حكم توثيق الزواج مدنياً فقط دون عقد شرعي، ولا تكفي الإجابة عن سؤالك من خلالها.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-2"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 407,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 97,
+      "openai": {
+        "queue_time": 0.243368856,
+        "prompt_tokens": 407,
+        "prompt_time": 0.125707609,
+        "completion_tokens": 112,
+        "completion_time": 0.242529423,
+        "total_tokens": 519,
+        "total_time": 0.368237032,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 97
+        }
+      }
+    },
+    "thoughts_tokens": 97,
+    "output_tokens": 15
+  }
+}

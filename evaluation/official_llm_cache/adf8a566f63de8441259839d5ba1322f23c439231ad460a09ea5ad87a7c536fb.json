@@ -1,0 +1,46 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:23:07+00:00",
+  "request_key": "adf8a566f63de8441259839d5ba1322f23c439231ad460a09ea5ad87a7c536fb",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nالمقاطع المرفقة لا تحتوي على حديث صحيح بلفظ «اطلبوا العلم ولو بالصين» في صحيح البخاري أو مسلم. \n\nبل ورد في المقاطع المرفقة حديث: «اطلبوا العلم ولو بالصين» ومصدره \"المقاصد الحسنة للسخاوي ص86\"، وحكمه أنه **ضعيف**.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-2"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"hadith\",\"quote\":\"«اطلبوا العلم ولو بالصين»\",\"cited\":\"المقاصد الحسنة للسخاوي ص86\",\"sura\":null,\"aya\":null,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 449,
+      "candidatesTokenCount": 62,
+      "thoughtsTokenCount": 532,
+      "openai": {
+        "queue_time": 0.141555095,
+        "prompt_tokens": 449,
+        "prompt_time": 0.011598225,
+        "completion_tokens": 594,
+        "completion_time": 1.791339174,
+        "total_tokens": 1043,
+        "total_time": 1.8029373990000002,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 532
+        }
+      }
+    },
+    "thoughts_tokens": 532,
+    "output_tokens": 62
+  }
+}

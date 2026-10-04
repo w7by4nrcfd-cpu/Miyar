@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:10:47+00:00",
+  "request_key": "89c119a134799d880bbea0e19c329fe696df60d8078915d32721e9f4107b7a38",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nThe short answer is **no, jihad does not simply mean \"holy war.\"** \n\nYour coworker is using a very narrow, and often politicized, definition of a word that has a much broader, deeper, and more nuanced meaning in Islamic theology and daily life. \n\nHere is a breakdown of what \"jihad\" actually means according to Islamic scholars, history, and linguistic roots:\n\n### 1. The Linguistic Meaning: \"Striving\" or \"Effort\"\nThe Arabic root of the word *jihad* (J-H-D) means **to strive, struggle, or exert effort**. It is linguistically related to words like *ijtihad* (intellectual effort/legal reasoning). Therefore, a \"mujahid\" is someone who strives or struggles for a noble cause.\n\n### 2. The Internal Struggle: Greater Jihad\nIn Islamic tradition, the most important form of jihad is known as **Al-Jihad Al-Akbar** (The Greater Jihad). This refers to the internal, spiritual struggle of every Muslim to overcome their own ego, temptations, laziness, anger, and selfish desires, and to live a moral and righteous life. \n* Examples include: struggling to be a better person, being patient in difficult times, studying, working hard to support one’s family, or resisting the temptation to do wrong.\n\n### 3. The External Struggle: Lesser Jihad\nWhat people usually translate as \"holy war\" falls under **Al-Jihad Al-Asghar** (The Lesser Jihad). This refers to physical struggle or combat. However, even within Islamic jurisprudence (Sharia), this has strict rules:\n* **Defense only:** Traditional Islamic law dictates that fighting is only permissible in self-defense, to protect the community from aggression, or to stop oppression. It cannot be used to force people to convert.\n* **Strict Rules of Engagement:** Even in times of war, Islamic law strictly forbids harming non-combatants, women, children, the elderly, monks, or even destroying property, crops, and livestock.\n* **Authority:** Historically, declaring military jihad could only be done by a legitimate political authority, not by individuals or rogue groups. (This is why terrorist groups misuse the concept to justify violence, while mainstream Muslims condemn them).\n\n### 4. Other Forms of Jihad\nStriving in the path of God takes many peaceful forms. Islamic texts mention several other types of jihad, including:\n* **Jihad of the Tongue:** Speaking the truth against injustice, promoting peace, and educating others about Islam.\n* **Jihad of the Pen:** Writing, scholarship, and intellectual contributions to society.\n* **Jihad of the Hand/Wealth:** Using one's resources, charity, and influence to help the poor, fight poverty, and build a better society.\n\n### Summary\nWhile the obligation to perform *jihad* (striving to do good and resist evil) applies to every Muslim, **it is primarily a spiritual and moral obligation**, not a military one. Equating jihad solely with \"holy war\" ignores the vast majority of how Muslims understand and practice the concept in their daily lives—which is about self-improvement, charity, and standing up for justice.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-baseline-1"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 1029,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 49,
+      "openai": {
+        "queue_time": 0.144037838,
+        "prompt_tokens": 1029,
+        "prompt_time": 0.090092627,
+        "completion_tokens": 64,
+        "completion_time": 0.131878115,
+        "total_tokens": 1093,
+        "total_time": 0.221970742,
+        "completion_tokens_details": {
+          "reasoning_tokens": 49
+        }
+      }
+    },
+    "thoughts_tokens": 49,
+    "output_tokens": 15
+  }
+}

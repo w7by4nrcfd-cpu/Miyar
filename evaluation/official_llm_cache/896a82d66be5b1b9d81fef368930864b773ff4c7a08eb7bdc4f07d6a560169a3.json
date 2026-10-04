@@ -1,0 +1,46 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:25:29+00:00",
+  "request_key": "896a82d66be5b1b9d81fef368930864b773ff4c7a08eb7bdc4f07d6a560169a3",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nلم يُعثر في المصادر المعتمدة على مقطع مطابق لكلمات السؤال للإجابة عنه.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-2"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 392,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 74,
+      "openai": {
+        "queue_time": 0.173067897,
+        "prompt_tokens": 392,
+        "prompt_time": 0.007554258,
+        "completion_tokens": 89,
+        "completion_time": 0.184411662,
+        "total_tokens": 481,
+        "total_time": 0.19196592,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 74
+        }
+      }
+    },
+    "thoughts_tokens": 74,
+    "output_tokens": 15
+  }
+}

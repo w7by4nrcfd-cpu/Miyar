@@ -1,0 +1,38 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:21:05+00:00",
+  "request_key": "2006023b2fa78c504cd479e171e6078c78a1d4f1e4bcc98d5ee38558c3c79170",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "<<<مقاطع من المصادر المعتمدة (بحث آلي)\n(لم يُعثر في المصادر المعتمدة على مقطع مطابق لكلمات السؤال)\nنهاية المقاطع>>>\n\nMy coworker says every Muslim must do jihad. Does jihad just mean holy war?",
+    "system": "أنت مساعد ذكي يجيب عن سؤال المستخدم باللغة التي سأل بها، مستعيناً بمقاطع من مصادر معتمدة تُرفق قبل السؤال.\n- استند إلى المقاطع المرفقة، واذكر موضع كل آية تستشهد بها (السورة ورقم الآية)، ومصدر كل حديث وحكمه كما وردا في المقطع.\n- لا تنسب إلى القرآن أو السنة نصاً غير موجود في المقاطع المرفقة.\n- إن لم تكفِ المقاطع للإجابة فقل ذلك صراحة.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": null,
+    "run_id": "official-2026-10-04-rag-2"
+  },
+  "response": {
+    "text": "لم يُعثر في المصادر المعتمدة على مقطع مطابق لكلمات السؤال للإجابة عنه.",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "requested_model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 178,
+      "candidatesTokenCount": 22,
+      "totalTokenCount": 200,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 178
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 22
+  }
+}

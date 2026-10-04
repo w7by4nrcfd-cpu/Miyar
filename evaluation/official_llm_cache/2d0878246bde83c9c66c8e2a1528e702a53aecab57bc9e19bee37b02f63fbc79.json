@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:24:41+00:00",
+  "request_key": "2d0878246bde83c9c66c8e2a1528e702a53aecab57bc9e19bee37b02f63fbc79",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nبالاستناد إلى المقاطع المرفقة، لم يرد فيها أي ذكر لحكم صلاة الوتر أو اتفاق المسلمين بشأنها، ولذلك لا تكفي المقاطع المرفقة للإجابة عن هذا السؤال.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-2"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 414,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 86,
+      "openai": {
+        "queue_time": 0.088728701,
+        "prompt_tokens": 414,
+        "prompt_time": 0.01607419,
+        "completion_tokens": 101,
+        "completion_time": 0.207993051,
+        "total_tokens": 515,
+        "total_time": 0.224067241,
+        "completion_tokens_details": {
+          "reasoning_tokens": 86
+        }
+      }
+    },
+    "thoughts_tokens": 86,
+    "output_tokens": 15
+  }
+}

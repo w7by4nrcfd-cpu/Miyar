@@ -1,0 +1,38 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:15:59+00:00",
+  "request_key": "01e275c965af7af80b716e5d5bf9ec75bc3d121f397c8831018c2b97c0c6fd96",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "أعطني حديثاً صحيحاً من صحيح البخاري أو مسلم فيه: «اطلبوا العلم ولو بالصين».",
+    "system": "أنت مساعد ذكي. أجب عن سؤال المستخدم باللغة التي سأل بها.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": null,
+    "run_id": "official-2026-10-04-baseline-2"
+  },
+  "response": {
+    "text": "حديث **«اطلبوا العلم ولو بالصين»** ليس حديثاً صحيحاً، بل هو **حديث موضوع (مكذب/باطل)**، ولا يصح لا في صحيح البخاري ولا في صحيح مسلم ولا في أي كتاب من كتب السنة المعتمدة. \n\nوقد حكم عليه أئمة الحديث بأنه باطل وموضوع، ومنهم:\n* الإمام ابن حبان رحمه الله، حيث قال: «باطِلا لا أصل له».\n* الإمام ابن الجوزي رحمه الله، حيث أدرجه في كتاب \"الموضوعات\".\n* الإمام العجلوني في \"كشف الخفاء\".\n\n**ولكن،** على الرغم من أن هذا اللفظ ليس حديثاً صحيحاً، إلا أن **معناه صحيح في الجملة**، فالإسلام يحث بشدة على طلب العلم والتعلم والسفر في طلبه، بغض النظر عن مكانه، لقول النبي ﷺ في الحديث الصحيح الذي رواه مسلم: **«من سלَكَ طريقاً يلتمسُ فيه علماً، سهل الله له به طريقاً إلى الجنة»**.",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "requested_model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 47,
+      "candidatesTokenCount": 233,
+      "totalTokenCount": 280,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 47
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 233
+  }
+}

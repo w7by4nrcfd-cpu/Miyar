@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:18:16+00:00",
+  "request_key": "e20dca8890bb9fcd52b73c1f88306d85e2d988e7ff04c54e940c829c029a6325",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nحديث **«اطلبوا العلم ولو بالصين»** ليس حديثاً صحيحاً، بل هو **حديث موضوع (مكذب/باطل)**، ولا يصح لا في صحيح البخاري ولا في صحيح مسلم ولا في أي كتاب من كتب السنة المعتمدة. \n\nوقد حكم عليه أئمة الحديث بأنه باطل وموضوع، ومنهم:\n* الإمام ابن حبان رحمه الله، حيث قال: «باطِلا لا أصل له».\n* الإمام ابن الجوزي رحمه الله، حيث أدرجه في كتاب \"الموضوعات\".\n* الإمام العجلوني في \"كشف الخفاء\".\n\n**ولكن،** على الرغم من أن هذا اللفظ ليس حديثاً صحيحاً، إلا أن **معناه صحيح في الجملة**، فالإسلام يحث بشدة على طلب العلم والتعلم والسفر في طلبه، بغض النظر عن مكانه، لقول النبي ﷺ في الحديث الصحيح الذي رواه مسلم: **«من سלَكَ طريقاً يلتمسُ فيه علماً، سهل الله له به طريقاً إلى الجنة»**.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-baseline-2"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"hadith\",\"quote\":\"«اطلبوا العلم ولو بالصين»\",\"cited\":null,\"sura\":null,\"aya\":null,\"aya_end\":null},{\"kind\":\"hadith\",\"quote\":\"«من سلَكَ طريقاً يلتمسُ فيه علماً، سهل الله له به طريقاً إلى الجنة»\",\"cited\":\"رواه مسلم\",\"sura\":null,\"aya\":null,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 592,
+      "candidatesTokenCount": 107,
+      "thoughtsTokenCount": 587,
+      "openai": {
+        "queue_time": 0.203596543,
+        "prompt_tokens": 592,
+        "prompt_time": 0.023377076,
+        "completion_tokens": 694,
+        "completion_time": 1.453228145,
+        "total_tokens": 1286,
+        "total_time": 1.476605221,
+        "completion_tokens_details": {
+          "reasoning_tokens": 587
+        }
+      }
+    },
+    "thoughts_tokens": 587,
+    "output_tokens": 107
+  }
+}
