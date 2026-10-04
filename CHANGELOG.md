@@ -43,6 +43,15 @@
   - **الاختبارات:** `tests/test_publish.py` فيه 17 اختباراً على سجلات اصطناعية في مجلد مؤقت، منها اختبار أن `web/data/` في المستودع متزامن مع السجلات الرسمية. لا سجلات رسمية بعد، فالناتج `runs: []` كما هو.
   - **التوثيق:** عقد حقل `judgement` في `evaluation/official/README.md`، و`web/data/README.md`.
   - لم يُستدعَ أي نموذج — فرع `feat/day3-publish-results`.
+- **08:25** — **دمج PR #14 (سكربت النشر)** بموافقة صريحة، مثبّتاً على `b754392` بعد نجاح فحوصه. **الموقع الحي:** طابق `main` قبل الدمج وبعده (15 ملفاً). الفرق الوحيد بعد الدمج ملف التوثيق `web/data/README.md` (5 أسطر)، وصفحات الموقع لم تتغير.
+- **08:25** — **كاتب السجل الكامل** `miyar/evaluate.py` (`python -m miyar.evaluate`).
+  - **التسلسل:** المساعد (`runner.run_testset`)، ثم الاستخراج، ثم حكم الإسناد البرمجي (القرآن والملف اليدوي)، ثم حكم السلوك.
+  - **السجل:** لكل حالة `judgement` بصيغة `publish.judgement_to_dict`، أو `judge_error` إن تعذّر الحكم، ولا تُحذف حالة. ويُسجَّل `commit` (مع `-dirty` إن تغيّر الكود أو البيانات) و`case_selection` و`judge_model` و`min_confidence` و`n_judged` و`n_judge_errors`.
+  - **الحفظ:** `OFFICIAL_RUN` إلى `evaluation/official/` فقط، ويشترط `MIYAR_RUN_ID`. و`DEV_RUN` إلى `evaluation/dev/`. لا كتابة فوق سجل موجود.
+  - **اختيار الحالات:** `official_v0` (12 حالة)، و`official_v0+critical` (51 حالة: الاثنتا عشرة مع 39 حالة حرجة من extended_v1)، و`all` (60 حالة).
+  - **الاختبارات:** `tests/test_evaluate.py` فيه 11 اختباراً بنقل وهمي، منها أن السجل الناتج يقبله `publish`، وأن الحالة المرتبطة بمدخل ناقص تُحال دون استدعاء الحَكَم، وأن وضع cached يعيد السجل دون أي استدعاء.
+  - **التوثيق:** `ARCHITECTURE.md` و`evaluation/official/README.md`.
+  - لم يُستدعَ أي نموذج — فرع `feat/day3-official-run-writer`.
 
 ## 2026-10-05 — اليوم 2
 _لم يبدأ بعد._
