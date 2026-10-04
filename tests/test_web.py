@@ -162,9 +162,9 @@ def test_status_items_are_computed_from_repo():
     mod = _load_builder()
     f = mod.facts()
     p0, p1 = mod.status_items(f)
-    assert all(done for _, done, _ in p0)
+    assert all(item[1] for item in p0)
     # كل بند في أيام التحدي يطابق حالة وحدته في الكود (هيكل NotImplementedError = لم يُنفَّذ)
-    by_evidence = {ev: done for _, done, ev in p1}
+    by_evidence = {item[2]: item[1] for item in p1 if item[2] != "evaluation/official/"}
     assert by_evidence["miyar/runner.py"] == (f["state"]["runner"] == "built")
     assert by_evidence["miyar/judge.py"] == (f["state"]["judge"] == "built")
     assert by_evidence["miyar/scoring.py"] == (f["state"]["scoring"] == "built")
@@ -179,6 +179,23 @@ def test_status_items_are_computed_from_repo():
     jd = (ROOT / "miyar/judge.py").read_text(encoding="utf-8")
     if "def classify_error" not in jd or "hadith_matching_not_built" in jd:
         assert f["state"]["judge"] != "built" and by_evidence["miyar/judge.py"] is False
+
+
+def test_accuracy_item_is_partial_not_counted_complete():
+    """الدليل المكتوب (evaluation/official/) لا يشمل قياس اتفاق الحَكَم مع الوسوم البشرية: البند «جاهز جزئياً» ولا يُحتسب مكتملاً."""
+    mod = _load_builder()
+    f = mod.facts()
+    _, p1 = mod.status_items(f)
+    text, done, evidence, partial = next(i for i in p1 if i[2] == "evaluation/official/")
+    assert done is False
+    assert partial is (f["official_runs"] > 0)
+    status_text = _text("status.html")
+    if f["official_runs"]:
+        assert f"التشغيل الرسمي مسجّل ({mod._rounds(f['official_runs'])} مكتملة)" in text
+        assert "قياس اتفاق أحكام الحَكَم مع الوسوم البشرية لم يُنفَّذ" in text
+        assert "المراجعة البشرية: حالة واحدة من 12 (تحقق مصادر) و0 مراجعة شرعية متخصصة" in text
+        assert text in status_text and "جاهز جزئياً" in _page("status.html")
+    assert f"{sum(1 for i in p1 if i[1])} من {len(p1)}" in status_text
 
 
 def test_home_flow_svg_marks_built_and_unbuilt():
