@@ -18,6 +18,11 @@ const SUGGESTION_POOL = 25;
 const QURAN_BRACKETS = [["﴿", "﴾"], ["﴾", "﴿"], ["{", "}"]];
 const QUOTES = [["«", "»"], ["“", "”"], ['"', '"']];
 const SALLA = "ﷺ";
+// عرض «لم يُطابَق حرفياً، أقرب مدخل»: شروط محافظة كلها مطلوبة معاً (نقل حرفي لـ miyar/paste_check.py)
+const NEAR_MIN_WORDS = 3;
+const NEAR_MIN_WORD_LEN = 3;
+const NEAR_MIN_RATIO = 0.92;
+const MAX_DIFF_CHUNKS = 5;
 
 // مسافات بايثون (str.isspace) بدل \s في JavaScript، لتطابق strip() و\s في re
 const PY_WS = "\\t\\n\\u000b\\f\\r\\u001c-\\u001f \\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000";
@@ -327,10 +332,10 @@ function spans(cps, pairs) {
   return kept;
 }
 
-export function extract(text, index, names = suraByName(index)) {
+export function extractAll(text, index, names = suraByName(index)) {
   const cps = Array.from(text);
   const sl = (a, b) => cps.slice(Math.max(0, a), b).join("");
-  const found = [], taken = [];
+  const found = [], skipped = [], taken = [];
   for (const [a, qs, qe, b] of spans(cps, QURAN_BRACKETS)) {
     const quote = pyStrip(sl(qs, qe));
     if (quote) {
@@ -353,10 +358,124 @@ export function extract(text, index, names = suraByName(index)) {
     if (hasBefore || hasAfter) {
       const cited = hasAfter ? pyStrip(afterRaw, " ،,:-–()[]") : null;
       found.push({ kind: "hadith", quote, start: a, cited: cited || null });
+    } else {
+      skipped.push({ quote, start: a });
     }
   }
   found.sort((x, y) => x.start - y.start);
-  return found;
+  return { found, skipped };
+}
+
+export const extract = (text, index, names = suraByName(index)) => extractAll(text, index, names).found;
+
+// ---------- الفروق والاقتراب ----------
+// فروق على مستوى الكلمات بأطول تتابع مشترك (LCS) وكسر تعادل ثابت، كما في paste_check.word_diff
+export function wordDiff(a, b) {
+  const n = a.length, m = b.length;
+  const lcs = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) lcs[i][j] = a[i] === b[j] ? lcs[i + 1][j + 1] + 1 : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+  }
+  const chunks = [];
+  let cur = null, i = 0, j = 0;
+  const close = () => {
+    if (cur) {
+      chunks.push({ q: [cur.q0, i], w: [cur.w0, j], q_words: a.slice(cur.q0, i), w_words: b.slice(cur.w0, j) });
+      cur = null;
+    }
+  };
+  while (i < n || j < m) {
+    if (i < n && j < m && a[i] === b[j]) { close(); i++; j++; continue; }
+    if (!cur) cur = { q0: i, w0: j };
+    if (j >= m || (i < n && lcs[i + 1][j] >= lcs[i][j + 1])) i++; else j++;
+  }
+  close();
+  return chunks;
+}
+
+export function quranDiff(index, quote, ref) {
+  const [s, rest] = ref.split(":");
+  const [a1, a2] = rest.split("-");
+  const sura = Number(s), aya1 = Number(a1), aya2 = Number(a2 || a1);
+  const q = words(normalize(quote.replace(ELLIPSIS, " ")));
+  const p1 = index.pos.get(`${sura}:${aya1}`), p2 = index.pos.get(`${sura}:${aya2}`);
+  if (!q.length || p1 === undefined || p2 === undefined) return null;
+  const qs = q.join(" ");
+  let best = null; // [تشابه، الرسم، بداية النافذة، كلمات النافذة]
+  for (const [si, stream] of index.streams.entries()) {
+    const lo = stream.verseSpan[p1][0], hi = stream.verseSpan[p2][1];
+    const toks = stream.tokens.slice(lo, hi);
+    for (const size of [...new Set([Math.max(1, q.length - 1), q.length, q.length + 1])].sort((x, y) => x - y)) {
+      const windows = size >= toks.length ? [[0, toks]] : Array.from({ length: toks.length - size + 1 }, (_, j) => [j, toks.slice(j, j + size)]);
+      for (const [j, w] of windows) {
+        const r = ratio(qs, w.join(" "));
+        if (best === null || r > best[0]) best = [r, si === 0 ? "simple" : "uthmani", j, w];
+      }
+    }
+  }
+  if (best === null) return null;
+  return { ref, script: best[1], similarity: pyRound3(best[0]), offset: best[2], chunks: wordDiff(q, best[3]).slice(0, MAX_DIFF_CHUNKS) };
+}
+
+// هل بين الكلمتين حرف واحد بالضبط (استبدال أو حذف أو إضافة)؟
+function lev1(a, b) {
+  const A = Array.from(a), B = Array.from(b);
+  if (a === b || Math.abs(A.length - B.length) > 1) return false;
+  if (A.length === B.length) return A.filter((c, k) => c !== B[k]).length === 1;
+  const [short, long] = A.length < B.length ? [A, B] : [B, A];
+  let i = 0;
+  while (i < short.length && short[i] === long[i]) i++;
+  return short.slice(i).join("") === long.slice(i + 1).join("");
+}
+
+function nearPair(a, b) {
+  const diffs = [];
+  for (let k = 0; k < a.length; k++) if (a[k] !== b[k]) diffs.push(k);
+  if (diffs.length !== 1) return null;
+  const k = diffs[0];
+  if (Array.from(a[k]).length < NEAR_MIN_WORD_LEN || Array.from(b[k]).length < NEAR_MIN_WORD_LEN || !lev1(a[k], b[k])) return null;
+  const r = ratio(a.join(" "), b.join(" "));
+  return r >= NEAR_MIN_RATIO ? [k, r] : null;
+}
+
+const ENTRY_KEYS = ["kind", "text", "query", "source", "grade", "grade_by", "link", "max_number"];
+const pickEntry = (e) => Object.fromEntries(ENTRY_KEYS.filter((k) => k in e).map((k) => [k, e[k]]));
+
+// أقرب مدخل found مكتمل إن اختلف النص عنه بحرف واحد في كلمة واحدة فقط (وإلا null). للمقارنة وحدها: لا «مؤيَّد» معه أبداً.
+export function nearEntry(quote, doc) {
+  const q = words(normalize(quote));
+  if (q.length < NEAR_MIN_WORDS) return null;
+  const hits = [];
+  for (const e of doc.entries) {
+    if (e.kind !== "found") continue;
+    const p = words(normalize(e.text || ""));
+    if (p.length < NEAR_MIN_WORDS) continue;
+    for (let s = 0; s < Math.abs(q.length - p.length) + 1; s++) {
+      const [qw, pw] = q.length >= p.length ? [q.slice(s, s + p.length), p] : [q, p.slice(s, s + q.length)];
+      const r = nearPair(qw, pw);
+      if (r !== null) {
+        const [k, rt] = r;
+        const [qi, pi] = q.length >= p.length ? [s + k, k] : [k, s + k];
+        hits.push({ entry_id: e.id, entry: pickEntry(e), q_word: q[qi], entry_word: p[pi], q_index: qi, entry_index: pi, similarity: pyRound3(rt) });
+      }
+    }
+  }
+  return hits.length === 1 ? hits[0] : null;
+}
+
+// تلميحات بلا حكم: نص بين علامتي تنصيص لم يُفحص (لا علامة نسبة) لكنه يطابق أو يقارب مدخلاً في الملف اليدوي
+export function hintsFor(text, index, doc, names = suraByName(index)) {
+  const out = [];
+  for (const sk of extractAll(text, index, names).skipped) {
+    const lit = findEntries(sk.quote, doc).filter((e) => e.kind === "found");
+    if (lit.length === 1) {
+      out.push({ quote: sk.quote, match: "literal", entry_id: lit[0].id, near: null, entry: pickEntry(lit[0]) });
+      continue;
+    }
+    const near = lit.length === 0 ? nearEntry(sk.quote, doc) : null;
+    if (near !== null) out.push({ quote: sk.quote, match: "near", entry_id: near.entry_id, near, entry: near.entry });
+  }
+  return out;
 }
 
 export function suggestions(index, quote, limit = MAX_SUGGESTIONS) {
@@ -409,6 +528,11 @@ export function checkQuran(item, index) {
   };
   if (status !== SUPPORTED && !foundAt.length) {
     out.suggestions = suggestions(index, quote).map((s) => ({ ...versePayload(index, s.ref), score: s.score }));
+  }
+  out.diff = null;
+  if (status === WRONG_OR_MISSING && (reason === "altered_text" || reason === "altered_text_unreferenced")) {
+    const target = reason === "altered_text" ? cited : (out.suggestions.length ? out.suggestions[0].ref : null);
+    out.diff = target ? quranDiff(index, quote, target) : null;
   }
   return out;
 }
@@ -483,11 +607,18 @@ export function verifyHadith(quote, cited, doc) {
   return H(NEEDS_REVIEW, "cited_location_not_in_entry_source", e);
 }
 
-const ENTRY_KEYS = ["kind", "text", "query", "source", "grade", "grade_by", "link", "max_number"];
 export function checkHadith(item, doc) {
   const c = verifyHadith(item.quote, item.cited ?? null, doc);
-  const entry = c.entry ? Object.fromEntries(ENTRY_KEYS.filter((k) => k in c.entry).map((k) => [k, c.entry[k]])) : null;
-  return { kind: "hadith", quote: item.quote, cited: item.cited ?? null, status: c.status, reason: c.reason, entry_id: c.entry_id, entry };
+  const entry = c.entry ? pickEntry(c.entry) : null;
+  let reason = c.reason, near = null;
+  if (c.reason === "no_manual_entry") { // لا مدخل حرفي: قد يوجد مدخل قريب يُعرض للمقارنة وحدها
+    near = nearEntry(item.quote, doc);
+    if (near !== null) {
+      if (c.status !== NEEDS_REVIEW) throw new Error("الاقتراب لا يُنتج غير «يحتاج تحقق»");
+      reason = "near_match_not_literal";
+    }
+  }
+  return { kind: "hadith", quote: item.quote, cited: item.cited ?? null, status: c.status, reason, entry_id: c.entry_id, entry, near };
 }
 
 // doc: {entries} — المدخلات المكتملة فقط، كما يكتبها paste_check.complete_manual
@@ -508,6 +639,7 @@ export const REASONS = {
   quote_too_short: "النص أقصر من أن يُطابَق بثقة.",
   matched_manual_entry: "طابق مدخلاً مكتملاً في الملف اليدوي، والموضع المذكور يطابق مصدره.",
   no_manual_entry: "لا مدخل مكتمل في الملف اليدوي يطابق هذا النص.",
+  near_match_not_literal: "لم يُطابَق حرفياً: لا مدخل مكتمل يطابق هذا النص، لكن أقرب مدخل في الملف اليدوي يختلف عنه بحرف واحد في كلمة واحدة (للمقارنة فقط، وليس تأييداً).",
   not_found_in_manual_search: "سُجّل في الملف اليدوي أنه لم يُعثر عليه في البحث اليدوي.",
   location_not_stated: "طابق مدخلاً في الملف اليدوي، لكن لم يُذكر كتاب التخريج.",
   number_not_stated: "طابق مدخلاً في الملف اليدوي، لكن لم يُذكر رقم الحديث.",
