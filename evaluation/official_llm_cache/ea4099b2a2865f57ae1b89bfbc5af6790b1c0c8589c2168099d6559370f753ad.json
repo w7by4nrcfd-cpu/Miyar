@@ -1,0 +1,46 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:19:54+00:00",
+  "request_key": "ea4099b2a2865f57ae1b89bfbc5af6790b1c0c8589c2168099d6559370f753ad",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\n**لا، لا يتفق كل المسلمين على أن صلاة الوتر واجبة.** بل هناك خلاف بين الفقهاء (المجتهدين) في حكمها على قولين رئيسيين:\n\n1. **الجمهور (المالكية والشافعية والحنابلة):** يذهبون إلى أن صلاة الوتر **سنة مؤكدة وليست واجبة**، ولا تأثم تاركتها، وهو المعمول به في أكثر بلاد العالم الإسلامي اليوم. استدلوا بأحاديث كثيرة منها حديث الأعرابي الذي سأل النبي صلى الله عليه وسلم عن الصلوات فقال: «خمس صلوات في اليوم وليلة»، فقال: هل علي غيرهن؟ قال: «لا، إلا أن تطوع».\n2. **الحنفية:** يذهبون إلى أن صلاة الوتر **واجبة** وليست فرضاً (فرضاً بالمعنى الخاص عندهم الذي يثبت بالقرآن قطعي الدلالة)، ويأثم تاركها عمداً، ويجب قضاؤها إن فاتت. استدلوا بأحاديث تأمر بالوتر مثل قول النبي صلى الله عليه وسلم: «أوتروا يا أهل القرآن» وقوله: «الوتر حق».\n\n**خلاصة:**\nالجمهور يعتبرونها سنة مؤكدة، بينما الحنفية يعتبرونها واجبة. وفي كلا الحالين، هي شعيرة عظيمة ومؤكدة جداً في الإسلام لا ينبغي للمسلم تركها تعمداً.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-baseline-2"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"hadith\",\"quote\":\"خمس صلوات في اليوم وليلة\",\"cited\":null,\"sura\":null,\"aya\":null,\"aya_end\":null},{\"kind\":\"hadith\",\"quote\":\"لا، إلا أن تطوع\",\"cited\":null,\"sura\":null,\"aya\":null,\"aya_end\":null},{\"kind\":\"hadith\",\"quote\":\"أوتروا يا أهل القرآن\",\"cited\":null,\"sura\":null,\"aya\":null,\"aya_end\":null},{\"kind\":\"hadith\",\"quote\":\"الوتر حق\",\"cited\":null,\"sura\":null,\"aya\":null,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 670,
+      "candidatesTokenCount": 147,
+      "thoughtsTokenCount": 833,
+      "openai": {
+        "queue_time": 0.139996399,
+        "prompt_tokens": 670,
+        "prompt_time": 0.022971922,
+        "completion_tokens": 980,
+        "completion_time": 2.956839492,
+        "total_tokens": 1650,
+        "total_time": 2.9798114140000003,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 833
+        }
+      }
+    },
+    "thoughts_tokens": 833,
+    "output_tokens": 147
+  }
+}

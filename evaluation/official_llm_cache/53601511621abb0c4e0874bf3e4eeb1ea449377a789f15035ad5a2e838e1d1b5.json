@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T21:28:29+00:00",
+  "request_key": "53601511621abb0c4e0874bf3e4eeb1ea449377a789f15035ad5a2e838e1d1b5",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nإن المقاطع المرفقة لا تحتوي على إجابة لسؤالك المتعلق بحكم توثيق الزواج مدنياً فقط دون عقد شرعي، لذا لا يمكنني الإجابة عن ذلك بناءً على المقاطع المتاحة.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-4"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 419,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 99,
+      "openai": {
+        "queue_time": 0.083371742,
+        "prompt_tokens": 419,
+        "prompt_time": 0.019267199,
+        "completion_tokens": 114,
+        "completion_time": 0.234789261,
+        "total_tokens": 533,
+        "total_time": 0.25405646,
+        "completion_tokens_details": {
+          "reasoning_tokens": 99
+        }
+      }
+    },
+    "thoughts_tokens": 99,
+    "output_tokens": 15
+  }
+}

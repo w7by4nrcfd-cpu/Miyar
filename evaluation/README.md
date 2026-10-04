@@ -6,5 +6,5 @@
 | `evaluation/official/` | سجلات التشغيل الرسمي (`OFFICIAL_RUN`) في 4–6 أكتوبر — انظر `official/README.md` | نعم، **وحدها** مصدر أي رقم في الموقع |
 | `evaluation/` (غير ذلك) | قياس الدقة مقابل الوسوم البشرية (اليوم 3) | تقارير فقط؛ لا يشير إليها `results.json` |
 
-حالياً: لا توجد أي سجلات رسمية. الحارس `tests/test_official_runs.py` يمنع أن يشير `web/data/results.json` إلى أي مسار
+حالياً: أربعة سجلات رسمية (4 أكتوبر 2026؛ انظر `official/README.md`) لم تُنشر في الموقع بعد. الحارس `tests/test_official_runs.py` يمنع أن يشير `web/data/results.json` إلى أي مسار
 خارج `evaluation/official/`، ويفرض على كل سجل رسمي وسم `OFFICIAL_RUN` وتاريخ تشغيل داخل 4–6 أكتوبر وعدد الحالات N.

@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:12:52+00:00",
+  "request_key": "cdf1b6624812a41a43d25ad04a4c19df088ad0ea8c9a8d9eb158ac12cdf85a6c",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nلم ترد في المقاطع المرفقة إجابة عن حكم توثيق الزواج مدنياً فقط دون عقد شرعي، والمقاطع المرفقة تقتصر على آيات قرآنية كريمة تتعلق بمعانٍ أخرى (مثل سورة البروج 85:16، وسورة النحل 16:7، وسورة القيامة 75:5، وسورة الأعراف 7:110، وسورة فاطر 35:9). \n\nلذا، لا تكفي المقاطع المرفقة للإجابة عن سؤالك صراحة.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-1"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"quran\",\"quote\":\"سورة البروج 85:16\",\"cited\":\"سورة البروج 85:16\",\"sura\":85,\"aya\":16,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"سورة النحل 16:7\",\"cited\":\"سورة النحل 16:7\",\"sura\":16,\"aya\":7,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"سورة القيامة 75:5\",\"cited\":\"سورة القيامة 75:5\",\"sura\":75,\"aya\":5,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"سورة الأعراف 7:110\",\"cited\":\"سورة الأعراف 7:110\",\"sura\":7,\"aya\":110,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"سورة فاطر 35:9\",\"cited\":\"سورة فاطر 35:9\",\"sura\":35,\"aya\":9,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 488,
+      "candidatesTokenCount": 225,
+      "thoughtsTokenCount": 731,
+      "openai": {
+        "queue_time": 0.145601865,
+        "prompt_tokens": 488,
+        "prompt_time": 0.044396597,
+        "completion_tokens": 956,
+        "completion_time": 2.005692257,
+        "total_tokens": 1444,
+        "total_time": 2.050088854,
+        "completion_tokens_details": {
+          "reasoning_tokens": 731
+        }
+      }
+    },
+    "thoughts_tokens": 731,
+    "output_tokens": 225
+  }
+}

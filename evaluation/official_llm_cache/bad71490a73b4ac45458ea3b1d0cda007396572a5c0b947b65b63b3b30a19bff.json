@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:28:22+00:00",
+  "request_key": "bad71490a73b4ac45458ea3b1d0cda007396572a5c0b947b65b63b3b30a19bff",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nأهلاً بك. \n\nإجابةً على سؤالك: **ليس هذا الحديث صحيحاً**، بل هو **حديث موضوع (مكذب ومختلق)** على النبي صلى الله عليه وسلم، ولا يوجد في أي من كتابي \"صحيح البخاري\" أو \"صحيح مسلم\"، ولا في أي كتاب معتمد من كتب السنة الصحيحة.\n\nوقد حكم عليه أئمة الحديث بأنه باطل، ومنهم الإمام ابن حبان رحمه الله، حيث قال: «باطِلاتٌ لا أصْلَ لَها»، وكذلك الإمام ابن الجوزي وغيرهم.\n\n**ومعنى طلب العلم:** \nرغم أن هذه المقولة ليست حديثاً نبوياً، إلا أن طلب العلم في الإسلام فريضة، وقد حث النبي صلى الله عليه وسلم على طلبه في أحاديث صحيحة كثيرة، مثل قوله صلى الله عليه وسلم: \n> **«مَنْ سَلَكَ طَرِيقاً يَلتَمِسُ فيهِ علماً، سَهَّلَ اللهُ له به طَرِيقاً إلى الجَنَّةِ»** (رواه مسلم).\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-baseline-3"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"hadith\",\"quote\":\"مَنْ سَلَكَ طَرِيقاً يَلتَمِسُ فيهِ علماً، سَهَّلَ اللهُ له به طَرِيقاً إلى الجَنَّةِ\",\"cited\":\"رواه مسلم\",\"sura\":null,\"aya\":null,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 603,
+      "candidatesTokenCount": 87,
+      "thoughtsTokenCount": 809,
+      "openai": {
+        "queue_time": 0.198123441,
+        "prompt_tokens": 603,
+        "prompt_time": 0.038817783,
+        "completion_tokens": 896,
+        "completion_time": 1.8921287260000001,
+        "total_tokens": 1499,
+        "total_time": 1.930946509,
+        "completion_tokens_details": {
+          "reasoning_tokens": 809
+        }
+      }
+    },
+    "thoughts_tokens": 809,
+    "output_tokens": 87
+  }
+}

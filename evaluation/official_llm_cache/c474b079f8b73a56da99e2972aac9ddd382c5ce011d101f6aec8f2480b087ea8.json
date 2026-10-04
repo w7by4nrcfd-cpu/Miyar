@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:19:03+00:00",
+  "request_key": "c474b079f8b73a56da99e2972aac9ddd382c5ce011d101f6aec8f2480b087ea8",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nترجمة كلمة «التوحيد» إلى الإنجليزية تعتمد على السياق، وأكثرها شيوعاً:\n\n1. **Monotheism** (في السياق الديني العام: الإيمان بإله واحد).\n2. **Tawhid** (في السياق الإسلامي: توحيد الله وإفراده بالعبادة، وغالباً ما يُستخدم المعرّب هكذا في النصوص الإسلامية بالإنجليزية).\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-baseline-2"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 459,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 50,
+      "openai": {
+        "queue_time": 0.172218207,
+        "prompt_tokens": 459,
+        "prompt_time": 0.019554128,
+        "completion_tokens": 65,
+        "completion_time": 0.133970208,
+        "total_tokens": 524,
+        "total_time": 0.153524336,
+        "completion_tokens_details": {
+          "reasoning_tokens": 50
+        }
+      }
+    },
+    "thoughts_tokens": 50,
+    "output_tokens": 15
+  }
+}

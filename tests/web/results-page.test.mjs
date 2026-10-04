@@ -57,12 +57,16 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
       const errors = [];
       page.on("pageerror", (e) => errors.push(e.message));
 
-      await t.test(`${width}: الملف المنشور فارغ → «لا نتائج رسمية بعد» بلا أرقام`, async () => {
+      await t.test(`${width}: ملف نتائج فارغ → «لا نتائج رسمية بعد» بلا أرقام`, async () => {
+        // الفارغ يُمرَّر صراحةً: الاختبار لا يتوقف على ما نُشر في المستودع (مع سجلات رسمية أو بدونها)
+        await page.route("**/data/results.json", (route) =>
+          route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ schema_version: 1, runs: [] }) }));
         await page.goto(base + "results.html", { waitUntil: "networkidle" });
         const text = await page.locator("#results").innerText();
         assert.match(text, /لم يُشغَّل أي تقييم رسمي بعد/);
         assert.match(text, /لا نتائج رسمية بعد/);
         assert.equal(await page.locator("#compare").count(), 0);
+        await page.unroute("**/data/results.json");
       });
 
       await t.test(`${width}: ملف اصطناعي → جدول المقارنة والبوابة دون تمرير أفقي`, async () => {

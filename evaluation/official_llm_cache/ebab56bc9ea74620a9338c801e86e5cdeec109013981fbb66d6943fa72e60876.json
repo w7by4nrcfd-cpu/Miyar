@@ -1,0 +1,46 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T20:57:18+00:00",
+  "request_key": "ebab56bc9ea74620a9338c801e86e5cdeec109013981fbb66d6943fa72e60876",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nاستناداً إلى المقاطع المرفقة، فإن القرآن الكريم هو منزل من الله تعالى على النبي محمد صلى الله عليه وسلم، وليس من تأليفه؛ والددليل على ذلك قول الله تعالى:\n- {مَا أَنْزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ} [سورة طه 20:2].\n- {إِنَّا نَحْنُ نَزَّلْنَا عَلَيْكَ الْقُرْآنَ تَنْزِيلًا} [سورة الإنسان 76:23].\n- {عَلَّمَ الْقُرْآنَ} [سورة الرحمن 55:2].\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-4"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"quran\",\"quote\":\"{مَا أَنْزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ}\",\"cited\":\"سورة طه 20:2\",\"sura\":20,\"aya\":2,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"{إِنَّا نَحْنُ نَزَّلْنَا عَلَيْكَ الْقُرْآنَ تَنْزِيلًا}\",\"cited\":\"سورة الإنسان 76:23\",\"sura\":76,\"aya\":23,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"{عَلَّمَ الْقُرْآنَ}\",\"cited\":\"سورة الرحمن 55:2\",\"sura\":55,\"aya\":2,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 524,
+      "candidatesTokenCount": 195,
+      "thoughtsTokenCount": 512,
+      "openai": {
+        "queue_time": 0.140556359,
+        "prompt_tokens": 524,
+        "prompt_time": 0.016184212,
+        "completion_tokens": 707,
+        "completion_time": 1.490599836,
+        "total_tokens": 1231,
+        "total_time": 1.506784048,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 512
+        }
+      }
+    },
+    "thoughts_tokens": 512,
+    "output_tokens": 195
+  }
+}
