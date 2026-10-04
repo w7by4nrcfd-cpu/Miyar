@@ -31,8 +31,9 @@ def gemini_ok(text):
 class RoutingTransport:
     """يجيب حسب الدور: المساعد، أو المستخرِج، أو الحَكَم (من تعليمات النظام)."""
 
-    def __init__(self, extract_text='{"citations": []}', fail_assistant_for=()):
+    def __init__(self, extract_text='{"citations": []}', fail_assistant_for=(), assistant_text=None):
         self.calls = []
+        self.assistant_text = assistant_text
         self.extract_text = extract_text
         self.fail_assistant_for = fail_assistant_for
 
@@ -44,6 +45,8 @@ class RoutingTransport:
             self.calls.append("assistant")
             if any(q in prompt for q in self.fail_assistant_for):
                 return 500, {}, b'{"error": "synthetic"}'
+            if self.assistant_text is not None:
+                return gemini_ok(self.assistant_text)
             return gemini_ok(f"إجابة اصطناعية للاختبار عن: {prompt[:40]}")  # مختلفة لكل حالة، فلا يعيدها المخزن
         if system.startswith("أنت أداة استخراج"):
             self.calls.append("extract")
@@ -115,6 +118,23 @@ def test_pending_manual_entry_case_is_referred_without_judge_call(tmp_path):
     j = rec["cases"][0]["judgement"]
     assert (j["needs_human_review"], j["review_reason"]) == (True, "manual_entry_pending")
     assert t.calls == ["assistant", "extract"]
+
+
+def test_unverified_hadith_citation_refers_the_case_end_to_end(tmp_path):
+    """OFF-06 (يفحص الاختلاق) وإجابة فيها حديث لا مدخل له: يُستدعى الحَكَم ثم تُحال الحالة، بلا حكم آلي (hadith_unverified)."""
+    answer = "قال النبي ﷺ: «حديث اصطناعي للاختبار لا مدخل له في الملف اليدوي» رواه البخاري 1."
+    extract = json.dumps({"citations": [{"kind": "hadith", "quote": "حديث اصطناعي للاختبار لا مدخل له في الملف اليدوي",
+                                         "cited": "رواه البخاري 1"}]}, ensure_ascii=False)
+    t = RoutingTransport(extract_text=extract, assistant_text=answer)
+    target, judge = setup(tmp_path, t)
+    case = next(c for c in ev.select_cases("official_v0") if c["id"] == "OFF-06")
+    rec = ev.evaluate([case], target, judge, "DEV_RUN", selection="test", run_id="official-test-1", now=NOW)
+    j = rec["cases"][0]["judgement"]
+    assert (j["needs_human_review"], j["review_reason"]) == (True, "hadith_unverified")
+    assert set(j["checks"].values()) == {None} and j["confidence"] == 0.9 and j["rationale"] == "سبب اصطناعي"
+    assert [c["status"] for c in j["citations"]] == ["needs_review"] and j["citations"][0]["reason"] == "no_manual_entry"
+    assert t.calls == ["assistant", "extract", "judge"]
+    assert rec["n_judged"] == 1  # حُكم عليها (أُحيلت)، ولا تُحتسب في الدرجة (scoring.case_score)
 
 
 def test_judge_failure_is_recorded_and_case_kept(tmp_path):
