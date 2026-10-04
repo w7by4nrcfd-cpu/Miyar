@@ -50,9 +50,18 @@ def test_pages_in_sync_with_generator():
         assert (WEB / name).read_text(encoding="utf-8") == rendered[name], f"{name}: شغّل scripts/build_web_pages.py"
 
 
-def test_published_results_are_empty():
+def _published_runs() -> list:
+    return json.loads((WEB / "data/results.json").read_text(encoding="utf-8"))["runs"]
+
+
+def test_published_results_are_empty_or_backed_by_records():
+    """فارغ إن لم تُنشر سجلات رسمية، وإلا فلكل تشغيل منشور سجل موجود في evaluation/official/ (والمزامنة التفصيلية في test_publish)."""
     data = json.loads((WEB / "data/results.json").read_text(encoding="utf-8"))
-    assert data == {"schema_version": 1, "runs": []}
+    assert data["schema_version"] == 1
+    for run in data["runs"]:
+        rec = run["evaluation_record"]
+        assert re.fullmatch(r"evaluation/official/[^/]+\.json", rec), rec
+        assert (ROOT / rec).is_file(), rec
 
 
 def _page(name):
@@ -197,20 +206,34 @@ def test_transparency_page_disclosures():
 @pytest.mark.parametrize("page", PAGES)
 def test_mode_bar_says_display_only_not_official(page):
     t = _text(page)
-    assert "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026." in t
+    if _published_runs():
+        assert "نتائج محفوظة من تشغيلات رسمية مسجّلة في evaluation/official/، كل رقم مع N." in t
+        assert "لا توجد نتائج تقييم رسمية بعد" not in t
+    else:
+        assert "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026." in t
 
 
 def test_results_page_says_demo_not_official():
     t = _text("results.html")
-    for needle in ("للعرض فقط: هذه ليست نتائج تقييم رسمية", "فارغ حالياً", "التقييم الرسمي يبدأ 4 أكتوبر 2026"):
-        assert needle in t, needle
+    if _published_runs():
+        assert "نتائج من تشغيلات رسمية مسجّلة في evaluation/official/" in t
+        assert "الحكم الآلي مساعد للمراجعة لا بديل عنها" in t
+        assert "فارغ حالياً" not in t
+    else:
+        for needle in ("للعرض فقط: هذه ليست نتائج تقييم رسمية", "فارغ حالياً", "التقييم الرسمي يبدأ 4 أكتوبر 2026"):
+            assert needle in t, needle
     js = (WEB / "assets/results.js").read_text(encoding="utf-8")
     assert "لم يُشغَّل أي تقييم رسمي بعد" in js and "التقييم الرسمي يبدأ 4 أكتوبر 2026" in js
 
 
 def test_status_page_is_honest():
     t = _text("status.html")
-    assert "لا توجد نتائج تقييم رسمية بعد" in t
+    runs = _published_runs()
+    if runs:
+        assert f"سجلات التشغيل الرسمية: {len(runs)}." in t
+        assert "لا توجد نتائج تقييم رسمية بعد" not in t
+    else:
+        assert "لا توجد نتائج تقييم رسمية بعد" in t
     assert "لم تُجرَ مراجعة شرعية متخصصة" in t and "تحقق مصادر" in t and "Quranpedia" in t
     assert "قبل أيام التحدي" in t and "أيام التحدي: 4–6 أكتوبر 2026" in t
     assert "<progress" in _page("status.html")
