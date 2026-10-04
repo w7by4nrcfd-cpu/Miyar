@@ -751,7 +751,7 @@ def status_items(f: dict) -> tuple[list, list]:
         ("حكم السلوك حسب المستوى A–D" + (" (حكم إسناد الآيات وحكم السلوك الأولي بالثقة والإحالة جاهزان؛ "
                                          "الأحاديث وأصناف الحكم الستة لم تُبنَ)" if st["judge"] == "partial" else ""),
          st["judge"] == "built", "miyar/judge.py"),
-        ("الدرجة والمقارنة وقرار البوابة", st["scoring"] == "built", "miyar/scoring.py"),
+        ("وحدة حساب الدرجة والمقارنة وقرار البوابة (scoring)", st["scoring"] == "built", "miyar/scoring.py"),
         ("لوحة النتائج والمقارنة (تشغيلات منشورة)", f["published_runs"] > 0, "web/data/results.json"),
         ("تشغيل رسمي مسجّل وقياس الدقة", f["official_runs"] > 0, "evaluation/official/"),
         ("وحدة Red Teaming", st["redteam"] == "built", "miyar/redteam.py"),
