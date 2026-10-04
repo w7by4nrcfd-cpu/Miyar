@@ -1,0 +1,43 @@
+{
+  "run_label": "OFFICIAL_RUN",
+  "stored_at": "2026-10-04T21:58:54+00:00",
+  "request_key": "b6e8ca9e436847ddabc43cab8f244e7a27ae82e4eecd857f9f4082408b31eda0",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nالمقاطع المرفقة لا تحتوي على حديث صحيح فيه «اطلبوا العلم ولو بالصين»، بل ورد في المقاطع المرفقة حديث بلفظ: «اطلبوا العلم ولو بالصين» ومصدره \"المقاصد الحسنة للسخاوي ص86\"، وحكمه أنه \"ضعيف\". \n\nلذلك، لا توجد في المقاطع المرفقة أي إشارة لوجود هذا الحديث في صحيح البخاري أو مسلم، ولم تذكر المقاطع أي حديث صحيح بهذا اللفظ.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "official-2026-10-04-rag-4"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"hadith\",\"quote\":\"«اطلبوا العلم ولو بالصين»\",\"cited\":\"المقاصد الحسنة للسخاوي ص86\",\"sura\":null,\"aya\":null,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 480,
+      "candidatesTokenCount": 62,
+      "thoughtsTokenCount": 387,
+      "openai": {
+        "queue_time": 0.083347094,
+        "prompt_tokens": 480,
+        "prompt_time": 0.018507218,
+        "completion_tokens": 449,
+        "completion_time": 0.923515747,
+        "total_tokens": 929,
+        "total_time": 0.942022965,
+        "completion_tokens_details": {
+          "reasoning_tokens": 387
+        }
+      }
+    },
+    "thoughts_tokens": 387,
+    "output_tokens": 62
+  }
+}
