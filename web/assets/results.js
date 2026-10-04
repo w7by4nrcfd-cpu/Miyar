@@ -72,6 +72,10 @@ function gateSection(gate, latest) {
   const reasons = el("ul");
   for (const r of gate.reasons) reasons.append(el("li", {}, r));
   sec.append(reasons, el("p", { class: "muted" }, "القرار محسوب بـ scoring.gate_decision من السجلين الرسميين، لا من هذه الصفحة."),
+    el("p", { class: "notice demo", role: "note", id: "gate-sensitivity" },
+      el("strong", {}, "القرار حساس لاختيار الجولة المرجعية. "),
+      "يُحسب القرار مقابل آخر جولة baseline منشورة، وجولات baseline تتفاوت درجاتها فيما بينها؛ فقد تتغير الأسباب وهوامشها بتغيير الجولة المرجعية. "
+      + "لا تُختار جولة مرجعية بحسب النتيجة."),
     caveat(latest, "gate-caveat"));
   return sec;
 }
@@ -101,6 +105,23 @@ function stabilitySection(stability) {
   return sec;
 }
 
+// مساعد له جولة رسمية مكتملة واحدة فقط: لا ثبات يُقاس له، وتُذكر الحدود صراحةً
+function singleRunNotes(runs, stability) {
+  const counts = {};
+  for (const r of runs) counts[r.assistant] = (counts[r.assistant] || 0) + 1;
+  const notes = [];
+  for (const [assistant, n] of Object.entries(counts)) {
+    if (n !== 1 || stability[assistant]) continue;
+    const why = assistant === "rag"
+      ? " السبب في هذا التشغيل حد Groq اليومي المجاني: الجولات الناقصة لم تُحتسب وحُفظت في evaluation/official_incomplete/."
+      : "";
+    notes.push(el("p", { class: "notice demo single-run", role: "note" },
+      el("strong", {}, `لـ ${assistant} جولة مكتملة واحدة فقط، فالثبات غير قابل للقياس له. `),
+      "ولا يصح الاستدلال من جولة واحدة على استقراره." + why));
+  }
+  return notes;
+}
+
 function renderOk(root, view) {
   const latest = latestByAssistant(view.runs);
   const nodes = [
@@ -122,6 +143,7 @@ function renderOk(root, view) {
     el("h3", {}, "السجلات المعروضة في المقارنة"), recordsList(latest),
     gateSection(view.gate, latest),
     stabilitySection(view.stability),
+    ...singleRunNotes(view.runs, view.stability),
     el("h2", {}, "كل التشغيلات الرسمية المنشورة"), recordsList(view.runs),
   );
   root.replaceChildren(...nodes);
