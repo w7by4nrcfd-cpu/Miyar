@@ -145,6 +145,7 @@ def _judgement_view(j: BehaviorJudgement) -> dict:
         "checks": j.checks, "confidence": j.confidence, "judge_model": j.judge_model,
         "needs_human_review": j.needs_human_review, "review_reason": j.review_reason, "rationale": j.rationale,
         "program_overrides": j.program_overrides,
+        "categories": j.categories, "unnecessary_refusal": j.unnecessary_refusal,
         "citations": [{"kind": c.citation.kind, "quote": c.citation.quote, "cited": c.citation.cited, "status": c.status,
                        "reason": c.reason, "matched_ref": c.matched_ref, "matched_text": c.matched_text}
                       for c in j.citations],
