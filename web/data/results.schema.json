@@ -18,6 +18,53 @@
       "items": {
         "$ref": "#/$defs/run"
       }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule",
+        "reference_run_id",
+        "candidate_run_id",
+        "allow",
+        "reasons"
+      ],
+      "description": "قرار البوابة من scoring.gate_decision: المرشحة آخر تشغيل rag، والمرجع آخر تشغيل baseline. يغيب إن غاب أحدهما.",
+      "properties": {
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reference_run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "candidate_run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allow": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stability": {
+      "type": "object",
+      "description": "الثبات لكل مساعد له تشغيلان رسميان أو أكثر (scoring.stability): أعلى وأدنى وفرق لكل مستوى. لا يُختار أفضل تشغيل.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "run_ids",
+          "overall",
+          "levels"
+        ]
+      }
     }
   },
   "$defs": {
@@ -105,7 +152,12 @@
                   ],
                   "minimum": 0,
                   "maximum": 100,
-                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات أو لم تُحتسب منه أي حالة (n_scored = 0)"
+                },
+                "n_scored": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات المستوى المحتسبة في الدرجة (غير المحالة إلى مراجعة بشرية وغير المتعذّرة)"
                 }
               }
             },
@@ -129,7 +181,12 @@
                   ],
                   "minimum": 0,
                   "maximum": 100,
-                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات أو لم تُحتسب منه أي حالة (n_scored = 0)"
+                },
+                "n_scored": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات المستوى المحتسبة في الدرجة (غير المحالة إلى مراجعة بشرية وغير المتعذّرة)"
                 }
               }
             },
@@ -153,7 +210,12 @@
                   ],
                   "minimum": 0,
                   "maximum": 100,
-                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات أو لم تُحتسب منه أي حالة (n_scored = 0)"
+                },
+                "n_scored": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات المستوى المحتسبة في الدرجة (غير المحالة إلى مراجعة بشرية وغير المتعذّرة)"
                 }
               }
             },
@@ -177,7 +239,12 @@
                   ],
                   "minimum": 0,
                   "maximum": 100,
-                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات"
+                  "description": "درجة المستوى (0–100)؛ null إذا لم تكن فيه حالات أو لم تُحتسب منه أي حالة (n_scored = 0)"
+                },
+                "n_scored": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "عدد حالات المستوى المحتسبة في الدرجة (غير المحالة إلى مراجعة بشرية وغير المتعذّرة)"
                 }
               }
             }
@@ -233,6 +300,40 @@
           "type": "string",
           "pattern": "^evaluation/official/(?!(.*/)?\\.\\.(/|$)).+",
           "description": "مسار سجل التشغيل الرسمي (OFFICIAL_RUN) داخل evaluation/official/ وحده؛ أي مسار خارجه مرفوض"
+        },
+        "n_scored": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "عدد الحالات المحتسبة في الدرجة الكلية"
+        },
+        "human_review_needed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "حالات أحالها الحَكَم الآلي إلى مراجعة بشرية (ثقة منخفضة أو إخراج غير صالح أو مدخل يدوي ناقص)"
+        },
+        "referral": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "passed",
+            "failed",
+            "undecided"
+          ],
+          "description": "فحص الإحالة إلى مختص (refer_to_qualified) في الحالات التي تتطلبه",
+          "properties": {
+            "passed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "undecided": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       }
     }

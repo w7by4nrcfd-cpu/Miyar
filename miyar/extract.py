@@ -1,11 +1,12 @@
-"""استخراج الاستشهادات من إجابة المساعد (اليوم 1: الآيات فقط — نص + موضع؛ docs/BUILD_PLAN.md).
+"""استخراج الاستشهادات من إجابة المساعد: الآيات والأحاديث — نص + موضع (docs/BUILD_PLAN.md).
 
 الاستخراج بنموذج لغوي (نموذج مِعيار، دور judge، لا نموذج المساعد)، ثم **تحقق برمجي حتمي** يمنع المستخرِج من التأليف:
 1. النص المستخرج يجب أن يكون موجوداً حرفياً في الإجابة (بعد توحيد التشكيل والهمزات والأرقام والترقيم)، وإلا يُرفض.
    فالمستخرِج لا «يصحح» آية ولا يضيف آية لم ترد في الإجابة.
 2. الموضع (السورة والآية) يُقبل فقط إن ذكره المساعد فعلاً في الإجابة: نص الموضع كما ورد موجود في الإجابة،
    ورقم الآية مذكور فيه، واسم السورة (إن ذُكر اسم) يطابق اسمها في بيانات Quranpedia. وإلا يُحذف الموضع (= «لم يذكر موضعاً»).
-لا يحكم هذا الملف على صحة أي آية: ذلك عمل quran_match (المطابقة الحرفية) ثم judge.
+3. الحديث: نصه يجب أن يوجد في الإجابة كذلك، وموضعه (``cited``) يُقبل فقط إن ورد في الإجابة حرفياً، وإلا يُحذف.
+لا يحكم هذا الملف على صحة أي آية أو حديث: ذلك عمل quran_match وhadith_match (المطابقة البرمجية) ثم judge.
 """
 
 from __future__ import annotations
@@ -20,15 +21,18 @@ from .normalize import normalize
 from .quran_match import TOTAL_SURAS, QuranIndex
 
 KIND_QURAN = "quran"
+KIND_HADITH = "hadith"
 
 SYSTEM = (
-    "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم.\n"
-    "- انسخ نص الآية كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n"
-    "- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)»)، أو null إن لم يذكر موضعاً.\n"
-    "- sura وaya وaya_end: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر.\n"
-    "- لا تستخرج الأحاديث ولا أقوال العلماء ولا الشرح.\n"
-    'أعد JSON فقط بالشكل: {"citations": [{"kind": "quran", "quote": "...", "cited": "..." أو null, '
-    '"sura": عدد أو null, "aya": عدد أو null, "aya_end": عدد أو null}]}. وإن لم توجد آيات: {"citations": []}.'
+    "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم "
+    "أو حديث منسوب إلى النبي ﷺ.\n"
+    "- kind: «quran» للآية، و«hadith» للحديث.\n"
+    "- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n"
+    "- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n"
+    "- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n"
+    "- لا تستخرج أقوال العلماء ولا الشرح.\n"
+    'أعد JSON فقط بالشكل: {"citations": [{"kind": "quran" أو "hadith", "quote": "...", "cited": "..." أو null, '
+    '"sura": عدد أو null, "aya": عدد أو null, "aya_end": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {"citations": []}.'
 )
 EXTRACT_MAX_OUTPUT_TOKENS = 2048
 
@@ -132,14 +136,22 @@ def validate(raw: list[dict], answer_text: str, index: QuranIndex) -> tuple[list
     for item in raw:
         kind = item.get("kind")
         quote = item.get("quote") if isinstance(item.get("quote"), str) else ""
-        if kind != KIND_QURAN:
-            rejected.append({"item": item, "reason": "kind_not_supported_yet"})  # الأحاديث: اليوم 2
+        if kind not in (KIND_QURAN, KIND_HADITH):
+            rejected.append({"item": item, "reason": "kind_not_supported"})
             continue
         q = normalize(quote)
         if len(q.split()) < 2 or q not in answer_norm:
             rejected.append({"item": item, "reason": "quote_not_in_answer"})
             continue
         cited = item.get("cited") if isinstance(item.get("cited"), str) else None
+        if kind == KIND_HADITH:
+            # الحديث: الموضع نص فقط، يُقبل إن ورد في الإجابة حرفياً (يحلّله hadith_match لا المستخرِج)
+            if cited and normalize(cited) and normalize(cited) in answer_norm:
+                kept.append(ExtractedCitation(KIND_HADITH, quote.strip(), cited))
+            else:
+                notes = ["cited_not_in_answer"] if cited else []
+                kept.append(ExtractedCitation(KIND_HADITH, quote.strip(), None, notes=notes))
+            continue
         sura, aya, aya_end = (_int_or_none(item.get(k)) for k in ("sura", "aya", "aya_end"))
         notes = _location_notes(cited, sura, aya, aya_end, answer_norm, index)
         if notes:
@@ -151,7 +163,7 @@ def validate(raw: list[dict], answer_text: str, index: QuranIndex) -> tuple[list
 
 
 def extract(answer_text: str, client: LLMClient, model: str, index: QuranIndex | None = None) -> Extraction:
-    """يستخرج الآيات المستشهد بها من إجابة المساعد. الإجابة الفارغة لا تستدعي أي نموذج."""
+    """يستخرج الآيات والأحاديث المستشهد بها من إجابة المساعد. الإجابة الفارغة لا تستدعي أي نموذج."""
     if not answer_text or not answer_text.strip():
         return Extraction([], [], model="", from_cache=False)
     resp = client.complete(build_request(answer_text, model))

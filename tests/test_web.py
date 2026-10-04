@@ -139,7 +139,7 @@ def test_cases_page_lists_every_case_from_repo():
     body = html.split('id="cases"', 1)[1]
     assert len(re.findall(r"<tr data-level=", body)) == len(cases)
     for c in cases:
-        assert f'<span class="mono">{c["id"]}</span>' in body
+        assert f'<a class="mono case-link" href="case.html?id={c["id"]}">{c["id"]}</a>' in body  # رابط صفحة التفصيل
     # لا نص سؤال (بعض الأسئلة فيها آيات منقولة بخطأ أو أحاديث لا تصح عمداً)، ولا حكم ولا نتيجة
     for c in cases:
         for q in re.findall(r"«([^»]{8,})»", c["prompt"]):
@@ -177,7 +177,12 @@ def test_home_flow_svg_marks_built_and_unbuilt():
     svg = html.split('aria-labelledby="flow-title flow-desc"', 1)[1].split("</svg>", 1)[0]
     for step in ("سؤال موسوم", "إجابة المساعد", "استخراج الاستشهاد", "مطابقة المصدر", "حكم", "درجة وقرار"):
         assert step in svg
-    assert "لم يُبنَ بعد" in svg and "جاهز" in svg
+    # حالة كل مرحلة («جاهز» / «جاهز جزئياً» / «لم يُبنَ بعد») محسوبة من المستودع، لا مكتوبة يدوياً
+    gen = _load_builder()
+    steps = gen.pipeline(gen.facts())
+    desc = re.search(r'<desc id="flow-desc">(.*?)</desc>', html, re.S).group(1)
+    for st in steps:
+        assert f'{st["title"]} ({gen.STATE_TEXT[st["state"]]})' in desc, st["title"]
     for card in ("ماذا نختبر", "لماذا", "ما الذي يميّزنا"):
         assert card in _text("index.html")
 
@@ -192,7 +197,7 @@ def test_transparency_page_disclosures():
 @pytest.mark.parametrize("page", PAGES)
 def test_mode_bar_says_display_only_not_official(page):
     t = _text(page)
-    assert "للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026." in t
+    assert "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026." in t
 
 
 def test_results_page_says_demo_not_official():
@@ -243,3 +248,16 @@ def test_no_specialist_review_is_stated_honestly(page):
     if f["review"]["approved"]["specialist"] == 0:
         assert "لم تُجرَ مراجعة شرعية متخصصة" in _text(page)
         assert "معتمدة شرعياً</span>" not in _page(page)
+
+
+def test_comparison_caveat_on_methodology_and_results():
+    """تنبيه ميل المقارنة لصالح rag وصغر N: ثابت في المنهجية وبجوار المقارنة وقرار البوابة، والنص واحد في المولّد والصفحة."""
+    COMPARISON_CAVEAT = _load_builder().COMPARISON_CAVEAT
+    assert "أُعدّت لحالات الاختبار نفسها" in COMPARISON_CAVEAT and "تميل لصالح rag" in COMPARISON_CAVEAT
+    assert COMPARISON_CAVEAT in _text("sources.html")
+    core = (WEB / "assets/results-core.js").read_text(encoding="utf-8")
+    m = re.search(r'export const COMPARISON_CAVEAT =\s*"([^"]+)"', core)
+    assert m and m.group(1) == COMPARISON_CAVEAT
+    js = (WEB / "assets/results.js").read_text(encoding="utf-8")
+    assert '"compare-caveat"' in js and '"gate-caveat"' in js
+    assert "تميل لصالح rag" in (ROOT / "docs/METHODOLOGY.md").read_text(encoding="utf-8")

@@ -33,6 +33,7 @@ REPO = "https://github.com/w7by4nrcfd-cpu/Miyar"
 BLOB = f"{REPO}/blob/main/"
 
 NAV = [
+    ("check.html", "تحقق من نص"),
     ("index.html", "الرئيسية"),
     ("levels.html", "مستويات المحتوى"),
     ("sources.html", "المصادر والمنهجية"),
@@ -42,7 +43,16 @@ NAV = [
     ("results.html", "النتائج"),
 ]
 
-DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026."
+DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026."
+# تنبيه المقارنة: النص نفسه في web/assets/results-core.js (COMPARISON_CAVEAT)، ويتحقق من تطابقهما tests/test_web.py
+COMPARISON_CAVEAT = ("مدخلات الأحاديث اليدوية التي يسترجعها rag (data/hadith/manual_hadith.json) أُعدّت لحالات الاختبار نفسها، "
+                     "فالمقارنة تميل لصالح rag.")
+# بعد نشر أول تشغيل رسمي (web/data/results.json غير فارغ) تتغير الصياغة؛ ولا تُدّعى نتائج قبل ذلك
+PUBLISHED_NOTE = "نتائج محفوظة من تشغيلات رسمية مسجّلة في evaluation/official/، كل رقم مع N."
+
+
+def demo_note(f: dict) -> str:
+    return PUBLISHED_NOTE if f["published_runs"] else DEMO_NOTE
 
 LAYOUT = """<!doctype html>
 <html lang="ar" dir="rtl">
@@ -134,7 +144,7 @@ def status_card(f: dict) -> str:
     <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
     <button class="mode" type="button" aria-disabled="true" disabled title="التشغيل الحي غير متاح حالياً">○ تشغيل حي — معطّل حالياً</button>
   </div>
-  <p class="modenote">{DEMO_NOTE}</p>
+  <p class="modenote">{demo_note(f)}</p>
   <div class="sc-progress">
     <div class="sc-row"><span id="sc0">الأساس</span><span>{d0} من {len(p0)}</span></div>
     <progress value="{d0}" max="{len(p0)}" aria-labelledby="sc0">{d0} من {len(p0)}</progress>
@@ -306,7 +316,8 @@ def pipeline(f: dict) -> list[dict]:
                  ("جاهزة" if st["hadith_match"] == "built" else "لم تُبنَ")) if st["quran_match"] == "built" else "الآيات والأحاديث"
     extract_sub = ("الآيات مع موضعها: جاهز؛ الأحاديث: لم تُبنَ" if st["extract"] == "partial"
                    else "كل آية أو حديث نسبه المساعد مع موضعه")
-    judge_sub = ("الآيات والسلوك الأولي: جاهز؛ الأحاديث: لم تُبنَ" if st["judge"] == "partial"
+    judge_sub = (("الإسناد والسلوك الأولي: جاهز؛ الأصناف الستة: لم تُبنَ" if st["hadith_match"] == "built"
+                  else "الآيات والسلوك الأولي: جاهز؛ الأحاديث: لم تُبنَ") if st["judge"] == "partial"
                  else "مؤيَّد / يحتاج تحقق / خاطئ، وسلوك المستوى")
     return [
         {"title": "سؤال موسوم", "sub": f"{f['n']} حالة موسومة بالمستوى A–D والسلوك المتوقع",
@@ -356,10 +367,14 @@ def home(f: dict) -> str:
 {pattern_svg()}
 <div class="hero-grid">
   <div class="hero-text">
+    <div class="try-box">
+      <a class="btn btn-try" href="check.html">جرّب مِعيار بنفسك</a>
+      <p class="muted small try-note">«جرّب» وضع ثانوي: يفحص آيات وأحاديث في نص تلصقه، داخل متصفحك، وليس تقييماً لمساعد.</p>
+    </div>
     <p class="eyebrow">المسار الرابع: أدوات المعرفة والتحقق</p>
     <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
     <p class="lead">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
-    <p class="hero-actions"><a class="btn" href="sources.html">المصادر والمنهجية</a><a class="btn ghost" href="cases.html">حالات الاختبار</a></p>
+    <p class="hero-actions"><a class="btn ghost" href="sources.html">المصادر والمنهجية</a><a class="btn ghost" href="cases.html">حالات الاختبار</a></p>
   </div>
   <figure class="flow">
     <figcaption>مسار العمل: حالة كل مرحلة محسوبة من كود المستودع</figcaption>
@@ -410,7 +425,7 @@ def home(f: dict) -> str:
   <li><a href="levels.html">مستويات المحتوى</a><span>المستويات الأربعة A–D والسلوك المتوقع في كل منها.</span></li>
   <li><a href="sources.html">المصادر والمنهجية</a><span>سجل المصادر للمجالات التسعة، وأصناف الحكم، وكيف يُتحقق من الإسناد.</span></li>
   <li><a href="cases.html">حالات الاختبار</a><span>الحالات كما هي في المستودع، مع البحث والتصفية.</span></li>
-  <li><a href="status.html">الحالة</a><span>ما اكتمل وما يُنفَّذ في 4–6 أكتوبر. <strong>لا توجد نتائج تقييم رسمية بعد.</strong></span></li>
+  <li><a href="status.html">الحالة</a><span>ما اكتمل وما يُنفَّذ في 4–6 أكتوبر. <strong>{"لا توجد نتائج تقييم رسمية بعد." if not f["published_runs"] else "النتائج الرسمية المنشورة في صفحة النتائج."}</strong></span></li>
   <li><a href="transparency.html">الشفافية والخصوصية</a><span>أداة مدعومة بالذكاء الاصطناعي، لا تجمع بياناتك.</span></li>
 </ul>
 </section>
@@ -629,6 +644,8 @@ def sources(f: dict) -> str:
     وهو غير متخصص شرعياً، مقابل Quranpedia والدرر السنية والمكتبة الشاملة؛ وهذا <strong>ليس</strong> مراجعة شرعية.
     والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية ومعلّقة حتى يتوفر مراجع، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.
     {specialist_sentence(f)}</li>
+  <li><strong>حدود المقارنة بين baseline وrag:</strong> {COMPARISON_CAVEAT}
+    والأرقام من عدد محدود من الحالات (N مذكور بجانب كل رقم)، فلا تُعمَّم. والتنبيه نفسه ثابت بجوار المقارنة وقرار البوابة في <a href="results.html">النتائج</a>.</li>
 </ol>
 <p>التفاصيل في {link("docs/METHODOLOGY.md")}.</p>
 """
@@ -691,7 +708,7 @@ def cases_page(f: dict) -> str:
         t = c.get("risk_type")
         tl = TYPE_LABELS.get(t, t)
         rows.append(
-            f'    <tr data-level="{_attr(c["level"])}" data-type="{_attr(tl)}"><th scope="row"><span class="mono">{_esc(c["id"])}</span></th>'
+            f'    <tr data-level="{_attr(c["level"])}" data-type="{_attr(tl)}"><th scope="row"><a class="mono case-link" href="case.html?id={_attr(c["id"])}">{_esc(c["id"])}</a></th>'
             f'<td data-label="المستوى"><span class="badge b-level" lang="en">{_esc(c["level"])}</span></td>'
             f'<td data-label="نوع الحالة">{_esc(tl)}</td>'
             f'<td data-label="آلية المعالجة">{_esc(HANDLING_LABELS.get(c.get("handling"), c.get("handling")))}</td>'
@@ -709,7 +726,8 @@ def cases_page(f: dict) -> str:
 <div class="notice">
   <p><strong>لا حكم ولا نتيجة هنا.</strong> هذه الصفحة تعرض ما يُنتظر من المساعد فقط، لا ما أجاب به.
   والسلوك المتوقع مسودة من إعداد المشروع. {specialist_sentence(f)} {source_check_sentence(f)}
-  ولا يُعرض نص السؤال هنا، لأن بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد.</p>
+  ولا يُعرض نص السؤال في هذا الجدول، لأن بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد؛
+  واضغط معرّف الحالة لصفحتها: السؤال مع تنبيه الفخ والنص الصحيح من البيانات، وما سُجّل لها في تشغيل رسمي إن وُجد.</p>
 </div>
 
 <form class="filters" role="search" aria-label="بحث وتصفية الحالات">
@@ -727,6 +745,102 @@ def cases_page(f: dict) -> str:
 {chr(10).join(rows)}
   </tbody>
 </table></div>
+"""
+
+
+# ---------- تفصيل الحالة (S2) ----------
+CASES_JSON = WEB / "data/testcases.json"
+# فخاخ مقصودة: يُسبق نص السؤال بتنبيه، ويُعرض بجانبه النص الصحيح من البيانات (BUILD_SPEC S2)
+TRAP_TYPES = {"misquoted_verse", "wrong_reference", "invalid_reference", "hadith_absent", "hadith_fabricated"}
+TRAP_WARNING = "هذا السؤال يتضمن عمداً نصاً محرّفاً أو لا يصح، لاختبار المساعد."
+CITATION_STATUS_LABELS = {"supported": "مؤيَّد", "needs_review": "يحتاج تحقق", "wrong_or_missing": "خاطئ أو غير موجود"}
+
+
+def _quran_reference(ref: dict, index) -> dict | None:
+    if ref.get("type") != "quran":
+        return None
+    verses = index.verses_range(ref["sura"], ref["aya"], ref.get("aya_end") or ref["aya"])
+    if not verses:
+        return None
+    aya = str(ref["aya"]) if not ref.get("aya_end") or ref["aya_end"] == ref["aya"] else f'{ref["aya"]}–{ref["aya_end"]}'
+    # الرسم الإملائي المضبوط (mushafs-1) للعرض هنا: علامات الرسم العثماني الصغيرة لا تظهر في كثير من خطوط الجوال
+    return {"kind": "quran", "ref": f'{verses[0].sura_name} {ref["sura"]}:{aya}', "text": " ".join(v.text_simple for v in verses),
+            "source": "Quranpedia.net (النسخة 2026-10-01، mushafs-1 بالرسم الإملائي)"}
+
+
+def _hadith_reference(entry_id: str, manual: dict) -> dict:
+    e = manual.get(entry_id) or {}
+    if not e or entry_status(e) != "complete":
+        return {"kind": "hadith", "ref": entry_id, "pending": True,
+                "note": "مدخل الملف اليدوي ناقص؛ لا يُعرض نص ولا حكم حتى يكتمل من الدرر السنية أو المكتبة الشاملة."}
+    out = {"kind": "hadith", "ref": entry_id, "pending": False, "entry_kind": e["kind"], "link": e.get("link")}
+    if e["kind"] == "found":
+        out.update(text=e["text"], source=e["source"], grade=e["grade"], grade_by=e["grade_by"])
+    elif e["kind"] == "not_found":
+        out.update(query=e["query"], searched_in=e["searched_in"])
+    else:
+        out.update(source=e["source"], max_number=e["max_number"])
+    return out
+
+
+def case_records(f: dict) -> dict:
+    """بيانات صفحة تفصيل الحالة: من testsets/ والبيانات المعتمدة فقط، بلا أي نتيجة (النتائج من web/data/cases/ وحدها)."""
+    from miyar.hadith_match import pending_entries_for_case
+    from miyar.judge import CATEGORIES
+    from miyar.publish import MASK_WHILE_PENDING, MASKED_TEXT
+    from miyar.quran_match import QuranIndex
+
+    index = QuranIndex.load()
+    manual_doc = load_manual()
+    manual = {e["id"]: e for e in manual_doc["entries"]}
+    check_desc, level_desc = {}, {}
+    for p in TESTSETS:
+        doc = json.loads(p.read_text(encoding="utf-8"))
+        check_desc.update(doc.get("checks", {}))
+        level_desc.update(doc.get("levels", {}))
+    cases = []
+    for c in f["cases"]:
+        masked = c["id"] in MASK_WHILE_PENDING and bool(pending_entries_for_case(c["id"], manual_doc))
+        refs = []
+        if c.get("misquote"):
+            refs.append(_quran_reference(c["misquote"]["correct_ref"], index))
+        elif c.get("risk_type") in ("wrong_reference",):
+            refs += [_quran_reference(r, index) for r in c.get("reference_hints", [])]
+        if (c.get("data_check") or {}).get("manual_ref"):
+            refs.append(_hadith_reference(c["data_check"]["manual_ref"], manual))
+        cases.append({
+            "id": c["id"], "testset": "official_v0" if c["id"].startswith("OFF-") else "extended_v1",
+            "level": c["level"], "level_behavior": level_desc.get(c["level"], ""),
+            "type": TYPE_LABELS.get(c.get("risk_type"), c.get("risk_type")),
+            "handling": HANDLING_LABELS.get(c.get("handling"), c.get("handling")),
+            "critical": bool(c.get("critical")),
+            "prompt": None if masked else c["prompt"], "prompt_masked": masked,
+            "trap": bool({c.get("risk_type"), c.get("category"), (c.get("data_check") or {}).get("type")} & TRAP_TYPES),
+            "injected_context": c.get("injected_context"),
+            "expected_behavior": c["expected_behavior"],
+            "checks": [{"name": k, "description": check_desc.get(k, "")} for k in c.get("checks", [])],
+            "review": {"status": c.get("review_status"), "role": c.get("reviewer_role")},
+            "references": [r for r in refs if r],
+        })
+    return {
+        "schema_version": 1,
+        "note": "حالات الاختبار كما في testsets/، والنص الصحيح من البيانات المعتمدة؛ لا نتائج هنا.",
+        "trap_warning": TRAP_WARNING, "masked_text": MASKED_TEXT,
+        "specialist_reviews": f["review"]["approved"]["specialist"],
+        "citation_status_labels": CITATION_STATUS_LABELS, "categories": dict(CATEGORIES),
+        "cases": cases,
+    }
+
+
+CASE_PAGE = """
+<h1>تفصيل الحالة</h1>
+<p class="lead">السؤال كما يُطرح على المساعد، والسلوك المتوقع، وما سجّله التشغيل الرسمي لهذه الحالة إن وُجد.
+كل نص شرعي هنا منقول من البيانات المعتمدة، وكل حكم من سجل رسمي.</p>
+<p class="back"><a href="cases.html">← كل الحالات</a> · <a href="results.html">النتائج والمقارنة</a></p>
+<div id="case" aria-live="polite">
+  <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
+</div>
+<noscript><div class="notice empty"><strong>تحتاج هذه الصفحة إلى JavaScript لقراءة بيانات الحالة.</strong></div></noscript>
 """
 
 
@@ -748,8 +862,11 @@ def status_items(f: dict) -> tuple[list, list]:
         ("استخراج الاستشهادات من الإجابات" + (" (الآيات جاهزة؛ الأحاديث لم تُبنَ)" if st["extract"] == "partial" else ""),
          st["extract"] == "built", "miyar/extract.py"),
         ("مطابقة الأحاديث مع الملف اليدوي", st["hadith_match"] == "built", "miyar/hadith_match.py"),
-        ("حكم السلوك حسب المستوى A–D" + (" (حكم إسناد الآيات وحكم السلوك الأولي بالثقة والإحالة جاهزان؛ "
-                                         "الأحاديث وأصناف الحكم الستة لم تُبنَ)" if st["judge"] == "partial" else ""),
+        ("حكم السلوك حسب المستوى A–D" + (("" if st["judge"] != "partial" else
+                                          " (حكم إسناد الآيات والأحاديث وحكم السلوك الأولي بالثقة والإحالة جاهزة؛ "
+                                          "أصناف الحكم الستة لم تُبنَ)" if st["hadith_match"] == "built" else
+                                          " (حكم إسناد الآيات وحكم السلوك الأولي بالثقة والإحالة جاهزان؛ "
+                                          "الأحاديث وأصناف الحكم الستة لم تُبنَ)")),
          st["judge"] == "built", "miyar/judge.py"),
         ("وحدة حساب الدرجة والمقارنة وقرار البوابة (scoring)", st["scoring"] == "built", "miyar/scoring.py"),
         ("لوحة النتائج والمقارنة (تشغيلات منشورة)", f["published_runs"] > 0, "web/data/results.json"),
@@ -859,15 +976,25 @@ def transparency(f: dict) -> str:
 """
 
 
-RESULTS = """
-<h1>النتائج</h1>
-<div class="notice demo" role="note">
+RESULTS_EMPTY_NOTE = """<div class="notice demo" role="note">
   <p><strong>للعرض فقط: هذه ليست نتائج تقييم رسمية.</strong>
   وضع «نتائج محفوظة» يعرض ملف نتائج محفوظاً مسبقاً دون أي استدعاء لنموذج لغوي، وهو <strong>فارغ حالياً</strong>:
   لا نتائج تقييم رسمية فيه، ولا بيانات تجريبية مصطنعة.</p>
   <p><strong>التقييم الرسمي يبدأ 4 أكتوبر 2026</strong> (أيام التحدي 4–6 أكتوبر)، ولا يُعرض هنا بعده إلا ناتج تشغيل رسمي
-  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N). صفحات النتائج والمقارنة تُبنى في أيام التحدي.</p>
-</div>
+  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N)، يحسبه سكربت النشر من سجلاته.</p>
+</div>"""
+
+RESULTS_PUBLISHED_NOTE = """<div class="notice" role="note">
+  <p><strong>نتائج من تشغيلات رسمية مسجّلة في <span class="ltr" lang="en">evaluation/official/</span>.</strong>
+  الأرقام يحسبها سكربت النشر من أحكام السجلات، ولا يُعرض رقم بلا عدد حالاته (N). الحكم الآلي مساعد للمراجعة لا بديل عنها.</p>
+</div>"""
+
+
+def results_page(f: dict) -> str:
+    note = RESULTS_PUBLISHED_NOTE if f["published_runs"] else RESULTS_EMPTY_NOTE
+    return f"""
+<h1>النتائج</h1>
+{note}
 <div id="results" aria-live="polite">
   <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
 </div>
@@ -885,7 +1012,10 @@ def pages(f: dict) -> dict:
         "cases.html": ("حالات الاختبار — مِعيار", cases_page(f), '<script type="module" src="assets/cases.js"></script>\n'),
         "status.html": ("الحالة — مِعيار", status(f), ""),
         "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f), ""),
-        "results.html": ("النتائج — مِعيار", RESULTS, '<script type="module" src="assets/results.js"></script>\n'),
+        "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
+        "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
+        "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]),
+                       '<script type="module" src="assets/check.js"></script>\n'),
     }
 
 
@@ -901,13 +1031,71 @@ def render() -> dict[str, str]:
     f = facts()
     card = status_card(f)
     return {
-        name: LAYOUT.format(title=title, body=page_head(body.strip("\n")), head_extra=head_extra, nav=nav_html(name),
+        name: LAYOUT.format(title=title, body=page_head(body.strip("\n")), head_extra=head_extra,
+                            nav=nav_html("cases.html" if name == "case.html" else name),
                             quran_version=f["quran_version"], repo=REPO, blob=BLOB, status_card=card, brand_mark=BRAND_MARK)
         for name, (title, body, head_extra) in pages(f).items()
     }
 
 
+# ---------- تحقق من نص (وضع ثانوي) ----------
+CHECK_DIR = WEB / "assets/check"
+CHECK_PAGE = """
+<h1>تحقق من نص <span class="tag-secondary">وضع ثانوي</span></h1>
+<p class="lead">الصق نصاً فيه آيات أو أحاديث، فيستخرجها مِعيار بقواعد ثابتة ويطابقها حرفياً مع البيانات المعتمدة، داخل متصفحك.
+لا يُرسل النص إلى أي خادم، ولا يُستدعى أي نموذج لغوي.</p>
+<div class="notice demo limits" role="note" id="check-limits">
+  <strong>حدود هذه الصفحة</strong>
+  <ul>
+    <li><strong>ليست تقييماً لمساعد:</strong> الوظيفة الأساسية لمِعيار اختبار المساعد كاملاً على مجموعة حالات (انظر <a href="results.html">النتائج</a>)؛ هذه الصفحة تفحص نصاً واحداً فقط.</li>
+    <li><strong>لا فتوى ولا حكم شرعي:</strong> تفحص نسبة النص إلى مصدره فقط، ولا تحكم على معنى ولا على مسألة.</li>
+    <li><strong>الآيات:</strong> مطابقة حرفية بعد توحيد التشكيل والهمزات مع نص Quranpedia (6236 آية). «مؤيَّد» فقط عند تطابق فعلي.</li>
+    <li><strong>الأحاديث محدودة جداً:</strong> تُطابَق مع <span id="hadith-count">المدخلات المكتملة</span> في الملف اليدوي وحدها؛ وكل حديث سواها «يحتاج تحقق»، وهذا لا يعني أنه ضعيف ولا صحيح.</li>
+    <li><strong>الاستخراج بقواعد ثابتة:</strong> الآية بين ﴿ ﴾ أو { } أو بين علامتي تنصيص يليها موضع بين قوسين مثل (البقرة: 255) أو (2:255)؛ والحديث بين علامتي تنصيص قبله «قال رسول الله» أو ﷺ، أو بعده «رواه» أو «أخرجه». ما لم يُكتب بهذه الصورة لا يُفحص.</li>
+  </ul>
+</div>
+<form id="check-form" class="check-form" autocomplete="off">
+  <label for="check-text">النص</label>
+  <textarea id="check-text" rows="8" dir="auto" maxlength="20000" placeholder="مثال: قال تعالى: ﴿قل هو الله أحد﴾ (الإخلاص: 1)"></textarea>
+  <div class="check-actions">
+    <button type="submit" class="btn" id="check-run">تحقق</button>
+    <button type="button" class="btn ghost" id="check-clear">امسح</button>
+  </div>
+  <p class="muted" id="check-size">عند أول تحقق يُحمَّل نص المصحف مرة واحدة (نحو نصف ميغابايت مضغوطاً)، ثم يحفظه المتصفح.</p>
+</form>
+<div id="check-results" aria-live="polite"></div>
+<noscript><div class="notice empty"><strong>تحتاج هذه الصفحة إلى JavaScript.</strong></div></noscript>
+<p class="muted">المصادر: نص القرآن من <a href="https://quranpedia.net" rel="noopener">Quranpedia.net</a> (النسخة {quran_version})، والأحاديث من الملف اليدوي
+<span class="ltr" lang="en">data/hadith/manual_hadith.json</span> (روابطه إلى الدرر السنية أو المكتبة الشاملة). المنطق نفسه في
+<span class="ltr" lang="en">miyar/paste_check.py</span>، واختبار يضمن تطابق نتائج المتصفح مع بايثون.</p>
+"""
+
+
+def render_check_data() -> dict[str, str]:
+    """بيانات صفحة التحقق: نص المصحف (الرسمان) ومدخلات الملف اليدوي المكتملة فقط."""
+    from miyar.paste_check import complete_manual, quran_web_data
+    from miyar.quran_match import QuranIndex
+
+    src = json.loads((ROOT / "data/quran/source.json").read_text(encoding="utf-8"))
+    source = {"name": "Quranpedia.net", "url": "https://quranpedia.net", "dump_version": src["dump_version"],
+              "files": [x["file"] for x in src["files"]], "license": "data/quran/LICENSE-quranpedia.md"}
+    quran = quran_web_data(QuranIndex.load(), source)
+    hadith = {"source": "data/hadith/manual_hadith.json — المدخلات المكتملة فقط", **complete_manual()}
+    return {
+        "quran.json": json.dumps(quran, ensure_ascii=False, separators=(",", ":")) + "\n",
+        "hadith.json": json.dumps(hadith, ensure_ascii=False, indent=1) + "\n",
+    }
+
+
+def render_case_data() -> str:
+    return json.dumps(case_records(facts()), ensure_ascii=False, indent=2) + "\n"
+
+
 def build() -> None:
+    CASES_JSON.write_text(render_case_data(), encoding="utf-8")
+    CHECK_DIR.mkdir(parents=True, exist_ok=True)
+    for name, body in render_check_data().items():
+        (CHECK_DIR / name).write_text(body, encoding="utf-8")
     rendered = render()
     for name, page in rendered.items():
         (WEB / name).write_text(page, encoding="utf-8")

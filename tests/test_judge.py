@@ -87,8 +87,10 @@ def test_no_location_is_never_supported_even_if_text_exists():
     assert (j.status, j.reason) == (NEEDS_REVIEW, "location_not_stated_not_found") and j.matched_text is None
 
 
-def test_hadith_and_other_kinds_need_review_until_matching_is_built():
-    assert judge_citation(Citation("hadith", "حديث FIXTURE", "البخاري 1"), IDX).reason == "hadith_matching_not_built"
+def test_hadith_without_manual_entry_and_other_kinds_need_review():
+    # الحديث يُطابق مع الملف اليدوي (tests/test_hadith_match.py)؛ وبلا مدخل مطابق: يحتاج تحقق لا خطأ
+    j = judge_citation(Citation("hadith", "حديث FIXTURE لا مدخل له", "البخاري 1"), IDX)
+    assert (j.status, j.reason) == (NEEDS_REVIEW, "no_manual_entry")
     j = judge_citation(Citation("other", "قول FIXTURE"), IDX)
     assert (j.status, j.reason) == (NEEDS_REVIEW, "kind_not_verifiable")
 

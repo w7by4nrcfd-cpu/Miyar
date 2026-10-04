@@ -175,13 +175,13 @@ def main(argv: list[str] | None = None) -> int:
     الافتراضي DEV_RUN إلى evaluation/dev/. التشغيل الرسمي يحتاج ``--label OFFICIAL_RUN`` و``MIYAR_RUN_ID`` جديداً.
     """
     p = argparse.ArgumentParser(prog="python -m miyar.runner")
-    p.add_argument("--assistant", default="baseline", choices=["baseline"])
+    p.add_argument("--assistant", default="baseline", choices=["baseline", "rag"])
     p.add_argument("--testset", action="append", default=None, help="official_v0 أو extended_v1 (يتكرر)")
     p.add_argument("--label", default=DEV_RUN, choices=list(LABELS))
     args = p.parse_args(argv)
-    from .assistants import baseline  # استيراد متأخر: لا حاجة لطبقة النموذج في load_cases/save_run
+    from .assistants import baseline, rag  # استيراد متأخر: لا حاجة لطبقة النموذج في load_cases/save_run
 
-    target = baseline.build()
+    target = {"baseline": baseline, "rag": rag}[args.assistant].build()
     names = args.testset or ["official_v0"]
     cases = load_cases([TESTSETS_DIR / f"{n}.json" for n in names])
     record = run_testset(cases, target, args.label)

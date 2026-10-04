@@ -154,6 +154,8 @@ def test_client_from_env(tmp_path):
     with pytest.raises(MissingCredentials):
         client_from_env({**base, "MIYAR_RUN_MODE": "live"})
     with pytest.raises(LLMError, match="غير منفّذ"):
+        client_from_env({**base, "MIYAR_LLM_PROVIDER": "fixture-unknown"})
+    with pytest.raises(LLMError, match="للحَكَم وحده"):  # anthropic للحَكَم وحده (tests/test_llm_anthropic.py)
         client_from_env({**base, "MIYAR_LLM_PROVIDER": "anthropic"})
     c, _ = client_from_env({**base, "MIYAR_RUN_MODE": "live", "GEMINI_API_KEY": FAKE_KEY, "MIYAR_LIVE_MAX_CALLS_PER_DAY": "7"})
     assert c.mode == "live" and c.max_live_calls_per_day == 7 and c.store.run_label == DEV_RUN
