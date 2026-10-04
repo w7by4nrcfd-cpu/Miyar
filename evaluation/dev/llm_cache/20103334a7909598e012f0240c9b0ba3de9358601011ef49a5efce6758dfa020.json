@@ -1,0 +1,38 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T02:43:37+00:00",
+  "request_key": "20103334a7909598e012f0240c9b0ba3de9358601011ef49a5efce6758dfa020",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash",
+    "prompt": "<<<الإجابة\nترجمة كلمة «التوحيد» إلى الإنجليزية تعتمد على السياق الديني أو الفلسفي:\n\n1. **Monotheism** (وهي الترجمة الأكثر شيوعاً وتعني الاعتقاد بإله واحد).\n2. **The Oneness [of God]** (وتعني وحدانية الله، وتُستخدم كثيراً في السياق الإسلامي مثل \"توحيد الله\").\n3. **Unification** (وتعني التوحيد بمعنى الدمج أو جمع الأشياء معاً، في غير السياق الديني).\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم.\n- انسخ نص الآية كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر.\n- لا تستخرج الأحاديث ولا أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": "low",
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": null
+  },
+  "response": {
+    "text": "{\n  \"citations\": []\n}",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash",
+    "requested_model": "gemini-3.8-flash",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 361,
+      "candidatesTokenCount": 9,
+      "totalTokenCount": 370,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 361
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 9
+  }
+}

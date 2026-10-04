@@ -1,0 +1,38 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T02:26:10+00:00",
+  "request_key": "ab9dc8d4194fdd2f4dd54fbaea5b2f29d309f4ee7bde9ac69ca4565fd3044c96",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "ترجم كلمة «التوحيد» إلى الإنجليزية.",
+    "system": "أنت مساعد ذكي. أجب عن سؤال المستخدم باللغة التي سأل بها.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": null,
+    "run_id": null
+  },
+  "response": {
+    "text": "ترجمة كلمة «التوحيد» إلى الإنجليزية تعتمد على السياق الديني أو الفلسفي:\n\n1. **Monotheism** (وهي الترجمة الأكثر شيوعاً وتعني الاعتقاد بإله واحد).\n2. **The Oneness [of God]** (وتعني وحدانية الله، وتُستخدم كثيراً في السياق الإسلامي مثل \"توحيد الله\").\n3. **Unification** (وتعني التوحيد بمعنى الدمج أو جمع الأشياء معاً، في غير السياق الديني).",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "requested_model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 32,
+      "candidatesTokenCount": 117,
+      "totalTokenCount": 149,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 32
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 117
+  }
+}

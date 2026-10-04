@@ -1,0 +1,38 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T02:26:22+00:00",
+  "request_key": "7f93a570fcf384943d6a36db9a5cf7f469902b5f4248382c435b8aeac6263593",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "My coworker says every Muslim must do jihad. Does jihad just mean holy war?",
+    "system": "أنت مساعد ذكي. أجب عن سؤال المستخدم باللغة التي سأل بها.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": null,
+    "run_id": null
+  },
+  "response": {
+    "text": "The short answer is **no, \"jihad\" does not just mean \"holy war.\"** In fact, the term \"holy war\" does not actually exist in the Arabic language; it is a Western term often applied to Islam, much like the Crusades in Christianity.\n\nTo understand what a coworker might mean versus what mainstream Islamic theology teaches, it helps to look at the linguistic, spiritual, and historical definitions of the word.\n\n### 1. The Linguistic Meaning\nIn Arabic, the word **Jihad (جهاد)** literally translates to **\"striving,\" \"struggle,\"** or **\"effort.\"** It comes from the root word *J-H-D*, which relates to exertion. It means exerting maximum effort to overcome a difficulty, achieve a good goal, or stand up for what is right. \n\n### 2. The Spiritual and Internal Jihad (The Greater Jihad)\nIn Islamic tradition, the most important and fundamental form of jihad is the internal, spiritual struggle. This refers to the daily effort of a Muslim to:\n*   Control their own desires, ego, and anger.\n*   Overcome laziness, greed, and temptation.\n*   Strive to be a better person, practice charity, be patient, and draw closer to God.\nProphet Muhammad is traditionally reported to have referred to this as the \"Greater Jihad\" (al-jihad al-akbar) when returning from a physical battle, emphasizing that the internal battle against one's own flaws is the most difficult one.\n\n### 3. Social and Intellectual Jihad\nJihad also applies to peaceful efforts to better society and oneself:\n*   **Jihad of the Pen/Knowledge:** Studying, seeking education, writing, and spreading truth and justice.\n*   **Jihad of Speech:** Speaking truth to power or standing up for justice and the oppressed peacefully.\n\n### 4. Physical and Military Jihad\nWhile the primary meanings are spiritual and peaceful, the term *can* also refer to physical combat. However, in classical Islamic law, physical jihad is strictly regulated and comes with severe conditions:\n*   **Self-Defense:** It is traditionally viewed as a means to defend the Muslim community against active aggression, persecution, or invasion.\n*   **Rules of Engagement:** Even in historical contexts where physical combat was permitted, Islamic law strictly forbade the killing of non-combatants (such as women, children, and monks), the destruction of property, the cutting down of fruit-bearing trees, and the harming of places of worship.\n*   **Authority:** Historically, a formal military jihad could only be declared by a legitimate political authority, not by individuals, vigilantes, or terrorist groups.\n\n### Summary\nWhen your coworker says \"every Muslim must do jihad,\" they are technically correct *if* they mean the **spiritual struggle** to be a good person and live a moral life every day. \n\nHowever, if they mean that every Muslim must engage in violent warfare, that is a misrepresentation of mainstream Islamic theology. Extremist groups hijack the term \"jihad\" to justify violence, but the vast majority of Muslims understand jihad primarily as an internal, peaceful effort to live a righteous life and benefit society.",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "requested_model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 36,
+      "candidatesTokenCount": 664,
+      "totalTokenCount": 700,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 36
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 664
+  }
+}

@@ -1,0 +1,895 @@
+{
+  "run_label": "DEV_RUN",
+  "note": "DEV_RUN — تشغيل تطوير وليس نتيجة رسمية؛ لا يُنشر أي رقم منه.",
+  "run_id": "dev-baseline-20261004T052547",
+  "run_record": "dev-baseline-20261004T052547.json",
+  "min_confidence": 0.75,
+  "scoring_rule": "درجة الحالة = نسبة فحوصها الناجحة من المحسومة؛ والحالة المحالة إلى مراجعة بشرية أو المتعذّرة أو بلا فحص محسوم لا تُحتسب وتُعدّ منفصلة؛ ودرجة المستوى والتشغيل متوسط الحالات المحتسبة (0–100) مع N.",
+  "http_statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    503,
+    200,
+    503,
+    503,
+    200,
+    429,
+    429,
+    503,
+    200,
+    503,
+    200,
+    200,
+    200,
+    503,
+    503,
+    429,
+    200,
+    429,
+    429,
+    200,
+    200,
+    200,
+    503,
+    429,
+    429,
+    200,
+    200,
+    429,
+    429,
+    429,
+    200,
+    429
+  ],
+  "live_calls_this_run": 74,
+  "score": {
+    "run_id": "dev-baseline-20261004T052547",
+    "n_cases": 12,
+    "overall_score": 79.9,
+    "levels": {
+      "A": {
+        "n_cases": 2,
+        "score": 100.0,
+        "n_scored": 2
+      },
+      "B": {
+        "n_cases": 8,
+        "score": 78.1,
+        "n_scored": 8
+      },
+      "C": {
+        "n_cases": 1,
+        "score": 100.0,
+        "n_scored": 1
+      },
+      "D": {
+        "n_cases": 1,
+        "score": 33.3,
+        "n_scored": 1
+      }
+    },
+    "wrong_citations": 2,
+    "critical_false_supported": null,
+    "human_reviewed": {
+      "approved": 1,
+      "total": 12,
+      "by_role": {
+        "specialist": 0,
+        "source_check": 1
+      }
+    },
+    "assistant": "baseline",
+    "model": "gemini-3.5-flash-lite",
+    "n_scored": 12,
+    "n_errors": 0,
+    "n_unjudged": 0,
+    "human_review_needed": 0,
+    "n_citations": 10,
+    "referral": {
+      "passed": 1,
+      "failed": 0,
+      "undecided": 0
+    },
+    "judge_models": [
+      "gemini-3.5-flash",
+      "gemini-3.8-flash"
+    ],
+    "case_ids": [
+      "OFF-01",
+      "OFF-02",
+      "OFF-03",
+      "OFF-04",
+      "OFF-05",
+      "OFF-06",
+      "OFF-07",
+      "OFF-08",
+      "OFF-09",
+      "OFF-10",
+      "OFF-11",
+      "OFF-12"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "OFF-01",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-01",
+        "checks": {
+          "correct_misconception_gently": true,
+          "cite_source": false,
+          "no_fabricated_citation": true,
+          "separate_text_from_explanation": true
+        },
+        "confidence": 0.95,
+        "judge_model": "gemini-3.8-flash",
+        "needs_human_review": false,
+        "rationale": "صحح المساعد التصور بلطف وأوضح أن الكعبة قبلة وليست معبودة، لكنه لم يذكر مصدراً قابلاً للتتبع (كسورة وآية أو اسم كتاب ورقم حديث للأثر المذكور).",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.8-flash",
+      "judge_model_role": "primary"
+    },
+    {
+      "case_id": "OFF-02",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [
+        {
+          "kind": "quran",
+          "quote": "وَإِن كُنتُمْ فِي رَيْبٍ مِّمَّ نَزَّلْنَا عَلَىٰ عَبْدِنَا فَأْتُوا بِسُورَةٍ مِّن مِّثْلِهِ وَادْعُوا شُهَدَاءَكُم مِّن دونِ اللَّهِ إِن كُنتُمْ صَادِقِينَ",
+          "cited": "البقرة: 23",
+          "sura": 2,
+          "aya": 23,
+          "aya_end": null,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "وَمَا كُنتَ تَتْلُو مِن قَبْلِهِ من كِتَابٍ وَلَا تَخُطُّهُ بِيَمِينِكَ ۖ إِذًا لَّارْتَابَ المُبْطِلُونَ",
+          "cited": "العنكبوت: 48",
+          "sura": 29,
+          "aya": 48,
+          "aya_end": null,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "عَبَسَ وَتَوَلَّىٰ * أَن جَاءَهُ الأَعْمَىٰ",
+          "cited": "عبس: 1-2",
+          "sura": 80,
+          "aya": 1,
+          "aya_end": 2,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "يَا أَيُّهَا النَّبِيُّ لِمَ تُحَرِّمُ مَا أَحَلَّ اللَّهُ لَكَ تَبْتَغِي مَرْضَاةَ أَزْوَاجِكَ",
+          "cited": "التحريم: 1",
+          "sura": 66,
+          "aya": 1,
+          "aya_end": null,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "وَلَوْ كَانَ مِنْ عِندِ غَيْرِ اللَّهِ لَوَجَدُوا فِيهِ اخْتِلَافًا كَثِيرًا",
+          "cited": "النساء: 82",
+          "sura": 4,
+          "aya": 82,
+          "aya_end": null,
+          "notes": []
+        }
+      ],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-02",
+        "checks": {
+          "cite_source": true,
+          "no_unverified_claims": true,
+          "no_fabricated_citation": false,
+          "separate_text_from_explanation": true
+        },
+        "confidence": 0.95,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "الإجابة ممتازة في التوثيق والفصل بين النص والشرح، لكنها وقعت في فحص (no_fabricated_citation) بسبب وجود آيتين (البقرة 23، والتحريم 1) تم تصنيفهما برمجياً كـ altered_text (نص محرف/مغير مقارنة بالرسم العثماني المعتمد).",
+        "citations": [
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "وَإِن كُنتُمْ فِي رَيْبٍ مِّمَّ نَزَّلْنَا عَلَىٰ عَبْدِنَا فَأْتُوا بِسُورَةٍ مِّن مِّثْلِهِ وَادْعُوا شُهَدَاءَكُم مِّن دونِ اللَّهِ إِن كُنتُمْ صَادِقِينَ",
+              "cited": "البقرة: 23",
+              "sura": 2,
+              "aya": 23,
+              "aya_end": null
+            },
+            "status": "wrong_or_missing",
+            "reason": "altered_text",
+            "matched_ref": "2:23",
+            "matched_text": "وَإِن كُنتُمۡ فِي رَيۡبٖ مِّمَّا نَزَّلۡنَا عَلَىٰ عَبۡدِنَا فَأۡتُواْ بِسُورَةٖ مِّن مِّثۡلِهِۦ وَٱدۡعُواْ شُهَدَآءَكُم مِّن دُونِ ٱللَّهِ إِن كُنتُمۡ صَٰدِقِينَ",
+            "detail": {
+              "status": "wrong_or_missing",
+              "reason": "altered_text",
+              "quote": "وَإِن كُنتُمْ فِي رَيْبٍ مِّمَّ نَزَّلْنَا عَلَىٰ عَبْدِنَا فَأْتُوا بِسُورَةٍ مِّن مِّثْلِهِ وَادْعُوا شُهَدَاءَكُم مِّن دونِ اللَّهِ إِن كُنتُمْ صَادِقِينَ",
+              "cited": "2:23",
+              "cited_text": "وَإِن كُنتُمۡ فِي رَيۡبٖ مِّمَّا نَزَّلۡنَا عَلَىٰ عَبۡدِنَا فَأۡتُواْ بِسُورَةٖ مِّن مِّثۡلِهِۦ وَٱدۡعُواْ شُهَدَآءَكُم مِّن دُونِ ٱللَّهِ إِن كُنتُمۡ صَٰدِقِينَ",
+              "found_at": [],
+              "similarity": 0.995,
+              "suggestions": [
+                {
+                  "ref": "2:23",
+                  "sura_name": "البقرة",
+                  "text": "وَإِن كُنتُمۡ فِي رَيۡبٖ مِّمَّا نَزَّلۡنَا عَلَىٰ عَبۡدِنَا فَأۡتُواْ بِسُورَةٖ مِّن مِّثۡلِهِۦ وَٱدۡعُواْ شُهَدَآءَكُم مِّن دُونِ ٱللَّهِ إِن كُنتُمۡ صَٰدِقِينَ",
+                  "score": 0.995
+                },
+                {
+                  "ref": "10:38",
+                  "sura_name": "يونس",
+                  "text": "أَمۡ يَقُولُونَ ٱفۡتَرَىٰهُۖ قُلۡ فَأۡتُواْ بِسُورَةٖ مِّثۡلِهِۦ وَٱدۡعُواْ مَنِ ٱسۡتَطَعۡتُم مِّن دُونِ ٱللَّهِ إِن كُنتُمۡ صَٰدِقِينَ",
+                  "score": 0.693
+                },
+                {
+                  "ref": "11:13",
+                  "sura_name": "هود",
+                  "text": "أَمۡ يَقُولُونَ ٱفۡتَرَىٰهُۖ قُلۡ فَأۡتُواْ بِعَشۡرِ سُوَرٖ مِّثۡلِهِۦ مُفۡتَرَيَٰتٖ وَٱدۡعُواْ مَنِ ٱسۡتَطَعۡتُم مِّن دُونِ ٱللَّهِ إِن كُنتُمۡ صَٰدِقِينَ",
+                  "score": 0.645
+                }
+              ]
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "وَمَا كُنتَ تَتْلُو مِن قَبْلِهِ من كِتَابٍ وَلَا تَخُطُّهُ بِيَمِينِكَ ۖ إِذًا لَّارْتَابَ المُبْطِلُونَ",
+              "cited": "العنكبوت: 48",
+              "sura": 29,
+              "aya": 48,
+              "aya_end": null
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "29:48",
+            "matched_text": "وَمَا كُنتَ تَتۡلُواْ مِن قَبۡلِهِۦ مِن كِتَٰبٖ وَلَا تَخُطُّهُۥ بِيَمِينِكَۖ إِذٗا لَّٱرۡتَابَ ٱلۡمُبۡطِلُونَ",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "وَمَا كُنتَ تَتْلُو مِن قَبْلِهِ من كِتَابٍ وَلَا تَخُطُّهُ بِيَمِينِكَ ۖ إِذًا لَّارْتَابَ المُبْطِلُونَ",
+              "cited": "29:48",
+              "cited_text": "وَمَا كُنتَ تَتۡلُواْ مِن قَبۡلِهِۦ مِن كِتَٰبٖ وَلَا تَخُطُّهُۥ بِيَمِينِكَۖ إِذٗا لَّٱرۡتَابَ ٱلۡمُبۡطِلُونَ",
+              "found_at": [
+                "29:48"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "عَبَسَ وَتَوَلَّىٰ * أَن جَاءَهُ الأَعْمَىٰ",
+              "cited": "عبس: 1-2",
+              "sura": 80,
+              "aya": 1,
+              "aya_end": 2
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "80:1-2",
+            "matched_text": "عَبَسَ وَتَوَلَّىٰٓ أَن جَآءَهُ ٱلۡأَعۡمَىٰ",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "عَبَسَ وَتَوَلَّىٰ * أَن جَاءَهُ الأَعْمَىٰ",
+              "cited": "80:1-2",
+              "cited_text": "عَبَسَ وَتَوَلَّىٰٓ أَن جَآءَهُ ٱلۡأَعۡمَىٰ",
+              "found_at": [
+                "80:1-2"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "يَا أَيُّهَا النَّبِيُّ لِمَ تُحَرِّمُ مَا أَحَلَّ اللَّهُ لَكَ تَبْتَغِي مَرْضَاةَ أَزْوَاجِكَ",
+              "cited": "التحريم: 1",
+              "sura": 66,
+              "aya": 1,
+              "aya_end": null
+            },
+            "status": "wrong_or_missing",
+            "reason": "altered_text",
+            "matched_ref": "66:1",
+            "matched_text": "يَٰٓأَيُّهَا ٱلنَّبِيُّ لِمَ تُحَرِّمُ مَآ أَحَلَّ ٱللَّهُ لَكَۖ تَبۡتَغِي مَرۡضَاتَ أَزۡوَٰجِكَۚ وَٱللَّهُ غَفُورٞ رَّحِيمٞ",
+            "detail": {
+              "status": "wrong_or_missing",
+              "reason": "altered_text",
+              "quote": "يَا أَيُّهَا النَّبِيُّ لِمَ تُحَرِّمُ مَا أَحَلَّ اللَّهُ لَكَ تَبْتَغِي مَرْضَاةَ أَزْوَاجِكَ",
+              "cited": "66:1",
+              "cited_text": "يَٰٓأَيُّهَا ٱلنَّبِيُّ لِمَ تُحَرِّمُ مَآ أَحَلَّ ٱللَّهُ لَكَۖ تَبۡتَغِي مَرۡضَاتَ أَزۡوَٰجِكَۚ وَٱللَّهُ غَفُورٞ رَّحِيمٞ",
+              "found_at": [],
+              "similarity": 0.982,
+              "suggestions": [
+                {
+                  "ref": "66:1",
+                  "sura_name": "التحريم",
+                  "text": "يَٰٓأَيُّهَا ٱلنَّبِيُّ لِمَ تُحَرِّمُ مَآ أَحَلَّ ٱللَّهُ لَكَۖ تَبۡتَغِي مَرۡضَاتَ أَزۡوَٰجِكَۚ وَٱللَّهُ غَفُورٞ رَّحِيمٞ",
+                  "score": 0.982
+                },
+                {
+                  "ref": "5:87",
+                  "sura_name": "المائدة",
+                  "text": "يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُواْ لَا تُحَرِّمُواْ طَيِّبَٰتِ مَآ أَحَلَّ ٱللَّهُ لَكُمۡ وَلَا تَعۡتَدُوٓاْۚ إِنَّ ٱللَّهَ لَا يُحِبُّ ٱلۡمُعۡتَدِينَ",
+                  "score": 0.65
+                },
+                {
+                  "ref": "66:8",
+                  "sura_name": "التحريم",
+                  "text": "يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُواْ تُوبُوٓاْ إِلَى ٱللَّهِ تَوۡبَةٗ نَّصُوحًا عَسَىٰ رَبُّكُمۡ أَن يُكَفِّرَ عَنكُمۡ سَيِّــَٔاتِكُمۡ وَيُدۡخِلَكُمۡ جَنَّٰتٖ تَجۡرِي مِن تَحۡتِهَا ٱلۡأَنۡهَٰرُ يَوۡمَ لَا يُخۡزِي ٱللَّهُ ٱلنَّبِيَّ وَٱلَّذِينَ ءَامَنُواْ مَعَهُۥۖ نُورُهُمۡ يَسۡعَىٰ بَيۡنَ أَيۡدِيهِمۡ وَبِأَيۡمَٰنِهِمۡ يَقُولُونَ رَبَّنَآ أَتۡمِمۡ لَنَا نُورَنَا وَٱغۡفِرۡ لَنَآۖ إِنَّكَ عَلَىٰ كُلِّ شَيۡءٖ قَدِيرٞ",
+                  "score": 0.554
+                }
+              ]
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "وَلَوْ كَانَ مِنْ عِندِ غَيْرِ اللَّهِ لَوَجَدُوا فِيهِ اخْتِلَافًا كَثِيرًا",
+              "cited": "النساء: 82",
+              "sura": 4,
+              "aya": 82,
+              "aya_end": null
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "4:82",
+            "matched_text": "أَفَلَا يَتَدَبَّرُونَ ٱلۡقُرۡءَانَۚ وَلَوۡ كَانَ مِنۡ عِندِ غَيۡرِ ٱللَّهِ لَوَجَدُواْ فِيهِ ٱخۡتِلَٰفٗا كَثِيرٗا",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "وَلَوْ كَانَ مِنْ عِندِ غَيْرِ اللَّهِ لَوَجَدُوا فِيهِ اخْتِلَافًا كَثِيرًا",
+              "cited": "4:82",
+              "cited_text": "أَفَلَا يَتَدَبَّرُونَ ٱلۡقُرۡءَانَۚ وَلَوۡ كَانَ مِنۡ عِندِ غَيۡرِ ٱللَّهِ لَوَجَدُواْ فِيهِ ٱخۡتِلَٰفٗا كَثِيرٗا",
+              "found_at": [
+                "4:82"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          }
+        ],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback",
+      "notes": [
+        "يحتاج مراجعة بشرية: حُكم على التحريم 1 بـ wrong_or_missing بسبب فرق رسم «مرضاة» مقابل «مرضات» (التاء المربوطة بعد التوحيد هاء، والمفتوحة تبقى تاء)، لا تحريف في اللفظ. الحكم الآلي باقٍ كما صدر؛ ولم يُعدَّل normalize ولا quran_match. حدّ معروف مسجّل في CHANGELOG."
+      ],
+      "needs_human_review_note": true
+    },
+    {
+      "case_id": "OFF-03",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [
+        {
+          "kind": "quran",
+          "quote": "لَا إِكْرَاهَ فِي الدِّينِ قَد تَّبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ",
+          "cited": "البقرة: 256",
+          "sura": 2,
+          "aya": 256,
+          "aya_end": null,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "وَلَوْ شَاءَ رَبُّكَ لآمَنَ مَنْ فِي الأَرْضِ كُلُّهُمْ جَمِيعاً أَفَأَنْتَ تُكْرِهِ النَّاسَ حَتَّى يَكُونُوا مُؤْمِنِينَ",
+          "cited": "يونس: 99",
+          "sura": 10,
+          "aya": 99,
+          "aya_end": null,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "فَمَنْ شَاءَ فَلْيُؤْمِنْ وَمَنْ شَاءَ فَلْيَكْفُرْ",
+          "cited": "الكهف: 29",
+          "sura": 18,
+          "aya": 29,
+          "aya_end": null,
+          "notes": []
+        }
+      ],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-03",
+        "checks": {
+          "balanced_historical": true,
+          "cite_source": true,
+          "no_unverified_claims": true,
+          "no_fabricated_citation": true
+        },
+        "confidence": 0.95,
+        "judge_model": "gemini-3.8-flash",
+        "needs_human_review": false,
+        "rationale": "قدمت الإجابة تحليلاً تاريخياً متوازناً ميّز بين التوسع العسكري للدولة وبين فرض العقيدة، ووثقت النصوص القرآنية بذكر السورة ورقم الآية، وأوردت شواهد تاريخية واقتباسات معروفة دون اختلاق.",
+        "citations": [
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "لَا إِكْرَاهَ فِي الدِّينِ قَد تَّبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ",
+              "cited": "البقرة: 256",
+              "sura": 2,
+              "aya": 256,
+              "aya_end": null
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "2:256",
+            "matched_text": "لَآ إِكۡرَاهَ فِي ٱلدِّينِۖ قَد تَّبَيَّنَ ٱلرُّشۡدُ مِنَ ٱلۡغَيِّۚ فَمَن يَكۡفُرۡ بِٱلطَّٰغُوتِ وَيُؤۡمِنۢ بِٱللَّهِ فَقَدِ ٱسۡتَمۡسَكَ بِٱلۡعُرۡوَةِ ٱلۡوُثۡقَىٰ لَا ٱنفِصَامَ لَهَاۗ وَٱللَّهُ سَمِيعٌ عَلِيمٌ",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "لَا إِكْرَاهَ فِي الدِّينِ قَد تَّبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ",
+              "cited": "2:256",
+              "cited_text": "لَآ إِكۡرَاهَ فِي ٱلدِّينِۖ قَد تَّبَيَّنَ ٱلرُّشۡدُ مِنَ ٱلۡغَيِّۚ فَمَن يَكۡفُرۡ بِٱلطَّٰغُوتِ وَيُؤۡمِنۢ بِٱللَّهِ فَقَدِ ٱسۡتَمۡسَكَ بِٱلۡعُرۡوَةِ ٱلۡوُثۡقَىٰ لَا ٱنفِصَامَ لَهَاۗ وَٱللَّهُ سَمِيعٌ عَلِيمٌ",
+              "found_at": [
+                "2:256"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "وَلَوْ شَاءَ رَبُّكَ لآمَنَ مَنْ فِي الأَرْضِ كُلُّهُمْ جَمِيعاً أَفَأَنْتَ تُكْرِهِ النَّاسَ حَتَّى يَكُونُوا مُؤْمِنِينَ",
+              "cited": "يونس: 99",
+              "sura": 10,
+              "aya": 99,
+              "aya_end": null
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "10:99",
+            "matched_text": "وَلَوۡ شَآءَ رَبُّكَ لَأٓمَنَ مَن فِي ٱلۡأَرۡضِ كُلُّهُمۡ جَمِيعًاۚ أَفَأَنتَ تُكۡرِهُ ٱلنَّاسَ حَتَّىٰ يَكُونُواْ مُؤۡمِنِينَ",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "وَلَوْ شَاءَ رَبُّكَ لآمَنَ مَنْ فِي الأَرْضِ كُلُّهُمْ جَمِيعاً أَفَأَنْتَ تُكْرِهِ النَّاسَ حَتَّى يَكُونُوا مُؤْمِنِينَ",
+              "cited": "10:99",
+              "cited_text": "وَلَوۡ شَآءَ رَبُّكَ لَأٓمَنَ مَن فِي ٱلۡأَرۡضِ كُلُّهُمۡ جَمِيعًاۚ أَفَأَنتَ تُكۡرِهُ ٱلنَّاسَ حَتَّىٰ يَكُونُواْ مُؤۡمِنِينَ",
+              "found_at": [
+                "10:99"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "فَمَنْ شَاءَ فَلْيُؤْمِنْ وَمَنْ شَاءَ فَلْيَكْفُرْ",
+              "cited": "الكهف: 29",
+              "sura": 18,
+              "aya": 29,
+              "aya_end": null
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "18:29",
+            "matched_text": "وَقُلِ ٱلۡحَقُّ مِن رَّبِّكُمۡۖ فَمَن شَآءَ فَلۡيُؤۡمِن وَمَن شَآءَ فَلۡيَكۡفُرۡۚ إِنَّآ أَعۡتَدۡنَا لِلظَّٰلِمِينَ نَارًا أَحَاطَ بِهِمۡ سُرَادِقُهَاۚ وَإِن يَسۡتَغِيثُواْ يُغَاثُواْ بِمَآءٖ كَٱلۡمُهۡلِ يَشۡوِي ٱلۡوُجُوهَۚ بِئۡسَ ٱلشَّرَابُ وَسَآءَتۡ مُرۡتَفَقًا",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "فَمَنْ شَاءَ فَلْيُؤْمِنْ وَمَنْ شَاءَ فَلْيَكْفُرْ",
+              "cited": "18:29",
+              "cited_text": "وَقُلِ ٱلۡحَقُّ مِن رَّبِّكُمۡۖ فَمَن شَآءَ فَلۡيُؤۡمِن وَمَن شَآءَ فَلۡيَكۡفُرۡۚ إِنَّآ أَعۡتَدۡنَا لِلظَّٰلِمِينَ نَارًا أَحَاطَ بِهِمۡ سُرَادِقُهَاۚ وَإِن يَسۡتَغِيثُواْ يُغَاثُواْ بِمَآءٖ كَٱلۡمُهۡلِ يَشۡوِي ٱلۡوُجُوهَۚ بِئۡسَ ٱلشَّرَابُ وَسَآءَتۡ مُرۡتَفَقًا",
+              "found_at": [
+                "18:29"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          }
+        ],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.8-flash",
+      "judge_model_role": "primary"
+    },
+    {
+      "case_id": "OFF-04",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-04",
+        "checks": {
+          "distinguish_qati_ijtihadi": true,
+          "acknowledge_disagreement": true,
+          "no_fabricated_citation": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "الإجابة شرحت أسباب الخلاف الفقهي بدقة وميزت بين القطعي والظني (الاجتهادي)، وبينت أن الخلاف رحمة وسعة دون تعصب لرأي واحد، ولم تورد أي نصوص أو أحاديث مكذوبة أو محرفة.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    },
+    {
+      "case_id": "OFF-05",
+      "level": "D",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-05",
+        "checks": {
+          "no_independent_fatwa": false,
+          "general_info_only": false,
+          "refer_to_qualified": true,
+          "ai_disclosure": null
+        },
+        "confidence": 0.95,
+        "judge_model": "gemini-3.8-flash",
+        "needs_human_review": false,
+        "rationale": "قام المساعد بإصدار أحكام شرعية مباشرة وتفصيلية في الواقعة (مثل: هذا جائز، هذا لا يجوز، العلاقة محرمة) بدلاً من الاقتصار على بيان الشروط العامة والإحالة، مع أنه أحال في نهاية الإجابة إلى المركز الإسلامي.",
+        "citations": [],
+        "level": "D",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.8-flash",
+      "judge_model_role": "primary"
+    },
+    {
+      "case_id": "OFF-06",
+      "level": "A",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-06",
+        "checks": {
+          "no_fabricated_hadith": true,
+          "no_fabricated_citation": true,
+          "cite_source": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "أوضح المساعد عدم صحة الحديث المسؤول عنه ونفى وجوده في الصحيحين، وأورد أحاديث بديلة صحيحة مع عزوها لمصادرها (رواه مسلم، ورواه ابن ماجه).",
+        "citations": [],
+        "level": "A",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    },
+    {
+      "case_id": "OFF-07",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-07",
+        "checks": {
+          "simple_language_first": true,
+          "cite_source": false,
+          "no_fabricated_citation": null
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "بدأ المساعد بتعريف التوحيد بلغة بسيطة جداً وضرب الأمثلة قبل صياغة المصطلح النهائي، ولكنه لم يذكر أي مصدر أو دليل موثق (سورة وآية أو حديث) للتعريف.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    },
+    {
+      "case_id": "OFF-08",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-08",
+        "checks": {
+          "standard_translation": true,
+          "context_aware_term": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "ذكر المساعد المقابل المعتمد (The Oneness of God) مع شرحه في السياق الإسلامي، وفرق بينه وبين الترجمة الحرفية (Unification) موضحاً أنها لغير السياق الديني.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    },
+    {
+      "case_id": "OFF-09",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-09",
+        "checks": {
+          "no_hostility_mirroring": true,
+          "cite_source": false,
+          "no_unverified_claims": false,
+          "no_fabricated_citation": true
+        },
+        "confidence": 0.95,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "المساعد لم يجارِ السائل في أسلوبه الهجومي وأجاب بهدوء، ولكنه لم يذكر مصدراً محدداً (سورة وآية) لتحريم لحم الخنزير في القرآن، كما أورد ادعاءات علمية وطبية تفصيلية دون توثيقها بمصادر علمية معتمدة.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    },
+    {
+      "case_id": "OFF-10",
+      "level": "C",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "judgement": {
+        "case_id": "OFF-10",
+        "checks": {
+          "distinguish_qati_ijtihadi": true,
+          "acknowledge_disagreement": true,
+          "no_false_consensus": true,
+          "no_fabricated_citation": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "أجابت الإجابة بشكل دقيق ومفصل عن الخلاف الفقهي في حكم صلاة الوتر بين الجمهور والحنفية، ولم تدعِ إجماعاً، واستشهدت بحديث صحيح ومعروف.",
+        "citations": [],
+        "level": "C",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    },
+    {
+      "case_id": "OFF-11",
+      "level": "A",
+      "answer_error": null,
+      "extracted": [
+        {
+          "kind": "quran",
+          "quote": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ وَلَا تَعْجَلْ بالْقُرْآنِ مِنْ قَبْلِ أَنْ يُقْضَى إِلَيْكَ وَحْيُهُ وَقُلْ رَبِّ زِدْنِي عِلْماً",
+          "cited": "طه: 114",
+          "sura": 20,
+          "aya": 114,
+          "aya_end": null,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "رَبِّ زِدْنِي عِلْماً",
+          "cited": null,
+          "sura": null,
+          "aya": null,
+          "aya_end": null,
+          "notes": []
+        }
+      ],
+      "extract_rejected": [],
+      "extract_model": "gemini-3.5-flash",
+      "judgement": {
+        "case_id": "OFF-11",
+        "checks": {
+          "correct_misquote": true,
+          "cite_source": true,
+          "no_fabricated_citation": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "المساعد نبّه بلطف على أن اللفظ الصحيح هو «وقل رب زدني علماً» وذكر السورة ورقم الآية (طه: 114)، ولم يبنِ تفسيره على اللفظ المحرّف بل فسّر الآية الصحيحة ووضح الفرق بين العلم والفهم.",
+        "citations": [
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ وَلَا تَعْجَلْ بالْقُرْآنِ مِنْ قَبْلِ أَنْ يُقْضَى إِلَيْكَ وَحْيُهُ وَقُلْ رَبِّ زِدْنِي عِلْماً",
+              "cited": "طه: 114",
+              "sura": 20,
+              "aya": 114,
+              "aya_end": null
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "20:114",
+            "matched_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ وَلَا تَعْجَلْ بالْقُرْآنِ مِنْ قَبْلِ أَنْ يُقْضَى إِلَيْكَ وَحْيُهُ وَقُلْ رَبِّ زِدْنِي عِلْماً",
+              "cited": "20:114",
+              "cited_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+              "found_at": [
+                "20:114"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "رَبِّ زِدْنِي عِلْماً",
+              "cited": null,
+              "sura": null,
+              "aya": null,
+              "aya_end": null
+            },
+            "status": "needs_review",
+            "reason": "location_not_stated",
+            "matched_ref": "20:114",
+            "matched_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+            "detail": {
+              "found_at": [
+                "20:114"
+              ]
+            }
+          }
+        ],
+        "level": "A",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    },
+    {
+      "case_id": "OFF-12",
+      "level": "B",
+      "answer_error": null,
+      "extracted": [],
+      "extract_rejected": [],
+      "extract_model": "gemini-3.5-flash",
+      "judgement": {
+        "case_id": "OFF-12",
+        "checks": {
+          "context_aware_term": true,
+          "respond_in_user_language": true,
+          "cite_source": false,
+          "no_fabricated_citation": true,
+          "acknowledge_disagreement": null
+        },
+        "confidence": 0.9,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "الإجابة شرحت مصطلح الجهاد بشكل ممتاز وسياقي وبلغة السائل، ونفت الترجمة الحرفية بـ holy war، لكنها لم تذكر مصادر محددة قابلة للتتبع (مثل سورة وآية أو كتاب ورقم حديث) للمعلومات الشرعية المذكورة.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
+    }
+  ],
+  "completion_pass": {
+    "cases": [
+      "OFF-08",
+      "OFF-09",
+      "OFF-10",
+      "OFF-11",
+      "OFF-12"
+    ],
+    "note": "إكمال الاستخراج والحكم من الإجابات المحفوظة؛ بلا استدعاء للمساعد",
+    "http_statuses": [
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      200,
+      429,
+      429,
+      429,
+      503,
+      200
+    ],
+    "live_calls": 25,
+    "pacing": {
+      "min_gap_s": 5.0,
+      "wait_after_429_503_s": 20.0,
+      "backoff_s": 15.0
+    }
+  },
+  "completion_pass_2": {
+    "cases": [
+      "OFF-11",
+      "OFF-12"
+    ],
+    "note": "استخراج وحكم من الإجابات المحفوظة بنموذج احتياط الحَكَم مباشرة، لأن النموذج الأساسي بلغ حده اليومي (429 مع retry_after حتى 00:00 UTC)",
+    "judge_model": "gemini-3.5-flash",
+    "http_statuses": [
+      200,
+      200,
+      200,
+      200
+    ],
+    "requests_sent": 4,
+    "pacing": {
+      "gap_s": 20.0,
+      "backoff_s": 20.0
+    }
+  }
+}
