@@ -162,6 +162,10 @@ def test_status_items_are_computed_from_repo():
     assert f["state"]["quran_match"] == "built"
     # «المساعدان المرجعيان» لا يكتمل بأحدهما
     assert f["state"]["assistants"] == ("built" if (ROOT / "miyar/assistants/rag.py").exists() else "todo")
+    # الاستخراج لا «يكتمل» بالآيات وحدها: جزئي حتى يشمل الأحاديث
+    ex = (ROOT / "miyar/extract.py").read_text(encoding="utf-8") if (ROOT / "miyar/extract.py").exists() else ""
+    if "KIND_HADITH" not in ex:
+        assert f["state"]["extract"] != "built" and by_evidence["miyar/extract.py"] is False
 
 
 def test_home_flow_svg_marks_built_and_unbuilt():
