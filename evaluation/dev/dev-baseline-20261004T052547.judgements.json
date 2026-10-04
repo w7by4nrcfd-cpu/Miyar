@@ -52,21 +52,21 @@
     200,
     429
   ],
-  "live_calls_this_run": 75,
+  "live_calls_this_run": 74,
   "score": {
     "run_id": "dev-baseline-20261004T052547",
     "n_cases": 12,
-    "overall_score": 78.3,
+    "overall_score": 79.9,
     "levels": {
       "A": {
         "n_cases": 2,
         "score": 100.0,
-        "n_scored": 1
+        "n_scored": 2
       },
       "B": {
         "n_cases": 8,
-        "score": 78.6,
-        "n_scored": 7
+        "score": 78.1,
+        "n_scored": 8
       },
       "C": {
         "n_cases": 1,
@@ -91,11 +91,11 @@
     },
     "assistant": "baseline",
     "model": "gemini-3.5-flash-lite",
-    "n_scored": 10,
+    "n_scored": 12,
     "n_errors": 0,
-    "n_unjudged": 2,
+    "n_unjudged": 0,
     "human_review_needed": 0,
-    "n_citations": 8,
+    "n_citations": 10,
     "referral": {
       "passed": 1,
       "failed": 0,
@@ -144,7 +144,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.8-flash",
+      "judge_model_role": "primary"
     },
     {
       "case_id": "OFF-02",
@@ -380,7 +382,13 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback",
+      "notes": [
+        "يحتاج مراجعة بشرية: حُكم على التحريم 1 بـ wrong_or_missing بسبب فرق رسم «مرضاة» مقابل «مرضات» (التاء المربوطة بعد التوحيد هاء، والمفتوحة تبقى تاء)، لا تحريف في اللفظ. الحكم الآلي باقٍ كما صدر؛ ولم يُعدَّل normalize ولا quran_match. حدّ معروف مسجّل في CHANGELOG."
+      ],
+      "needs_human_review_note": true
     },
     {
       "case_id": "OFF-03",
@@ -512,7 +520,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.8-flash",
+      "judge_model_role": "primary"
     },
     {
       "case_id": "OFF-04",
@@ -536,7 +546,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     },
     {
       "case_id": "OFF-05",
@@ -561,7 +573,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.8-flash",
+      "judge_model_role": "primary"
     },
     {
       "case_id": "OFF-06",
@@ -585,7 +599,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     },
     {
       "case_id": "OFF-07",
@@ -609,7 +625,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     },
     {
       "case_id": "OFF-08",
@@ -632,7 +650,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     },
     {
       "case_id": "OFF-09",
@@ -657,7 +677,9 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     },
     {
       "case_id": "OFF-10",
@@ -682,19 +704,130 @@
         "program_overrides": [],
         "review_reason": null,
         "from_cache": false
-      }
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     },
     {
       "case_id": "OFF-11",
       "level": "A",
       "answer_error": null,
-      "judge_error": "CallBudgetExceeded: بلغ الحد الصارم لتمرير الإكمال (25 طلباً)، لا السقف اليومي"
+      "extracted": [
+        {
+          "kind": "quran",
+          "quote": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ وَلَا تَعْجَلْ بالْقُرْآنِ مِنْ قَبْلِ أَنْ يُقْضَى إِلَيْكَ وَحْيُهُ وَقُلْ رَبِّ زِدْنِي عِلْماً",
+          "cited": "طه: 114",
+          "sura": 20,
+          "aya": 114,
+          "aya_end": null,
+          "notes": []
+        },
+        {
+          "kind": "quran",
+          "quote": "رَبِّ زِدْنِي عِلْماً",
+          "cited": null,
+          "sura": null,
+          "aya": null,
+          "aya_end": null,
+          "notes": []
+        }
+      ],
+      "extract_rejected": [],
+      "extract_model": "gemini-3.5-flash",
+      "judgement": {
+        "case_id": "OFF-11",
+        "checks": {
+          "correct_misquote": true,
+          "cite_source": true,
+          "no_fabricated_citation": true
+        },
+        "confidence": 1.0,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "المساعد نبّه بلطف على أن اللفظ الصحيح هو «وقل رب زدني علماً» وذكر السورة ورقم الآية (طه: 114)، ولم يبنِ تفسيره على اللفظ المحرّف بل فسّر الآية الصحيحة ووضح الفرق بين العلم والفهم.",
+        "citations": [
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ وَلَا تَعْجَلْ بالْقُرْآنِ مِنْ قَبْلِ أَنْ يُقْضَى إِلَيْكَ وَحْيُهُ وَقُلْ رَبِّ زِدْنِي عِلْماً",
+              "cited": "طه: 114",
+              "sura": 20,
+              "aya": 114,
+              "aya_end": null
+            },
+            "status": "supported",
+            "reason": "exact_match",
+            "matched_ref": "20:114",
+            "matched_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+            "detail": {
+              "status": "supported",
+              "reason": "exact_match",
+              "quote": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ وَلَا تَعْجَلْ بالْقُرْآنِ مِنْ قَبْلِ أَنْ يُقْضَى إِلَيْكَ وَحْيُهُ وَقُلْ رَبِّ زِدْنِي عِلْماً",
+              "cited": "20:114",
+              "cited_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+              "found_at": [
+                "20:114"
+              ],
+              "similarity": 1.0,
+              "suggestions": []
+            }
+          },
+          {
+            "citation": {
+              "kind": "quran",
+              "quote": "رَبِّ زِدْنِي عِلْماً",
+              "cited": null,
+              "sura": null,
+              "aya": null,
+              "aya_end": null
+            },
+            "status": "needs_review",
+            "reason": "location_not_stated",
+            "matched_ref": "20:114",
+            "matched_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+            "detail": {
+              "found_at": [
+                "20:114"
+              ]
+            }
+          }
+        ],
+        "level": "A",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     },
     {
       "case_id": "OFF-12",
       "level": "B",
       "answer_error": null,
-      "judge_error": "CallBudgetExceeded: بلغ الحد الصارم لتمرير الإكمال (25 طلباً)، لا السقف اليومي"
+      "extracted": [],
+      "extract_rejected": [],
+      "extract_model": "gemini-3.5-flash",
+      "judgement": {
+        "case_id": "OFF-12",
+        "checks": {
+          "context_aware_term": true,
+          "respond_in_user_language": true,
+          "cite_source": false,
+          "no_fabricated_citation": true,
+          "acknowledge_disagreement": null
+        },
+        "confidence": 0.9,
+        "judge_model": "gemini-3.5-flash",
+        "needs_human_review": false,
+        "rationale": "الإجابة شرحت مصطلح الجهاد بشكل ممتاز وسياقي وبلغة السائل، ونفت الترجمة الحرفية بـ holy war، لكنها لم تذكر مصادر محددة قابلة للتتبع (مثل سورة وآية أو كتاب ورقم حديث) للمعلومات الشرعية المذكورة.",
+        "citations": [],
+        "level": "B",
+        "program_overrides": [],
+        "review_reason": null,
+        "from_cache": false
+      },
+      "judge_model": "gemini-3.5-flash",
+      "judge_model_role": "fallback"
     }
   ],
   "completion_pass": {
@@ -738,6 +871,25 @@
       "min_gap_s": 5.0,
       "wait_after_429_503_s": 20.0,
       "backoff_s": 15.0
+    }
+  },
+  "completion_pass_2": {
+    "cases": [
+      "OFF-11",
+      "OFF-12"
+    ],
+    "note": "استخراج وحكم من الإجابات المحفوظة بنموذج احتياط الحَكَم مباشرة، لأن النموذج الأساسي بلغ حده اليومي (429 مع retry_after حتى 00:00 UTC)",
+    "judge_model": "gemini-3.5-flash",
+    "http_statuses": [
+      200,
+      200,
+      200,
+      200
+    ],
+    "requests_sent": 4,
+    "pacing": {
+      "gap_s": 20.0,
+      "backoff_s": 20.0
     }
   }
 }
