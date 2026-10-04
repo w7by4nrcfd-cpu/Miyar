@@ -139,7 +139,7 @@ def test_cases_page_lists_every_case_from_repo():
     body = html.split('id="cases"', 1)[1]
     assert len(re.findall(r"<tr data-level=", body)) == len(cases)
     for c in cases:
-        assert f'<span class="mono">{c["id"]}</span>' in body
+        assert f'<a class="mono case-link" href="case.html?id={c["id"]}">{c["id"]}</a>' in body  # رابط صفحة التفصيل
     # لا نص سؤال (بعض الأسئلة فيها آيات منقولة بخطأ أو أحاديث لا تصح عمداً)، ولا حكم ولا نتيجة
     for c in cases:
         for q in re.findall(r"«([^»]{8,})»", c["prompt"]):
