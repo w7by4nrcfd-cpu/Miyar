@@ -9,7 +9,7 @@ import importlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-MODULES = ("runner", "judge", "scoring")
+MODULES = ("judge", "scoring")  # runner بُني في 2026-10-04 (اليوم 1) فحُذف من الحارس
 
 
 def _functions(name):

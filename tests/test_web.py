@@ -153,11 +153,15 @@ def test_status_items_are_computed_from_repo():
     mod = _load_builder()
     f = mod.facts()
     p0, p1 = mod.status_items(f)
-    # قبل 4 أكتوبر: نواة التقييم كلها لم تُبنَ
-    assert not any(done for _, done, _ in p1)
     assert all(done for _, done, _ in p0)
-    assert f["state"]["runner"] == f["state"]["judge"] == f["state"]["scoring"] == "todo"
+    # كل بند في أيام التحدي يطابق حالة وحدته في الكود (هيكل NotImplementedError = لم يُنفَّذ)
+    by_evidence = {ev: done for _, done, ev in p1}
+    assert by_evidence["miyar/runner.py"] == (f["state"]["runner"] == "built")
+    assert by_evidence["miyar/judge.py"] == (f["state"]["judge"] == "built")
+    assert by_evidence["miyar/scoring.py"] == (f["state"]["scoring"] == "built")
     assert f["state"]["quran_match"] == "built"
+    # «المساعدان المرجعيان» لا يكتمل بأحدهما
+    assert f["state"]["assistants"] == ("built" if (ROOT / "miyar/assistants/rag.py").exists() else "todo")
 
 
 def test_home_flow_svg_marks_built_and_unbuilt():

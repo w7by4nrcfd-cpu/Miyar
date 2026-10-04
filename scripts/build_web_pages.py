@@ -723,7 +723,7 @@ def status_items(f: dict) -> tuple[list, list]:
     ]
     phase1 = [
         ("المساعدان المرجعيان (baseline و rag)", st["assistants"] == "built", "miyar/assistants/"),
-        ("تشغيل مجموعة الاختبار على المساعدين", st["runner"] == "built", "miyar/runner.py"),
+        ("وحدة تشغيل مجموعة الاختبار وحفظ سجل التشغيل (runner)", st["runner"] == "built", "miyar/runner.py"),
         ("استخراج الاستشهادات من الإجابات", st["extract"] == "built", "miyar/extract.py"),
         ("مطابقة الأحاديث مع الملف اليدوي", st["hadith_match"] == "built", "miyar/hadith_match.py"),
         ("حكم السلوك حسب المستوى A–D", st["judge"] == "built", "miyar/judge.py"),
