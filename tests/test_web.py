@@ -166,6 +166,10 @@ def test_status_items_are_computed_from_repo():
     ex = (ROOT / "miyar/extract.py").read_text(encoding="utf-8") if (ROOT / "miyar/extract.py").exists() else ""
     if "KIND_HADITH" not in ex:
         assert f["state"]["extract"] != "built" and by_evidence["miyar/extract.py"] is False
+    # والحكم لا «يكتمل» قبل الأحاديث وأصناف الحكم الستة
+    jd = (ROOT / "miyar/judge.py").read_text(encoding="utf-8")
+    if "def classify_error" not in jd or "hadith_matching_not_built" in jd:
+        assert f["state"]["judge"] != "built" and by_evidence["miyar/judge.py"] is False
 
 
 def test_home_flow_svg_marks_built_and_unbuilt():

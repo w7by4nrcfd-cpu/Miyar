@@ -53,7 +53,7 @@ class ExtractedCitation:
 
     def as_citation(self) -> Citation:
         """الصيغة التي يستقبلها judge."""
-        return Citation(kind=self.kind, quote=self.quote, cited=self.cited)
+        return Citation(kind=self.kind, quote=self.quote, cited=self.cited, sura=self.sura, aya=self.aya, aya_end=self.aya_end)
 
 
 @dataclass
