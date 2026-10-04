@@ -24,7 +24,9 @@
 - ``gemini`` (الافتراضي): Gemini عبر REST ``generateContent``، بالمفتاح ``GEMINI_API_KEY``.
 - ``openai``: أي واجهة متوافقة مع OpenAI (``POST {base_url}/chat/completions``)، بالعنوان ``MIYAR_OPENAI_BASE_URL``
   والمفتاح ``MIYAR_OPENAI_API_KEY``. إعدادات التفكير الخاصة بـ Gemini لا تُرسل إليها.
-Anthropic يُضاف عند الحاجة.
+- ``anthropic``: للحَكَم وحده (ومعه الاستخراج، لأنه يستعمل عميل الحَكَم)، ويُختار بـ ``MIYAR_LLM_PROVIDER_JUDGE=anthropic``
+  مع ``ANTHROPIC_API_KEY``؛ واسم النموذج من ``MIYAR_LLM_MODEL_JUDGE`` بلا قيمة افتراضية. المساعد المُختبَر يبقى على
+  ``MIYAR_LLM_PROVIDER`` (Gemini)، ولا يُقبل anthropic له.
 """
 
 from __future__ import annotations
@@ -45,9 +47,12 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CACHE_DIR = ROOT / "evaluation" / "dev" / "llm_cache"
 DEV_RUN = "DEV_RUN"
 MODES = ("cached", "live")
-PROVIDERS = ("gemini", "openai")
+PROVIDERS = ("gemini", "openai", "anthropic")
 OPENAI_BASE_URL_VAR = "MIYAR_OPENAI_BASE_URL"
 OPENAI_KEY_VAR = "MIYAR_OPENAI_API_KEY"
+ANTHROPIC_KEY_VAR = "ANTHROPIC_API_KEY"
+# مزوّد الحَكَم (والاستخراج): إن لم يُضبط فهو MIYAR_LLM_PROVIDER
+JUDGE_PROVIDER_VAR = "MIYAR_LLM_PROVIDER_JUDGE"
 
 
 # ---------- الأخطاء ----------
@@ -270,6 +275,64 @@ class OpenAICompatibleProvider:
         reason = choice.get("finish_reason")
         return LLMResponse(
             text=content,
+            provider=self.name,
+            model=data.get("model") or req.model,
+            finish_reason=self.FINISH.get(reason, reason),
+            usage=usage,
+        )
+
+
+class AnthropicProvider:
+    """Anthropic Messages API: POST /v1/messages مع الترويستين x-api-key وanthropic-version.
+
+    تُوحَّد الاستجابة مع Gemini: ``stop_reason`` «max_tokens» ← «MAX_TOKENS» (فلا تُخزَّن الإجابة المقطوعة)،
+    و«end_turn»/«stop_sequence» ← «STOP»، و«refusal» ← «SAFETY»؛ والاستخدام بمفاتيح Gemini مع الأصل في ``anthropic``.
+    إعدادات التفكير الخاصة بـ Gemini و``response_mime_type`` لا تُرسل (المطالبات تطلب JSON نصاً).
+    529 (مثقل) يُعامل كـ 503.
+    """
+
+    name = "anthropic"
+    URL = "https://api.anthropic.com/v1/messages"
+    API_VERSION = "2023-06-01"
+    FINISH = {"end_turn": "STOP", "stop_sequence": "STOP", "max_tokens": "MAX_TOKENS", "refusal": "SAFETY"}
+
+    def __init__(self, api_key: str, transport: Transport = urllib_transport, timeout: float = 120.0):
+        if not api_key:
+            raise MissingCredentials(f"{ANTHROPIC_KEY_VAR} غير مضبوط")
+        self._key = api_key
+        self._transport = transport
+        self._timeout = timeout
+
+    def call(self, req: LLMRequest) -> LLMResponse:
+        body: dict = {
+            "model": req.model,
+            "max_tokens": req.max_output_tokens,
+            "temperature": req.temperature,
+            "messages": [{"role": "user", "content": req.prompt}],
+        }
+        if req.system:
+            body["system"] = req.system
+        headers = {"Content-Type": "application/json", "x-api-key": self._key, "anthropic-version": self.API_VERSION}
+        status, resp_headers, raw = self._transport(self.URL, headers, json.dumps(body).encode("utf-8"), self._timeout)
+        text = _redact(raw.decode("utf-8", errors="replace"), self._key)
+        if status == 429:
+            raise RateLimited(f"Anthropic 429: {text[:300]}", _retry_after(resp_headers, text))
+        if status in (503, 529):
+            raise ServiceUnavailable(f"Anthropic {status}: {text[:300]}")
+        if status != 200:
+            raise LLMError(f"Anthropic HTTP {status}: {text[:300]}")
+        data = json.loads(text)
+        blocks = data.get("content") or []
+        u = data.get("usage") or {}
+        usage = {
+            "promptTokenCount": u.get("input_tokens") or 0,
+            "candidatesTokenCount": u.get("output_tokens") or 0,
+            "thoughtsTokenCount": 0,
+            "anthropic": u,
+        }
+        reason = data.get("stop_reason")
+        return LLMResponse(
+            text="".join(b.get("text", "") for b in blocks if b.get("type") == "text"),
             provider=self.name,
             model=data.get("model") or req.model,
             finish_reason=self.FINISH.get(reason, reason),
@@ -546,9 +609,17 @@ def client_from_env(
     env = os.environ if env is None else env
     provider_name = env.get("MIYAR_LLM_PROVIDER", "gemini")
     var, model = model_for_role(env, role)
+    if role == "judge" and env.get(JUDGE_PROVIDER_VAR):
+        provider_name = env[JUDGE_PROVIDER_VAR]
+    if provider_name not in PROVIDERS:
+        raise LLMError(f"المزوّد {provider_name} غير منفّذ (المتاح: {', '.join(PROVIDERS)})")
+    if provider_name == "anthropic" and role != "judge":
+        raise LLMError(f"المزوّد anthropic للحَكَم وحده (اضبطه في {JUDGE_PROVIDER_VAR})، والمساعد يبقى على MIYAR_LLM_PROVIDER")
     mode = env.get("MIYAR_RUN_MODE", "cached")
     if not model:
         raise LLMError(f"{var} غير مضبوط")
+    if provider_name == "anthropic" and model.startswith("gemini"):
+        raise LLMError(f"{var}={model} اسم نموذج Gemini، والمزوّد anthropic: اضبط اسم نموذج Claude")
     store = ResponseStore(env.get("MIYAR_LLM_CACHE_DIR") or DEFAULT_CACHE_DIR, env.get("MIYAR_RUN_LABEL", DEV_RUN))
     provider: Provider | None = None
     if provider_name == "gemini":
@@ -567,14 +638,19 @@ def client_from_env(
             provider = OpenAICompatibleProvider(key, base_url, transport)
         elif mode == "live":
             raise MissingCredentials(f"{OPENAI_KEY_VAR} غير مضبوط")
-    else:
-        raise LLMError(f"المزوّد {provider_name} غير منفّذ (المتاح: {', '.join(PROVIDERS)})")
+    else:  # anthropic
+        key = env.get(ANTHROPIC_KEY_VAR, "")
+        if key:
+            provider = AnthropicProvider(key, transport)
+        elif mode == "live":
+            raise MissingCredentials(f"{ANTHROPIC_KEY_VAR} غير مضبوط")
     max_calls = int(env.get("MIYAR_LIVE_MAX_CALLS_PER_DAY", "0") or 0)
     run_id = env.get("MIYAR_RUN_ID") or None
     if role == "judge":
         # الاحتياط الافتراضي اسم نموذج Gemini، فلا يُطبَّق على مزوّد آخر إلا إن ضُبط المتغير صراحة
         fallback = env.get(JUDGE_FALLBACK_VAR, DEFAULT_JUDGE_FALLBACK if provider_name == "gemini" else "")
-        fallbacks = tuple(m for m in [fallback] if m)
+        # مع anthropic لا يُستعمل احتياط باسم نموذج Gemini (قد يبقى مضبوطاً من إعداد Gemini السابق)
+        fallbacks = tuple(m for m in [fallback] if m and not (provider_name == "anthropic" and m.startswith("gemini")))
         return LLMClient(
             provider, store, mode, max_calls, fallbacks, DEFAULT_MAX_ATTEMPTS,
             min_output_tokens=JUDGE_MIN_OUTPUT_TOKENS, thinking=JUDGE_THINKING, run_id=run_id,
