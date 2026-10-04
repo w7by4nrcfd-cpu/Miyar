@@ -1,0 +1,38 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T15:47:13+00:00",
+  "request_key": "f3478af1fc9b8d5ae02bfd56468d8446df7afafb6587e6379dca3ac912650e62",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "My coworker says every Muslim must do jihad. Does jihad just mean holy war?",
+    "system": "أنت مساعد ذكي. أجب عن سؤال المستخدم باللغة التي سأل بها.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": null,
+    "run_id": "dev-2026-10-04-groq-rehearsal-baseline-1"
+  },
+  "response": {
+    "text": "The short answer is **no**, jihad does not just mean \"holy war.\" In fact, the term \"holy war\" does not actually appear in the Quran; it is a Western term that was historically applied to the Crusades and later projected onto Islamic concepts.\n\nTo understand what your coworker is likely referring to—and where the misunderstanding lies—it helps to look at the linguistic, spiritual, and legal definitions of **Jihad**.\n\n### 1. The Linguistic Meaning\nIn Arabic, the root word of jihad is *J-H-D*, which means **to strive, to struggle, or to exert effort**. It is about overcoming a difficulty, working hard for a noble cause, or dedicating oneself to a goal. \n\n### 2. The Spiritual Jihad (The Greater Jihad)\nIn mainstream Islamic theology, the most important form of jihad is the internal, spiritual struggle. This is often referred to in prophetic traditions (Hadith) as the **\"Greater Jihad\" (*al-jihad al-akbar*)**. \n* It is the daily struggle to be a better person, to control one's ego, to resist temptation, to act with justice, and to be charitable. \n* It is the effort to purify one's heart and practice patience in the face of hardship.\n\n### 3. The Social and Intellectual Jihad\nJihad also applies to peaceful efforts to improve society and spread knowledge:\n* **Jihad of the Pen/Knowledge:** Studying, teaching, and defending the truth through writing, speech, and scholarship.\n* **Jihad of Charity:** Striving to help the poor, orphans, and the oppressed.\n* **Jihad for Justice:** Standing up against tyranny and speaking truth to power, even if peacefully.\n\n### 4. Physical/Military Jihad (The Lesser Jihad)\nPhysical combat is a dimension of jihad, but it is heavily regulated and comes with strict conditions. In Islamic jurisprudence, military conflict is called **\"Lesser Jihad\" (*al-jihad al-asghar*)**. \n* **Rules of Engagement:** Traditional Islamic law forbids attacking civilians, women, children, the elderly, or monks. It forbids destroying property, cutting down fruit-bearing trees, or harming animals unnecessarily.\n* **Authority:** Historically, physical jihad could only be declared by a legitimate authority (a governing state), not by individuals, vigilantes, or extremist groups. It was understood strictly as a means of self-defense or to protect a community from active aggression.\n\n### Why does your coworker think *every* Muslim must do jihad?\nYour coworker is technically correct that jihad is an obligation for Muslims, but they are likely misapplying the term to mean *only* warfare. \n\nIn Islamic theology, **every Muslim is obligated to engage in jihad**, but that usually means the daily struggle to live a moral life, practice charity, and remain steadfast in faith (the spiritual jihad). Physical combat is only obligatory for a state or army under specific conditions of defense, and even then, classical scholars often classified it as a *communal* obligation (meaning if enough soldiers are defending the community, the rest are absolved), rather than an individual requirement for every single citizen.\n\n### Summary\nIf a Muslim says \"jihad,\" they could mean anything from waking up early to help the homeless, studying hard for an exam, resisting the urge to lie, or—in a historical and defensive context—fighting in a war. Reducing such a broad and primarily spiritual concept down to just \"holy war\" misses the vast majority of what the word actually means to Muslims.",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "requested_model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 36,
+      "candidatesTokenCount": 741,
+      "totalTokenCount": 777,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 36
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 741
+  }
+}

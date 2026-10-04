@@ -1,0 +1,43 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T15:54:30+00:00",
+  "request_key": "d6007f3f71ecb4d20519436e3ee6ab722bf44d229e1fda25b7212d7caf211f5f",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nإن المقاطع المرفقة لا تحتوي على شرح لمعنى \"التوحيد\".\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "dev-2026-10-04-groq-rehearsal-rag-1"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 389,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 60,
+      "openai": {
+        "queue_time": 0.086412558,
+        "prompt_tokens": 389,
+        "prompt_time": 0.018267251,
+        "completion_tokens": 75,
+        "completion_time": 0.15714238,
+        "total_tokens": 464,
+        "total_time": 0.175409631,
+        "completion_tokens_details": {
+          "reasoning_tokens": 60
+        }
+      }
+    },
+    "thoughts_tokens": 60,
+    "output_tokens": 15
+  }
+}

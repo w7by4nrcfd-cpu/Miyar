@@ -1,0 +1,43 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T15:54:06+00:00",
+  "request_key": "9a6b73a89dcc60b937414f5d12b1bf4695759e893010932d7033ce4583b2902d",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nالمقاطع المرفقة لا تحتوي على حديث صحيح فيه «اطلبوا العلم ولو بالصين»، بل ورد في المقاطع حديث بهذا اللفظ في المصدر (المقاصد الحسنة للسخاوي ص86) وحكمه أنه **ضعيف**. وإن لم تكفِ المقاطع للإجابة عما طلبته (حديث صحيح من البخاري أو مسلم بهذا اللفظ)، فالواقع أن المقاطع المرفقة لا تشتمل عليه.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "dev-2026-10-04-groq-rehearsal-rag-1"
+  },
+  "response": {
+    "text": "{\"citations\": []}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 469,
+      "candidatesTokenCount": 15,
+      "thoughtsTokenCount": 202,
+      "openai": {
+        "queue_time": 0.140609799,
+        "prompt_tokens": 469,
+        "prompt_time": 0.021200439,
+        "completion_tokens": 217,
+        "completion_time": 0.456377878,
+        "total_tokens": 686,
+        "total_time": 0.477578317,
+        "completion_tokens_details": {
+          "reasoning_tokens": 202
+        }
+      }
+    },
+    "thoughts_tokens": 202,
+    "output_tokens": 15
+  }
+}

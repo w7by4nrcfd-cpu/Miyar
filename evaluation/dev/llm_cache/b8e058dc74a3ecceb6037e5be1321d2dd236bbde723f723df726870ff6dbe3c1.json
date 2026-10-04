@@ -1,0 +1,46 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T15:56:07+00:00",
+  "request_key": "b8e058dc74a3ecceb6037e5be1321d2dd236bbde723f723df726870ff6dbe3c1",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nلم ترد عبارة «وقل رب زدني فهما» في المقاطع المرفقة، وإنما وردت آية أخرى تدل على طلب العلم وهي قوله تعالى: ﴿وَقُلْ رَبِّ زِدْنِي عِلْمًا﴾ [طه: 20:114]. ولم تشتمل المقاطع على تفسير لهذه الآيات، وعليه فإن المقاطع المرفقة لا تكفي للإجابة عن تفسير العبارة المذكورة.\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "dev-2026-10-04-groq-rehearsal-rag-1"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"quran\",\"quote\":\"﴿وَقُلْ رَبِّ زِدْنِي عِلْمًا﴾\",\"cited\":\"[طه: 20:114]\",\"sura\":20,\"aya\":114,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 469,
+      "candidatesTokenCount": 70,
+      "thoughtsTokenCount": 378,
+      "openai": {
+        "queue_time": 0.243210145,
+        "prompt_tokens": 469,
+        "prompt_time": 0.011821474,
+        "completion_tokens": 448,
+        "completion_time": 0.973364639,
+        "total_tokens": 917,
+        "total_time": 0.985186113,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 378
+        }
+      }
+    },
+    "thoughts_tokens": 378,
+    "output_tokens": 70
+  }
+}

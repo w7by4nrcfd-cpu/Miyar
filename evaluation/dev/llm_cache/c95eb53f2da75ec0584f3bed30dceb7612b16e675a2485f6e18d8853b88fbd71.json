@@ -1,0 +1,43 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T15:52:31+00:00",
+  "request_key": "c95eb53f2da75ec0584f3bed30dceb7612b16e675a2485f6e18d8853b88fbd71",
+  "request": {
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "prompt": "<<<الإجابة\nاستناداً إلى المقاطع المرفقة، يتبين أن القرآن الكريم هو تنزيل من الله عز وجل على نبيه محمد ﷺ، وليس من تأليفه، كما في الآيات الكريمة الآتية:\n\n- قال الله تعالى: {عَلَّمَ الْقُرْآنَ} [الرحمن 55:2].\n- قال الله تعالى: {مَا أَنْزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ} [طه 20:2].\n- قال الله تعالى: {إِنَّا نَحْنُ نَزَّلْنَا عَلَيْكَ الْقُرْآنَ تَنْزِيلًا} [الإنسان 76:23].\nنهاية الإجابة>>>",
+    "system": "أنت أداة استخراج لا تجيب ولا تصحح. مهمتك: استخراج كل نص قدّمته الإجابة على أنه آية من القرآن الكريم أو حديث منسوب إلى النبي ﷺ.\n- kind: «quran» للآية، و«hadith» للحديث.\n- انسخ النص كما ورد في الإجابة حرفياً، دون تصحيح ولا إكمال ولا تشكيل زائد.\n- cited: الموضع كما كتبه المساعد حرفياً (مثل «البقرة: 255» أو «(2:255)» أو «رواه البخاري 1»)، أو null إن لم يذكر موضعاً.\n- sura وaya وaya_end للآية فقط: أرقام الموضع الذي ذكره المساعد، أو null. لا تستنتج موضعاً لم يُذكر. وللحديث null.\n- لا تستخرج أقوال العلماء ولا الشرح.\nأعد JSON فقط بالشكل: {\"citations\": [{\"kind\": \"quran\" أو \"hadith\", \"quote\": \"...\", \"cited\": \"...\" أو null, \"sura\": عدد أو null, \"aya\": عدد أو null, \"aya_end\": عدد أو null}]}. وإن لم توجد آيات ولا أحاديث: {\"citations\": []}.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": "application/json",
+    "run_id": "dev-2026-10-04-groq-rehearsal-rag-1"
+  },
+  "response": {
+    "text": "{\"citations\":[{\"kind\":\"quran\",\"quote\":\"{عَلَّمَ الْقُرْآنَ}\",\"cited\":\"[الرحمن 55:2]\",\"sura\":55,\"aya\":2,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"{مَا أَنْزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ}\",\"cited\":\"[طه 20:2]\",\"sura\":20,\"aya\":2,\"aya_end\":null},{\"kind\":\"quran\",\"quote\":\"{إِنَّا نَحْنُ نَزَّلْنَا عَلَيْكَ الْقُرْآنَ تَنْزِيلًا}\",\"cited\":\"[الإنسان 76:23]\",\"sura\":76,\"aya\":23,\"aya_end\":null}]}",
+    "provider": "openai",
+    "model": "openai/gpt-oss-120b",
+    "requested_model": "openai/gpt-oss-120b",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 535,
+      "candidatesTokenCount": 198,
+      "thoughtsTokenCount": 451,
+      "openai": {
+        "queue_time": 0.107020468,
+        "prompt_tokens": 535,
+        "prompt_time": 0.139645669,
+        "completion_tokens": 649,
+        "completion_time": 1.371847991,
+        "total_tokens": 1184,
+        "total_time": 1.51149366,
+        "completion_tokens_details": {
+          "reasoning_tokens": 451
+        }
+      }
+    },
+    "thoughts_tokens": 451,
+    "output_tokens": 198
+  }
+}
