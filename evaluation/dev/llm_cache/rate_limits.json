@@ -1,0 +1,30 @@
+{
+  "run_label": "DEV_RUN",
+  "runs": {
+    "dev-2026-10-04-baseline": {
+      "count": 4,
+      "events": [
+        {
+          "at": "2026-10-04T05:34:43+00:00",
+          "model": "gemini-3.5-flash",
+          "retry_after": 16.0
+        },
+        {
+          "at": "2026-10-04T05:34:59+00:00",
+          "model": "gemini-3.5-flash",
+          "retry_after": 0.0
+        },
+        {
+          "at": "2026-10-04T05:35:03+00:00",
+          "model": "gemini-3.5-flash",
+          "retry_after": 55.0
+        },
+        {
+          "at": "2026-10-04T05:35:05+00:00",
+          "model": "gemini-3.5-flash",
+          "retry_after": 54.0
+        }
+      ]
+    }
+  }
+}
