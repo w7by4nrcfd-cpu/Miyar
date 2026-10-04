@@ -370,3 +370,9 @@ table.cits td { vertical-align: top; overflow-wrap: anywhere; }
 .try-box { margin: 0 0 var(--s3); }
 .try-note { margin: var(--s1) 0 0; max-width: 46ch; }
 @media (max-width: 479px) { .try-box .btn-try { width: 100%; justify-content: center; box-sizing: border-box; } }
+
+/* إبراز الكلمة المختلفة وبطاقة «أقرب مدخل» (للمقارنة فقط، لا تأييد) */
+mark.diff { background: var(--rev-bg); color: var(--rev-fg); border-radius: 4px; padding: 0 3px; font-weight: 700; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.diff-line { margin: 0; }
+.near-card .not-support { margin: 0; font-weight: 700; }
+.hint-card { border-style: dashed; }
