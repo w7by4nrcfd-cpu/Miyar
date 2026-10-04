@@ -60,6 +60,7 @@ testsets/*.json ──► evaluate ──► runner ──► assistants (baseli
 | `hadith_match.py` | 2026-10-04 ✅ | مطابقة الأحاديث برمجياً مع الملف اليدوي وحده؛ لا حديث «مؤيَّد» بلا مصدر ودرجة معتمدة وقائلها |
 | `evaluate.py` | 2026-10-04 ✅ | كاتب السجل الكامل: المساعد ← الاستخراج ← حكم الإسناد ← حكم السلوك، ثم سجل `DEV_RUN` في `evaluation/dev/` أو `OFFICIAL_RUN` في `evaluation/official/` بالصيغة التي يقرؤها `publish` (`python -m miyar.evaluate`) |
 | `publish.py` | 2026-10-04 ✅ | النشر من `evaluation/official/` إلى `web/data/` (`scripts/publish_results.py`)؛ الأرقام محسوبة من الأحكام بـ `scoring` |
+| `paste_check.py` | 2026-10-04 ✅ | وضع ثانوي «الصق نصاً وتحقق»: استخراج بقواعد ثابتة (بلا LLM) ثم `quran_match` و`hadith_match` على المدخلات المكتملة فقط. نسخة المتصفح `web/assets/check-core.js` نقل حرفي له، ويُقارن الاثنان على 89 نصاً وعلى توحيد كل آيات المصحف (`tests/fixtures/paste_parity.json`) |
 | `api.py` | هيكل 2026-10-01 | FastAPI — `/health` فقط؛ الموقع لا يحتاجه (التشغيل الحي حُذف من الخطة) |
 
 ## تصنيفات الإسناد

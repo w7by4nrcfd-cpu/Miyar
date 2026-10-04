@@ -40,6 +40,7 @@ NAV = [
     ("status.html", "الحالة"),
     ("transparency.html", "الشفافية والخصوصية"),
     ("results.html", "النتائج"),
+    ("check.html", "تحقق من نص"),
 ]
 
 DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026."
@@ -1009,6 +1010,8 @@ def pages(f: dict) -> dict:
         "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f), ""),
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
         "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
+        "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]),
+                       '<script type="module" src="assets/check.js"></script>\n'),
     }
 
 
@@ -1031,12 +1034,64 @@ def render() -> dict[str, str]:
     }
 
 
+# ---------- تحقق من نص (وضع ثانوي) ----------
+CHECK_DIR = WEB / "assets/check"
+CHECK_PAGE = """
+<h1>تحقق من نص <span class="tag-secondary">وضع ثانوي</span></h1>
+<p class="lead">الصق نصاً فيه آيات أو أحاديث، فيستخرجها مِعيار بقواعد ثابتة ويطابقها حرفياً مع البيانات المعتمدة، داخل متصفحك.
+لا يُرسل النص إلى أي خادم، ولا يُستدعى أي نموذج لغوي.</p>
+<div class="notice demo limits" role="note" id="check-limits">
+  <strong>حدود هذه الصفحة</strong>
+  <ul>
+    <li><strong>ليست تقييماً لمساعد:</strong> الوظيفة الأساسية لمِعيار اختبار المساعد كاملاً على مجموعة حالات (انظر <a href="results.html">النتائج</a>)؛ هذه الصفحة تفحص نصاً واحداً فقط.</li>
+    <li><strong>لا فتوى ولا حكم شرعي:</strong> تفحص نسبة النص إلى مصدره فقط، ولا تحكم على معنى ولا على مسألة.</li>
+    <li><strong>الآيات:</strong> مطابقة حرفية بعد توحيد التشكيل والهمزات مع نص Quranpedia (6236 آية). «مؤيَّد» فقط عند تطابق فعلي.</li>
+    <li><strong>الأحاديث محدودة جداً:</strong> تُطابَق مع <span id="hadith-count">المدخلات المكتملة</span> في الملف اليدوي وحدها؛ وكل حديث سواها «يحتاج تحقق»، وهذا لا يعني أنه ضعيف ولا صحيح.</li>
+    <li><strong>الاستخراج بقواعد ثابتة:</strong> الآية بين ﴿ ﴾ أو { } أو بين علامتي تنصيص يليها موضع بين قوسين مثل (البقرة: 255) أو (2:255)؛ والحديث بين علامتي تنصيص قبله «قال رسول الله» أو ﷺ، أو بعده «رواه» أو «أخرجه». ما لم يُكتب بهذه الصورة لا يُفحص.</li>
+  </ul>
+</div>
+<form id="check-form" class="check-form" autocomplete="off">
+  <label for="check-text">النص</label>
+  <textarea id="check-text" rows="8" dir="auto" maxlength="20000" placeholder="مثال: قال تعالى: ﴿قل هو الله أحد﴾ (الإخلاص: 1)"></textarea>
+  <div class="check-actions">
+    <button type="submit" class="btn" id="check-run">تحقق</button>
+    <button type="button" class="btn ghost" id="check-clear">امسح</button>
+  </div>
+  <p class="muted" id="check-size">عند أول تحقق يُحمَّل نص المصحف مرة واحدة (نحو نصف ميغابايت مضغوطاً)، ثم يحفظه المتصفح.</p>
+</form>
+<div id="check-results" aria-live="polite"></div>
+<noscript><div class="notice empty"><strong>تحتاج هذه الصفحة إلى JavaScript.</strong></div></noscript>
+<p class="muted">المصادر: نص القرآن من <a href="https://quranpedia.net" rel="noopener">Quranpedia.net</a> (النسخة {quran_version})، والأحاديث من الملف اليدوي
+<span class="ltr" lang="en">data/hadith/manual_hadith.json</span> (روابطه إلى الدرر السنية أو المكتبة الشاملة). المنطق نفسه في
+<span class="ltr" lang="en">miyar/paste_check.py</span>، واختبار يضمن تطابق نتائج المتصفح مع بايثون.</p>
+"""
+
+
+def render_check_data() -> dict[str, str]:
+    """بيانات صفحة التحقق: نص المصحف (الرسمان) ومدخلات الملف اليدوي المكتملة فقط."""
+    from miyar.paste_check import complete_manual, quran_web_data
+    from miyar.quran_match import QuranIndex
+
+    src = json.loads((ROOT / "data/quran/source.json").read_text(encoding="utf-8"))
+    source = {"name": "Quranpedia.net", "url": "https://quranpedia.net", "dump_version": src["dump_version"],
+              "files": [x["file"] for x in src["files"]], "license": "data/quran/LICENSE-quranpedia.md"}
+    quran = quran_web_data(QuranIndex.load(), source)
+    hadith = {"source": "data/hadith/manual_hadith.json — المدخلات المكتملة فقط", **complete_manual()}
+    return {
+        "quran.json": json.dumps(quran, ensure_ascii=False, separators=(",", ":")) + "\n",
+        "hadith.json": json.dumps(hadith, ensure_ascii=False, indent=1) + "\n",
+    }
+
+
 def render_case_data() -> str:
     return json.dumps(case_records(facts()), ensure_ascii=False, indent=2) + "\n"
 
 
 def build() -> None:
     CASES_JSON.write_text(render_case_data(), encoding="utf-8")
+    CHECK_DIR.mkdir(parents=True, exist_ok=True)
+    for name, body in render_check_data().items():
+        (CHECK_DIR / name).write_text(body, encoding="utf-8")
     rendered = render()
     for name, page in rendered.items():
         (WEB / name).write_text(page, encoding="utf-8")

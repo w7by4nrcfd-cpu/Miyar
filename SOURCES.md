@@ -10,6 +10,7 @@
 |---|---|---|---|---|
 | `data/quran/mushafs-1.json.gz` و`mushafs-2.json.gz` | الملفان كاملان كما نُزّلا دون تعديل (نص القرآن برواية حفص بالرسمين الإملائي المضبوط والعثماني، والعثماني موصوف في ملفه بأنه «غير موافق للمطبوع» + بيانات وصفية ونص الرخصة داخلهما) | Quranpedia.net، التنزيلات الرسمية `quranpedia.net/dumps` (النسخة 2026-10-01) | `LICENSE-quranpedia.md` (منسوخ كما هو): الاستعمال داخل التطبيقات مجاني؛ إعادة النشر كمجموعة بيانات تستلزم ذكر Quranpedia.net مع رابط ورقم النسخة | ✅ واضح |
 | `data/quran/LICENSE-quranpedia.md` | الملف كاملاً | كالسابق | — | ✅ |
+| `web/assets/check/quran.json` (مولّد) | نص الرسمين لكل الآيات وأسماء السور، منقول من الملفين أعلاه دون تعديل، لصفحة «تحقق من نص» في المتصفح | Quranpedia.net (النسخة 2026-10-01) | يحمل الملف والصفحة ذكر Quranpedia.net مع رابطه ورقم النسخة، كما تشترط الرخصة لإعادة النشر | ✅ واضح |
 | `data/unapproved/hadith/sahihayn.jsonl.gz` (**غير معتمد**، معزول) | حقل `text` لكل حديث (النص العربي بالسند) وأرقام الأحاديث، منقولة حرفياً؛ أما بنية الملف والحقول الأخرى فمن المشروع | `github.com/fawazahmed0/hadith-api` (`ara-bukhari.json`، `ara-muslim.json`) | ملف LICENSE في المستودع: **Unlicense** | ⚠️ **غير واضح** — انظر البند 2 |
 | `data/unapproved/hadith/weak_fabricated.json` (**غير معتمد**، معزول) | حقل `text` (النص بالسند) والرقم، وأسماء العلماء وأحكامهم بلفظها في المصدر (`scholar`، `grade`)؛ أما `translation_ar` فترجمة من المشروع غير مراجَعة | `github.com/fawazahmed0/hadith-api` (`ara-ibnmajah.json`) | **Unlicense** | ⚠️ **غير واضح** — انظر البند 3 |
 
