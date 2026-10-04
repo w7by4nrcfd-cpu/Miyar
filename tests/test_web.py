@@ -244,3 +244,16 @@ def test_no_specialist_review_is_stated_honestly(page):
     if f["review"]["approved"]["specialist"] == 0:
         assert "لم تُجرَ مراجعة شرعية متخصصة" in _text(page)
         assert "معتمدة شرعياً</span>" not in _page(page)
+
+
+def test_comparison_caveat_on_methodology_and_results():
+    """تنبيه ميل المقارنة لصالح rag وصغر N: ثابت في المنهجية وبجوار المقارنة وقرار البوابة، والنص واحد في المولّد والصفحة."""
+    COMPARISON_CAVEAT = _load_builder().COMPARISON_CAVEAT
+    assert "أُعدّت لحالات الاختبار نفسها" in COMPARISON_CAVEAT and "تميل لصالح rag" in COMPARISON_CAVEAT
+    assert COMPARISON_CAVEAT in _text("sources.html")
+    core = (WEB / "assets/results-core.js").read_text(encoding="utf-8")
+    m = re.search(r'export const COMPARISON_CAVEAT =\s*"([^"]+)"', core)
+    assert m and m.group(1) == COMPARISON_CAVEAT
+    js = (WEB / "assets/results.js").read_text(encoding="utf-8")
+    assert '"compare-caveat"' in js and '"gate-caveat"' in js
+    assert "تميل لصالح rag" in (ROOT / "docs/METHODOLOGY.md").read_text(encoding="utf-8")

@@ -1,6 +1,6 @@
 // صفحة النتائج: تقرأ data/results.json (ناتج scripts/publish_results.py من evaluation/official/) وتعرضه دون أي رقم مصطنع.
 import {
-  comparisonRows, interpretResults, latestByAssistant, LEVELS, noSpecialistReview,
+  comparisonCaveat, comparisonRows, interpretResults, latestByAssistant, LEVELS, noSpecialistReview,
 } from "./results-core.js";
 
 const RESULTS_URL = "data/results.json";
@@ -55,7 +55,9 @@ function recordsList(runs) {
   return list;
 }
 
-function gateSection(gate) {
+const caveat = (runs, id) => el("p", { class: "notice demo caveat", role: "note", id }, comparisonCaveat(runs));
+
+function gateSection(gate, latest) {
   const sec = el("section", { "aria-labelledby": "gate-h" }, el("h2", { id: "gate-h" }, "قرار البوابة"));
   if (!gate) {
     sec.append(el("p", {}, "لا قرار بوابة: يحتاج تشغيلاً رسمياً منشوراً لكل من baseline (المرجع) وrag (المرشحة)."));
@@ -69,7 +71,8 @@ function gateSection(gate) {
   );
   const reasons = el("ul");
   for (const r of gate.reasons) reasons.append(el("li", {}, r));
-  sec.append(reasons, el("p", { class: "muted" }, "القرار محسوب بـ scoring.gate_decision من السجلين الرسميين، لا من هذه الصفحة."));
+  sec.append(reasons, el("p", { class: "muted" }, "القرار محسوب بـ scoring.gate_decision من السجلين الرسميين، لا من هذه الصفحة."),
+    caveat(latest, "gate-caveat"));
   return sec;
 }
 
@@ -108,6 +111,7 @@ function renderOk(root, view) {
     el("p", {}, "rag هو نموذج baseline نفسه مع بحث في المصادر المعتمدة فقط (آيات Quranpedia ومدخلات الملف اليدوي المكتملة)، "
       + "ومِعيار لا يستعمل محرك حكمه داخل أي مساعد. الحالة المحالة إلى مراجعة بشرية أو المتعذّرة لا تُحتسب في الدرجة."),
     comparisonTable(latest),
+    caveat(latest, "compare-caveat"),
   ];
   if (noSpecialistReview(view.runs)) {
     nodes.push(el("p", { class: "notice demo", role: "note" },
@@ -116,7 +120,7 @@ function renderOk(root, view) {
   }
   nodes.push(
     el("h3", {}, "السجلات المعروضة في المقارنة"), recordsList(latest),
-    gateSection(view.gate),
+    gateSection(view.gate, latest),
     stabilitySection(view.stability),
     el("h2", {}, "كل التشغيلات الرسمية المنشورة"), recordsList(view.runs),
   );

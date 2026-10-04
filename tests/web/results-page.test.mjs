@@ -75,6 +75,12 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
           assert.ok(text.includes(needle), needle);
         }
         assert.equal(await page.locator("#compare tbody tr").count(), 10);
+        // التنبيه ثابت بجوار المقارنة وبجوار قرار البوابة، مع N من الملف
+        for (const id of ["#compare-caveat", "#gate-caveat"]) {
+          const caveat = (await page.locator(id).innerText()).replace(/[\u2066-\u2069]/g, "");
+          assert.match(caveat, /تميل لصالح rag/);
+          assert.match(caveat, /N = 12/);
+        }
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
         assert.ok(overflow <= 0, `تمرير أفقي ${overflow}px`);
         await page.unroute("**/data/results.json");

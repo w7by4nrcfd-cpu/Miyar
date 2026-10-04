@@ -224,3 +224,11 @@ export function reviewSummaryText(run) {
 export function reviewedRatio(run) {
   return run.human_reviewed.total === 0 ? 0 : run.human_reviewed.approved / run.human_reviewed.total;
 }
+
+/** تنبيه ثابت بجوار المقارنة وقرار البوابة: ميل المقارنة لصالح rag، وصغر N. N من الملف لا من الصفحة. */
+export const COMPARISON_CAVEAT =
+  "مدخلات الأحاديث اليدوية التي يسترجعها rag (data/hadith/manual_hadith.json) أُعدّت لحالات الاختبار نفسها، فالمقارنة تميل لصالح rag.";
+export function comparisonCaveat(runs) {
+  const ns = [...new Set(runs.map((r) => r.n_cases))].sort((a, b) => a - b);
+  return `تنبيه على المقارنة: ${COMPARISON_CAVEAT} والأرقام من عدد محدود من الحالات (${ns.map(nEq).join(" و")})، فلا تُعمَّم.`;
+}

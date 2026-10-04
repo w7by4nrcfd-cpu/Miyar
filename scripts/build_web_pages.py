@@ -43,6 +43,9 @@ NAV = [
 ]
 
 DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026."
+# تنبيه المقارنة: النص نفسه في web/assets/results-core.js (COMPARISON_CAVEAT)، ويتحقق من تطابقهما tests/test_web.py
+COMPARISON_CAVEAT = ("مدخلات الأحاديث اليدوية التي يسترجعها rag (data/hadith/manual_hadith.json) أُعدّت لحالات الاختبار نفسها، "
+                     "فالمقارنة تميل لصالح rag.")
 # بعد نشر أول تشغيل رسمي (web/data/results.json غير فارغ) تتغير الصياغة؛ ولا تُدّعى نتائج قبل ذلك
 PUBLISHED_NOTE = "نتائج محفوظة من تشغيلات رسمية مسجّلة في evaluation/official/، كل رقم مع N."
 
@@ -636,6 +639,8 @@ def sources(f: dict) -> str:
     وهو غير متخصص شرعياً، مقابل Quranpedia والدرر السنية والمكتبة الشاملة؛ وهذا <strong>ليس</strong> مراجعة شرعية.
     والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية ومعلّقة حتى يتوفر مراجع، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.
     {specialist_sentence(f)}</li>
+  <li><strong>حدود المقارنة بين baseline وrag:</strong> {COMPARISON_CAVEAT}
+    والأرقام من عدد محدود من الحالات (N مذكور بجانب كل رقم)، فلا تُعمَّم. والتنبيه نفسه ثابت بجوار المقارنة وقرار البوابة في <a href="results.html">النتائج</a>.</li>
 </ol>
 <p>التفاصيل في {link("docs/METHODOLOGY.md")}.</p>
 """

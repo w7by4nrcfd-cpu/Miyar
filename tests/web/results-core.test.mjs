@@ -184,3 +184,14 @@ test("صفوف المقارنة تنقل القيم كما هي مع N", () => {
   assert.equal(stripIsolates(levelCell({ n_cases: 2, score: null, n_scored: 0 })), "لا درجة (N = 2، المحتسب 0)");
   assert.equal(noSpecialistReview([FX_BASE, FX_RAG]), true);
 });
+
+import { comparisonCaveat, COMPARISON_CAVEAT } from "../../web/assets/results-core.js";
+
+test("تنبيه المقارنة يذكر ميلها لصالح rag وN من الملف", () => {
+  const text = stripIsolates(comparisonCaveat([FX_BASE, FX_RAG]));
+  assert.ok(text.includes(COMPARISON_CAVEAT));
+  assert.match(text, /أُعدّت لحالات الاختبار نفسها/);
+  assert.match(text, /\(N = 12\)/);
+  const mixed = stripIsolates(comparisonCaveat([FX_BASE, { ...FX_RAG, n_cases: 51 }]));
+  assert.match(mixed, /N = 12 وN = 51/);
+});
