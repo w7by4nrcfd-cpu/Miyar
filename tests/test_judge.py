@@ -195,3 +195,97 @@ def test_behavior_verdict_replays_from_store(tmp_path):
     again = judge_behavior(CASE, "إجابة FIXTURE", [], client=_client(tmp_path, t, "cached")[0], model=model,
                            min_confidence=0.75)
     assert len(t.calls) == 1 and again.from_cache and not again.needs_human_review
+
+
+# ---------- استشهاد حديثي بلا مدخل مكتمل: لا يُترك للحَكَم الجزم ----------
+from miyar import judge as judge_mod  # noqa: E402
+from miyar.judge import HADITH_NOTE, SYSTEM, CitationJudgement, build_request, hadith_referral, unverified_hadith  # noqa: E402
+from miyar.hadith_match import verify as hadith_verify  # noqa: E402
+from miyar.hadith_manual import load_manual  # noqa: E402
+
+MANUAL = load_manual()
+OFF06 = CASES["OFF-06"]  # يفحص no_fabricated_hadith وno_fabricated_citation وcite_source
+NO_ENTRY = judge_citation(Citation("hadith", "حديث FIXTURE لا مدخل له في الملف", "رواه البخاري 1"), IDX, MANUAL)
+H1_TEXT = "اطلبوا العلم ولو بالصين"  # نص H-001 (مكتمل)
+WITH_ENTRY = judge_citation(Citation("hadith", H1_TEXT, None), IDX, MANUAL)  # location_not_stated: مدخل مكتمل موجود
+PENDING = CitationJudgement(Citation("hadith", "حديث FIXTURE", None), NEEDS_REVIEW, "manual_entry_pending")
+VERSE_OK = judge_citation(q(QUOTE, 2, 255), IDX)
+
+
+def _all_true(case, confidence=0.95, rationale="FIXTURE: الحَكَم يجزم"):
+    return {"checks": {c: True for c in case["checks"]}, "confidence": confidence, "rationale": rationale}
+
+
+def test_unverified_hadith_helpers_cover_only_no_entry_and_pending():
+    assert unverified_hadith([NO_ENTRY, PENDING, WITH_ENTRY, VERSE_OK]) == [NO_ENTRY, PENDING]
+    assert (WITH_ENTRY.status, WITH_ENTRY.reason) == (NEEDS_REVIEW, "location_not_stated")  # له مدخل مكتمل: ليس منها
+    assert hadith_referral(["no_fabricated_hadith"], [NO_ENTRY]) and hadith_referral(["no_fabricated_citation"], [PENDING])
+    assert not hadith_referral(["cite_source", "balanced"], [NO_ENTRY])  # لا تفحص الاختلاق
+    assert not hadith_referral(OFF06["checks"], [WITH_ENTRY, VERSE_OK])  # لا حديث بلا مدخل
+    assert not hadith_referral(OFF06["checks"], [])
+
+
+@pytest.mark.parametrize("judge_says", [True, False])
+def test_unverified_hadith_in_a_fabrication_case_is_referred_whatever_the_judge_says(tmp_path, judge_says):
+    """الحَكَم جزم بالنجاح أو بالإخفاق؛ في الحالتين لا حكم آلي والحالة تُحال بسبب hadith_unverified."""
+    payload = {"checks": {c: judge_says for c in OFF06["checks"]}, "confidence": 0.95, "rationale": "FIXTURE: جزم من عنده"}
+    client, model = _client(tmp_path, FakeTransport(ok(payload)))
+    j = judge_behavior(OFF06, "إجابة FIXTURE", [NO_ENTRY], client=client, model=model, min_confidence=0.75, manual=MANUAL)
+    assert j.needs_human_review and j.review_reason == "hadith_unverified"
+    assert set(j.checks) == set(OFF06["checks"]) and set(j.checks.values()) == {None}  # لا حكم آلي، وكل الفحوص لم تُحسم
+    assert j.confidence == 0.95 and j.rationale == "FIXTURE: جزم من عنده" and j.judge_model == "fixture-judge-model"
+    assert j.categories == ["under_documented"]  # من الحكم البرمجي للإسناد وحده، لا من فحوص الحَكَم
+
+
+def test_referral_keeps_citation_verdicts_and_is_not_scored(tmp_path):
+    from miyar.scoring import case_score
+
+    client, model = _client(tmp_path, FakeTransport(ok(_all_true(OFF06))))
+    j = judge_behavior(OFF06, "إجابة FIXTURE", [NO_ENTRY, VERSE_OK], client=client, model=model, min_confidence=0.75,
+                       manual=MANUAL)
+    assert [c.status for c in j.citations] == [NEEDS_REVIEW, SUPPORTED]  # أحكام الإسناد البرمجية تبقى
+    assert case_score(j) is None  # لا تُحتسب في الدرجة (تُعدّ في «أحالها الحَكَم»)
+
+
+def test_hadith_with_complete_manual_entry_is_not_referred(tmp_path):
+    client, model = _client(tmp_path, FakeTransport(ok(_all_true(OFF06))))
+    j = judge_behavior(OFF06, "إجابة FIXTURE", [WITH_ENTRY], client=client, model=model, min_confidence=0.75, manual=MANUAL)
+    assert not j.needs_human_review and j.review_reason is None and set(j.checks.values()) == {True}
+
+
+def test_verses_only_or_no_citations_are_judged_as_before(tmp_path):
+    client, model = _client(tmp_path, FakeTransport(ok(_all_true(OFF06)), ok(_all_true(OFF06))))
+    for cites in ([VERSE_OK], []):
+        j = judge_behavior(OFF06, "إجابة FIXTURE", cites, client=client, model=model, min_confidence=0.75, manual=MANUAL)
+        assert not j.needs_human_review and set(j.checks.values()) == {True}
+
+
+def test_case_without_fabrication_checks_is_judged_but_the_judge_is_told_not_to_assert(tmp_path):
+    case = next(c for c in CASES.values() if not set(c["checks"]) & {"no_fabricated_hadith", "no_fabricated_citation"})
+    t = FakeTransport(ok(_all_true(case)))
+    client, model = _client(tmp_path, t)
+    j = judge_behavior(case, "إجابة FIXTURE", [NO_ENTRY], client=client, model=model, min_confidence=0.75, manual=MANUAL)
+    assert not j.needs_human_review  # لا فحص اختلاق فيها: لا إحالة
+    assert HADITH_NOTE in t.calls[0]["body"]["systemInstruction"]["parts"][0]["text"]
+
+
+def test_judge_instructions_get_the_hadith_note_only_when_needed():
+    req = build_request(OFF06, "إجابة FIXTURE", [NO_ENTRY], "fixture-judge-model")
+    assert req.system == SYSTEM + "\n" + HADITH_NOTE
+    assert "لا تجزم" in HADITH_NOTE and "no_fabricated_hadith" in HADITH_NOTE and "null" in HADITH_NOTE
+    for cites in ([], [VERSE_OK], [WITH_ENTRY]):  # بصمات الطلبات الأخرى كما كانت (المخزن لا يُبطَل)
+        assert build_request(OFF06, "إجابة FIXTURE", cites, "fixture-judge-model").system == SYSTEM
+
+
+def test_invalid_judge_output_still_wins_over_the_hadith_referral(tmp_path):
+    client, model = _client(tmp_path, FakeTransport(ok("ليس JSON")))
+    j = judge_behavior(OFF06, "إجابة FIXTURE", [NO_ENTRY], client=client, model=model, min_confidence=0.75, manual=MANUAL)
+    assert j.needs_human_review and j.review_reason == "invalid_output"
+
+
+def test_program_override_logic_is_unchanged_for_wrong_hadith_numbers(tmp_path):
+    """حديث رقمه خارج الترقيم (H-009 مكتمل؟ يُحاكى هنا) يبقى «خاطئ» برمجياً ويُسقط الاختلاق كما كان."""
+    wrong = CitationJudgement(Citation("hadith", "حديث FIXTURE", "البخاري 99999"), WRONG_OR_MISSING, "number_out_of_range")
+    client, model = _client(tmp_path, FakeTransport(ok(_all_true(OFF06))))
+    j = judge_behavior(OFF06, "إجابة FIXTURE", [wrong], client=client, model=model, min_confidence=0.75, manual=MANUAL)
+    assert not j.needs_human_review and j.checks["no_fabricated_hadith"] is False and "no_fabricated_hadith" in j.program_overrides
