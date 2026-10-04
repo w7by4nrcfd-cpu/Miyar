@@ -221,6 +221,8 @@ class OpenAICompatibleProvider:
 
     name = "openai"
     FINISH = {"stop": "STOP", "length": "MAX_TOKENS", "content_filter": "SAFETY"}
+    # ترويسة ثابتة: بعض المزوّدات خلف Cloudflare تحجب User-Agent الافتراضي «Python-urllib» (403، error code 1010)
+    USER_AGENT = "miyar/0.1"
 
     def __init__(self, api_key: str, base_url: str, transport: Transport = urllib_transport, timeout: float = 120.0):
         if not api_key:
@@ -242,7 +244,9 @@ class OpenAICompatibleProvider:
         }
         if req.response_mime_type == "application/json":
             body["response_format"] = {"type": "json_object"}
-        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self._key}"}
+        headers = {
+            "Content-Type": "application/json", "Authorization": f"Bearer {self._key}", "User-Agent": self.USER_AGENT,
+        }
         status, resp_headers, raw = self._transport(
             f"{self.base_url}/chat/completions", headers, json.dumps(body).encode("utf-8"), self._timeout
         )
