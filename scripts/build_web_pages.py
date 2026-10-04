@@ -306,7 +306,8 @@ def pipeline(f: dict) -> list[dict]:
                  ("جاهزة" if st["hadith_match"] == "built" else "لم تُبنَ")) if st["quran_match"] == "built" else "الآيات والأحاديث"
     extract_sub = ("الآيات مع موضعها: جاهز؛ الأحاديث: لم تُبنَ" if st["extract"] == "partial"
                    else "كل آية أو حديث نسبه المساعد مع موضعه")
-    judge_sub = ("الآيات والسلوك الأولي: جاهز؛ الأحاديث: لم تُبنَ" if st["judge"] == "partial"
+    judge_sub = (("الإسناد والسلوك الأولي: جاهز؛ الأصناف الستة: لم تُبنَ" if st["hadith_match"] == "built"
+                  else "الآيات والسلوك الأولي: جاهز؛ الأحاديث: لم تُبنَ") if st["judge"] == "partial"
                  else "مؤيَّد / يحتاج تحقق / خاطئ، وسلوك المستوى")
     return [
         {"title": "سؤال موسوم", "sub": f"{f['n']} حالة موسومة بالمستوى A–D والسلوك المتوقع",
@@ -748,8 +749,11 @@ def status_items(f: dict) -> tuple[list, list]:
         ("استخراج الاستشهادات من الإجابات" + (" (الآيات جاهزة؛ الأحاديث لم تُبنَ)" if st["extract"] == "partial" else ""),
          st["extract"] == "built", "miyar/extract.py"),
         ("مطابقة الأحاديث مع الملف اليدوي", st["hadith_match"] == "built", "miyar/hadith_match.py"),
-        ("حكم السلوك حسب المستوى A–D" + (" (حكم إسناد الآيات وحكم السلوك الأولي بالثقة والإحالة جاهزان؛ "
-                                         "الأحاديث وأصناف الحكم الستة لم تُبنَ)" if st["judge"] == "partial" else ""),
+        ("حكم السلوك حسب المستوى A–D" + (("" if st["judge"] != "partial" else
+                                          " (حكم إسناد الآيات والأحاديث وحكم السلوك الأولي بالثقة والإحالة جاهزة؛ "
+                                          "أصناف الحكم الستة لم تُبنَ)" if st["hadith_match"] == "built" else
+                                          " (حكم إسناد الآيات وحكم السلوك الأولي بالثقة والإحالة جاهزان؛ "
+                                          "الأحاديث وأصناف الحكم الستة لم تُبنَ)")),
          st["judge"] == "built", "miyar/judge.py"),
         ("وحدة حساب الدرجة والمقارنة وقرار البوابة (scoring)", st["scoring"] == "built", "miyar/scoring.py"),
         ("لوحة النتائج والمقارنة (تشغيلات منشورة)", f["published_runs"] > 0, "web/data/results.json"),
