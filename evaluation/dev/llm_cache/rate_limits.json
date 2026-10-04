@@ -1,0 +1,65 @@
+{
+  "run_label": "DEV_RUN",
+  "runs": {
+    "(بلا معرّف)": {
+      "count": 11,
+      "events": [
+        {
+          "at": "2026-10-04T02:26:44+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 15.0
+        },
+        {
+          "at": "2026-10-04T02:27:00+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 59.0
+        },
+        {
+          "at": "2026-10-04T02:28:26+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 33.0
+        },
+        {
+          "at": "2026-10-04T02:28:27+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 32.0
+        },
+        {
+          "at": "2026-10-04T02:29:00+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 59.0
+        },
+        {
+          "at": "2026-10-04T02:30:11+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 77388.0
+        },
+        {
+          "at": "2026-10-04T02:31:11+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 77328.0
+        },
+        {
+          "at": "2026-10-04T02:31:23+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 77316.0
+        },
+        {
+          "at": "2026-10-04T02:32:24+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 77255.0
+        },
+        {
+          "at": "2026-10-04T02:33:24+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 77195.0
+        },
+        {
+          "at": "2026-10-04T02:33:26+00:00",
+          "model": "gemini-3.8-flash",
+          "retry_after": 77193.0
+        }
+      ]
+    }
+  }
+}
