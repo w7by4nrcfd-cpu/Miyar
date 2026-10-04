@@ -174,7 +174,14 @@ def link(path: str, label: str | None = None) -> str:
 # ---------- حالة البناء محسوبة من الكود ----------
 def module_state(name: str) -> str:
     """built إن كانت الوحدة موجودة وفيها منطق؛ todo إن غابت أو كانت هيكلاً (كل دوالها raise NotImplementedError)."""
-    path = ROOT / "miyar" / f"{name}.py"
+    return "built" if module_built_at(ROOT / "miyar" / f"{name}.py") else "todo"
+
+
+def module_built_at(path: Path) -> bool:
+    return _module_state_at(path) == "built"
+
+
+def _module_state_at(path: Path) -> str:
     if not path.exists():
         return "todo"
     # الدوال العامة وحدها تحمل المنطق؛ أصناف البيانات (dataclass / Protocol) لا تُعدّ منطقاً
@@ -200,8 +207,9 @@ def any_module_built(*names: str) -> str:
 
 
 def assistants_state() -> str:
+    """«المساعدان المرجعيان» يكتملان بوجود المساعدين كليهما (baseline وrag)، لا بأحدهما."""
     d = ROOT / "miyar/assistants"
-    return "built" if any(p.suffix == ".py" and p.name != "__init__.py" for p in d.glob("*.py")) else "todo"
+    return "built" if all(module_built_at(d / f"{n}.py") for n in ("baseline", "rag")) else "todo"
 
 
 def quran_files_ok(src: dict) -> bool:
