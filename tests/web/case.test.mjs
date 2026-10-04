@@ -115,6 +115,8 @@ test("صفحة الحالة في المتصفح", { skip: !pw && !process.env.CI
       });
 
       await t.test(`${width} ${scheme}: بلا سجل رسمي → السؤال والتنبيه والنص الصحيح و«لا سجل رسمي بعد»`, async () => {
+        // غياب ملف الحالة يُفرض صراحةً (404)، فلا يتوقف الاختبار على ما نُشر في web/data/cases/
+        await page.route("**/data/cases/OFF-11.json", (r) => r.fulfill({ status: 404, body: "" }));
         await page.goto(base + "case.html?id=OFF-11", { waitUntil: "networkidle" });
         const text = await page.locator("#case").innerText();
         for (const needle of ["OFF-11", "السؤال", "تنبيه", "النص الصحيح من البيانات", "طه 20:114", "السلوك المتوقع", "لا سجل رسمي بعد"]) {
@@ -124,6 +126,7 @@ test("صفحة الحالة في المتصفح", { skip: !pw && !process.env.CI
         const l = await layout();
         assert.ok(l.overflow <= 0, `تمرير أفقي ${l.overflow}px`);
         assert.deepEqual(l.low, [], "تباين أقل من 4.5:1");
+        await page.unroute("**/data/cases/OFF-11.json");
       });
 
       await t.test(`${width} ${scheme}: سجل اصطناعي → الإجابة والاستشهادات والحكم والثقة والسبب`, async () => {

@@ -47,9 +47,16 @@ test("runs فارغة → فارغ", () => {
   assert.equal(interpretResults(json({ schema_version: 1, runs: [] })).state, "empty");
 });
 
-test("الملف المنشور web/data/results.json فارغ حالياً (لا نتائج مصطنعة)", () => {
-  const view = interpretResults(ok(read("web/data/results.json")));
-  assert.equal(view.state, "empty");
+test("الملف المنشور web/data/results.json صالح: فارغ إن لم تُنشر سجلات، وإلا «ok» ولكل تشغيل سجل في evaluation/official/", () => {
+  const raw = read("web/data/results.json");
+  const view = interpretResults(ok(raw));
+  const runs = JSON.parse(raw).runs;
+  if (runs.length === 0) {
+    assert.equal(view.state, "empty");
+  } else {
+    assert.equal(view.state, "ok");
+    for (const r of runs) assert.match(r.evaluation_record, /^evaluation\/official\/[^/]+\.json$/);
+  }
 });
 
 // ---------- الحالة غير الصالحة ----------
