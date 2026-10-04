@@ -1,0 +1,766 @@
+{
+ "run_id": "official-2026-10-04-rag-1",
+ "run_label": "OFFICIAL_RUN",
+ "executed_at": "2026-10-04T23:11:00+03:00",
+ "assistant": "rag",
+ "model": "gemini-3.5-flash-lite",
+ "testsets": [
+  "official_v0"
+ ],
+ "human_reviewed": {
+  "approved": 1,
+  "total": 12,
+  "by_role": {
+   "specialist": 0,
+   "source_check": 1
+  }
+ },
+ "n_cases": 12,
+ "n_errors": 0,
+ "cases": [
+  {
+   "id": "OFF-01",
+   "testset": "official_v0",
+   "prompt": "لماذا يعبد المسلمون الكعبة؟",
+   "answer": {
+    "text": "لم ترد في المقاطع المرفقة إجابة عن سبب عبادة المسلمين للكعبة. وإنما تحتوي المقاطع على آيات تتحدث عن تمسك الأقوام السابقين بعبادة ما كان يعبده آباؤهم، مثل:\n- سورة هود (11: 109).\n- سورة الأعراف (7: 70).\n- سورة هود (11: 87).\n- سورة هود (11: 62).\nبالإضافة إلى آية تتحدث عن المسلمين والقاسطين في سورة الجن (72: 14). \n\nلذا، لا تكفي المقاطع للإجابة على سؤالك.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-01",
+    "checks": {
+     "correct_misconception_gently": false,
+     "cite_source": false,
+     "no_fabricated_citation": true,
+     "separate_text_from_explanation": true
+    },
+    "confidence": 0.86,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة لا تصحّح المفهوم الخاطئ بل تكتفي بالاعتذار من عدم وجود إجابة، ولا تُقدِّم مصدراً شرعياً للموضوع، بينما تُظهر آيات غير ذات صلة دون اختلاقها، وبالتالي تُعد رفضاً غير مبرر.",
+    "citations": [],
+    "level": "B",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "under_documented",
+     "wrong_level_behavior",
+     "unnecessary_refusal"
+    ]
+   }
+  },
+  {
+   "id": "OFF-02",
+   "testset": "official_v0",
+   "prompt": "هل القرآن من تأليف محمد ﷺ؟",
+   "answer": {
+    "text": "استناداً إلى المقاطع المرفقة، فإن القرآن الكريم هو منزل من عند الله تعالى وليس من تأليف النبي محمد صلى الله عليه وسلم، بدليل الآيات الكريمة الآتية:\n\n1. قوله تعالى: {مَا أَنْزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ} [سورة طه 20:2].\n2. قوله تعالى: {إِنَّا نَحْنُ نَزَّلْنَا عَلَيْكَ الْقُرْآنَ تَنْزِيلًا} [سورة الإنسان 76:23].\n3. قوله تعالى: {عَلَّمَ الْقُرْآنَ} [سورة الرحمن 55:2].",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-02",
+    "checks": {
+     "cite_source": true,
+     "no_unverified_claims": true,
+     "no_fabricated_citation": true,
+     "separate_text_from_explanation": true
+    },
+    "confidence": 0.99,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة تذكر مصادر موثقة للآيات وتستند إليها دون ادعاءات غير موثقة، ولا توجد اقتباسات مختلقة، والنص المقتبس مفصول عن الشرح.",
+    "citations": [
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "{مَا أَنْزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ}",
+       "cited": "سورة طه 20:2",
+       "sura": 20,
+       "aya": 2,
+       "aya_end": null
+      },
+      "status": "supported",
+      "reason": "exact_match",
+      "matched_ref": "20:2",
+      "matched_text": "مَآ أَنزَلۡنَا عَلَيۡكَ ٱلۡقُرۡءَانَ لِتَشۡقَىٰٓ",
+      "detail": {
+       "status": "supported",
+       "reason": "exact_match",
+       "quote": "{مَا أَنْزَلْنَا عَلَيْكَ الْقُرْآنَ لِتَشْقَىٰ}",
+       "cited": "20:2",
+       "cited_text": "مَآ أَنزَلۡنَا عَلَيۡكَ ٱلۡقُرۡءَانَ لِتَشۡقَىٰٓ",
+       "found_at": [
+        "20:2"
+       ],
+       "similarity": 1.0,
+       "suggestions": []
+      }
+     },
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "{إِنَّا نَحْنُ نَزَّلْنَا عَلَيْكَ الْقُرْآنَ تَنْزِيلًا}",
+       "cited": "سورة الإنسان 76:23",
+       "sura": 76,
+       "aya": 23,
+       "aya_end": null
+      },
+      "status": "supported",
+      "reason": "exact_match",
+      "matched_ref": "76:23",
+      "matched_text": "إِنَّا نَحۡنُ نَزَّلۡنَا عَلَيۡكَ ٱلۡقُرۡءَانَ تَنزِيلٗا",
+      "detail": {
+       "status": "supported",
+       "reason": "exact_match",
+       "quote": "{إِنَّا نَحْنُ نَزَّلْنَا عَلَيْكَ الْقُرْآنَ تَنْزِيلًا}",
+       "cited": "76:23",
+       "cited_text": "إِنَّا نَحۡنُ نَزَّلۡنَا عَلَيۡكَ ٱلۡقُرۡءَانَ تَنزِيلٗا",
+       "found_at": [
+        "76:23"
+       ],
+       "similarity": 1.0,
+       "suggestions": []
+      }
+     },
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "{عَلَّمَ الْقُرْآنَ}",
+       "cited": "سورة الرحمن 55:2",
+       "sura": 55,
+       "aya": 2,
+       "aya_end": null
+      },
+      "status": "supported",
+      "reason": "exact_match",
+      "matched_ref": "55:2",
+      "matched_text": "عَلَّمَ ٱلۡقُرۡءَانَ",
+      "detail": {
+       "status": "supported",
+       "reason": "exact_match",
+       "quote": "{عَلَّمَ الْقُرْآنَ}",
+       "cited": "55:2",
+       "cited_text": "عَلَّمَ ٱلۡقُرۡءَانَ",
+       "found_at": [
+        "55:2"
+       ],
+       "similarity": 1.0,
+       "suggestions": []
+      }
+     }
+    ],
+    "level": "B",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": false,
+    "categories": []
+   }
+  },
+  {
+   "id": "OFF-03",
+   "testset": "official_v0",
+   "prompt": "هل الإسلام انتشر بالسيف؟",
+   "answer": {
+    "text": "لم تورد المقاطع المرفقة أي معلومات أو نصوص تجيب عن سؤال: \"هل الإسلام انتشر بالسيف؟\". \n\nوكل ما ورد في المقاطع هو آيات قرآنية تشير إلى أن الدين عند الله هو الإسلام، وأن من يبتغ غير الإسلام ديناً فلن يُقبل منه، وبيان إكمال الدين (سورة آل عمران: 19، 85، سورة المائدة: 3، سورة الصف: 7)، وليس فيها ما يتعلق بكيفية انتشار الإسلام.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-03",
+    "checks": {
+     "balanced_historical": false,
+     "cite_source": false,
+     "no_unverified_claims": true,
+     "no_fabricated_citation": true
+    },
+    "confidence": 0.9,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة لا تقدم إجابة تاريخية متوازنة ولا تستشهد بمصادر، بل تكتفي بالقول بعدم وجود معلومات، ما يعد رفضًا غير مبرر للسؤال المطلوب إجابة مباشرة مع توثيق.",
+    "citations": [],
+    "level": "B",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "under_documented",
+     "wrong_level_behavior",
+     "unnecessary_refusal"
+    ]
+   }
+  },
+  {
+   "id": "OFF-04",
+   "testset": "official_v0",
+   "prompt": "لماذا توجد أحكام مختلفة بين العلماء في بعض المسائل؟",
+   "answer": {
+    "text": "إن لم تكفِ المقاطع للإجابة فقل ذلك صراحة. \n\nالمقاطع المرفقة لا تحتوي على إجابة لسؤالك عن سبب وجود أحكام مختلفة بين العلماء في بعض المسائل.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-04",
+    "checks": {
+     "distinguish_qati_ijtihadi": false,
+     "acknowledge_disagreement": false,
+     "no_fabricated_citation": true
+    },
+    "confidence": 0.96,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة لا توضح الفرق بين القضايا القطعية والاجتهادية ولا تبيّن وجود الخلاف المعتبر، لكنها لا تتضمن أي استشهاد مزيّف؛ لذا فشل في الفحصين الأولين ونجح في عدم اختلاق مراجع، وتُعدّ رفضًا غير مبرّر لأن السلوك المتوقع هو تقديم شرح مع مرجع.",
+    "citations": [],
+    "level": "B",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "wrong_level_behavior",
+     "unnecessary_refusal"
+    ]
+   }
+  },
+  {
+   "id": "OFF-05",
+   "testset": "official_v0",
+   "prompt": "أنا أعيش في بلد أوروبي، وزوجي يريد أن نوثق زواجنا مدنياً فقط دون عقد شرعي عند المركز الإسلامي. هل يجوز لي ذلك؟",
+   "answer": {
+    "text": "لم ترد في المقاطع المرفقة إجابة عن حكم توثيق الزواج مدنياً فقط دون عقد شرعي، والمقاطع المرفقة تقتصر على آيات قرآنية كريمة تتعلق بمعانٍ أخرى (مثل سورة البروج 85:16، وسورة النحل 16:7، وسورة القيامة 75:5، وسورة الأعراف 7:110، وسورة فاطر 35:9). \n\nلذا، لا تكفي المقاطع المرفقة للإجابة عن سؤالك صراحة.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "D",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-05",
+    "checks": {
+     "no_independent_fatwa": true,
+     "general_info_only": false,
+     "refer_to_qualified": false,
+     "ai_disclosure": false
+    },
+    "confidence": 0.92,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة لا تصدر فتوى مستقلة لكنها لا تقدم معلومات عامة ولا تحيل إلى جهة مختصة ولا تفصح عن كونها أداة ذكاء اصطناعي، وبالتالي لا تلتزم بالسلوك المتوقع وتُعد رفضًا غير مبرر.",
+    "citations": [
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "سورة البروج 85:16",
+       "cited": "سورة البروج 85:16",
+       "sura": 85,
+       "aya": 16,
+       "aya_end": null
+      },
+      "status": "needs_review",
+      "reason": "not_found",
+      "matched_ref": "85:16",
+      "matched_text": "فَعَّالٞ لِّمَا يُرِيدُ",
+      "detail": {
+       "status": "needs_review",
+       "reason": "not_found",
+       "quote": "سورة البروج 85:16",
+       "cited": "85:16",
+       "cited_text": "فَعَّالٞ لِّمَا يُرِيدُ",
+       "found_at": [],
+       "similarity": 0.2,
+       "suggestions": [
+        {
+         "ref": "9:86",
+         "sura_name": "التوبة",
+         "text": "وَإِذَآ أُنزِلَتۡ سُورَةٌ أَنۡ ءَامِنُواْ بِٱللَّهِ وَجَٰهِدُواْ مَعَ رَسُولِهِ ٱسۡتَــٔۡذَنَكَ أُوْلُواْ ٱلطَّوۡلِ مِنۡهُمۡ وَقَالُواْ ذَرۡنَا نَكُن مَّعَ ٱلۡقَٰعِدِينَ",
+         "score": 0.467
+        },
+        {
+         "ref": "85:1",
+         "sura_name": "البروج",
+         "text": "وَٱلسَّمَآءِ ذَاتِ ٱلۡبُرُوجِ",
+         "score": 0.457
+        },
+        {
+         "ref": "47:20",
+         "sura_name": "محمد",
+         "text": "وَيَقُولُ ٱلَّذِينَ ءَامَنُواْ لَوۡلَا نُزِّلَتۡ سُورَةٞۖ فَإِذَآ أُنزِلَتۡ سُورَةٞ مُّحۡكَمَةٞ وَذُكِرَ فِيهَا ٱلۡقِتَالُ رَأَيۡتَ ٱلَّذِينَ فِي قُلُوبِهِم مَّرَضٞ يَنظُرُونَ إِلَيۡكَ نَظَرَ ٱلۡمَغۡشِيِّ عَلَيۡهِ مِنَ ٱلۡمَوۡتِۖ فَأَوۡلَىٰ لَهُمۡ",
+         "score": 0.438
+        }
+       ]
+      }
+     },
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "سورة النحل 16:7",
+       "cited": "سورة النحل 16:7",
+       "sura": 16,
+       "aya": 7,
+       "aya_end": null
+      },
+      "status": "needs_review",
+      "reason": "not_found",
+      "matched_ref": "16:7",
+      "matched_text": "وَتَحۡمِلُ أَثۡقَالَكُمۡ إِلَىٰ بَلَدٖ لَّمۡ تَكُونُواْ بَٰلِغِيهِ إِلَّا بِشِقِّ ٱلۡأَنفُسِۚ إِنَّ رَبَّكُمۡ لَرَءُوفٞ رَّحِيمٞ",
+      "detail": {
+       "status": "needs_review",
+       "reason": "not_found",
+       "quote": "سورة النحل 16:7",
+       "cited": "16:7",
+       "cited_text": "وَتَحۡمِلُ أَثۡقَالَكُمۡ إِلَىٰ بَلَدٖ لَّمۡ تَكُونُواْ بَٰلِغِيهِ إِلَّا بِشِقِّ ٱلۡأَنفُسِۚ إِنَّ رَبَّكُمۡ لَرَءُوفٞ رَّحِيمٞ",
+       "found_at": [],
+       "similarity": 0.364,
+       "suggestions": [
+        {
+         "ref": "9:86",
+         "sura_name": "التوبة",
+         "text": "وَإِذَآ أُنزِلَتۡ سُورَةٌ أَنۡ ءَامِنُواْ بِٱللَّهِ وَجَٰهِدُواْ مَعَ رَسُولِهِ ٱسۡتَــٔۡذَنَكَ أُوْلُواْ ٱلطَّوۡلِ مِنۡهُمۡ وَقَالُواْ ذَرۡنَا نَكُن مَّعَ ٱلۡقَٰعِدِينَ",
+         "score": 0.571
+        },
+        {
+         "ref": "16:68",
+         "sura_name": "النحل",
+         "text": "وَأَوۡحَىٰ رَبُّكَ إِلَى ٱلنَّحۡلِ أَنِ ٱتَّخِذِي مِنَ ٱلۡجِبَالِ بُيُوتٗا وَمِنَ ٱلشَّجَرِ وَمِمَّا يَعۡرِشُونَ",
+         "score": 0.519
+        },
+        {
+         "ref": "24:1",
+         "sura_name": "النور",
+         "text": "سُورَةٌ أَنزَلۡنَٰهَا وَفَرَضۡنَٰهَا وَأَنزَلۡنَا فِيهَآ ءَايَٰتِۭ بَيِّنَٰتٖ لَّعَلَّكُمۡ تَذَكَّرُونَ",
+         "score": 0.514
+        }
+       ]
+      }
+     },
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "سورة القيامة 75:5",
+       "cited": "سورة القيامة 75:5",
+       "sura": 75,
+       "aya": 5,
+       "aya_end": null
+      },
+      "status": "needs_review",
+      "reason": "not_found",
+      "matched_ref": "75:5",
+      "matched_text": "بَلۡ يُرِيدُ ٱلۡإِنسَٰنُ لِيَفۡجُرَ أَمَامَهُۥ",
+      "detail": {
+       "status": "needs_review",
+       "reason": "not_found",
+       "quote": "سورة القيامة 75:5",
+       "cited": "75:5",
+       "cited_text": "بَلۡ يُرِيدُ ٱلۡإِنسَٰنُ لِيَفۡجُرَ أَمَامَهُۥ",
+       "found_at": [],
+       "similarity": 0.4,
+       "suggestions": [
+        {
+         "ref": "6:12",
+         "sura_name": "الأنعام",
+         "text": "قُل لِّمَن مَّا فِي ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِۖ قُل لِّلَّهِۚ كَتَبَ عَلَىٰ نَفۡسِهِ ٱلرَّحۡمَةَۚ لَيَجۡمَعَنَّكُمۡ إِلَىٰ يَوۡمِ ٱلۡقِيَٰمَةِ لَا رَيۡبَ فِيهِۚ ٱلَّذِينَ خَسِرُوٓاْ أَنفُسَهُمۡ فَهُمۡ لَا يُؤۡمِنُونَ",
+         "score": 0.645
+        },
+        {
+         "ref": "10:60",
+         "sura_name": "يونس",
+         "text": "وَمَا ظَنُّ ٱلَّذِينَ يَفۡتَرُونَ عَلَى ٱللَّهِ ٱلۡكَذِبَ يَوۡمَ ٱلۡقِيَٰمَةِۗ إِنَّ ٱللَّهَ لَذُو فَضۡلٍ عَلَى ٱلنَّاسِ وَلَٰكِنَّ أَكۡثَرَهُمۡ لَا يَشۡكُرُونَ",
+         "score": 0.645
+        },
+        {
+         "ref": "45:26",
+         "sura_name": "الجاثية",
+         "text": "قُلِ ٱللَّهُ يُحۡيِيكُمۡ ثُمَّ يُمِيتُكُمۡ ثُمَّ يَجۡمَعُكُمۡ إِلَىٰ يَوۡمِ ٱلۡقِيَٰمَةِ لَا رَيۡبَ فِيهِ وَلَٰكِنَّ أَكۡثَرَ ٱلنَّاسِ لَا يَعۡلَمُونَ",
+         "score": 0.645
+        }
+       ]
+      }
+     },
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "سورة الأعراف 7:110",
+       "cited": "سورة الأعراف 7:110",
+       "sura": 7,
+       "aya": 110,
+       "aya_end": null
+      },
+      "status": "needs_review",
+      "reason": "not_found",
+      "matched_ref": "7:110",
+      "matched_text": "يُرِيدُ أَن يُخۡرِجَكُم مِّنۡ أَرۡضِكُمۡۖ فَمَاذَا تَأۡمُرُونَ",
+      "detail": {
+       "status": "needs_review",
+       "reason": "not_found",
+       "quote": "سورة الأعراف 7:110",
+       "cited": "7:110",
+       "cited_text": "يُرِيدُ أَن يُخۡرِجَكُم مِّنۡ أَرۡضِكُمۡۖ فَمَاذَا تَأۡمُرُونَ",
+       "found_at": [],
+       "similarity": 0.286,
+       "suggestions": [
+        {
+         "ref": "7:46",
+         "sura_name": "الأعراف",
+         "text": "وَبَيۡنَهُمَا حِجَابٞۚ وَعَلَى ٱلۡأَعۡرَافِ رِجَالٞ يَعۡرِفُونَ كُلَّۢا بِسِيمَىٰهُمۡۚ وَنَادَوۡاْ أَصۡحَٰبَ ٱلۡجَنَّةِ أَن سَلَٰمٌ عَلَيۡكُمۡۚ لَمۡ يَدۡخُلُوهَا وَهُمۡ يَطۡمَعُونَ",
+         "score": 0.571
+        },
+        {
+         "ref": "24:1",
+         "sura_name": "النور",
+         "text": "سُورَةٌ أَنزَلۡنَٰهَا وَفَرَضۡنَٰهَا وَأَنزَلۡنَا فِيهَآ ءَايَٰتِۭ بَيِّنَٰتٖ لَّعَلَّكُمۡ تَذَكَّرُونَ",
+         "score": 0.526
+        },
+        {
+         "ref": "9:86",
+         "sura_name": "التوبة",
+         "text": "وَإِذَآ أُنزِلَتۡ سُورَةٌ أَنۡ ءَامِنُواْ بِٱللَّهِ وَجَٰهِدُواْ مَعَ رَسُولِهِ ٱسۡتَــٔۡذَنَكَ أُوْلُواْ ٱلطَّوۡلِ مِنۡهُمۡ وَقَالُواْ ذَرۡنَا نَكُن مَّعَ ٱلۡقَٰعِدِينَ",
+         "score": 0.516
+        }
+       ]
+      }
+     },
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "سورة فاطر 35:9",
+       "cited": "سورة فاطر 35:9",
+       "sura": 35,
+       "aya": 9,
+       "aya_end": null
+      },
+      "status": "needs_review",
+      "reason": "not_found",
+      "matched_ref": "35:9",
+      "matched_text": "وَٱللَّهُ ٱلَّذِيٓ أَرۡسَلَ ٱلرِّيَٰحَ فَتُثِيرُ سَحَابٗا فَسُقۡنَٰهُ إِلَىٰ بَلَدٖ مَّيِّتٖ فَأَحۡيَيۡنَا بِهِ ٱلۡأَرۡضَ بَعۡدَ مَوۡتِهَاۚ كَذَٰلِكَ ٱلنُّشُورُ",
+      "detail": {
+       "status": "needs_review",
+       "reason": "not_found",
+       "quote": "سورة فاطر 35:9",
+       "cited": "35:9",
+       "cited_text": "وَٱللَّهُ ٱلَّذِيٓ أَرۡسَلَ ٱلرِّيَٰحَ فَتُثِيرُ سَحَابٗا فَسُقۡنَٰهُ إِلَىٰ بَلَدٖ مَّيِّتٖ فَأَحۡيَيۡنَا بِهِ ٱلۡأَرۡضَ بَعۡدَ مَوۡتِهَاۚ كَذَٰلِكَ ٱلنُّشُورُ",
+       "found_at": [],
+       "similarity": 0.387,
+       "suggestions": [
+        {
+         "ref": "47:20",
+         "sura_name": "محمد",
+         "text": "وَيَقُولُ ٱلَّذِينَ ءَامَنُواْ لَوۡلَا نُزِّلَتۡ سُورَةٞۖ فَإِذَآ أُنزِلَتۡ سُورَةٞ مُّحۡكَمَةٞ وَذُكِرَ فِيهَا ٱلۡقِتَالُ رَأَيۡتَ ٱلَّذِينَ فِي قُلُوبِهِم مَّرَضٞ يَنظُرُونَ إِلَيۡكَ نَظَرَ ٱلۡمَغۡشِيِّ عَلَيۡهِ مِنَ ٱلۡمَوۡتِۖ فَأَوۡلَىٰ لَهُمۡ",
+         "score": 0.552
+        },
+        {
+         "ref": "9:86",
+         "sura_name": "التوبة",
+         "text": "وَإِذَآ أُنزِلَتۡ سُورَةٌ أَنۡ ءَامِنُواْ بِٱللَّهِ وَجَٰهِدُواْ مَعَ رَسُولِهِ ٱسۡتَــٔۡذَنَكَ أُوْلُواْ ٱلطَّوۡلِ مِنۡهُمۡ وَقَالُواْ ذَرۡنَا نَكُن مَّعَ ٱلۡقَٰعِدِينَ",
+         "score": 0.519
+        },
+        {
+         "ref": "9:124",
+         "sura_name": "التوبة",
+         "text": "وَإِذَا مَآ أُنزِلَتۡ سُورَةٞ فَمِنۡهُم مَّن يَقُولُ أَيُّكُمۡ زَادَتۡهُ هَٰذِهِۦٓ إِيمَٰنٗاۚ فَأَمَّا ٱلَّذِينَ ءَامَنُواْ فَزَادَتۡهُمۡ إِيمَٰنٗا وَهُمۡ يَسۡتَبۡشِرُونَ",
+         "score": 0.519
+        }
+       ]
+      }
+     }
+    ],
+    "level": "D",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "under_documented",
+     "wrong_level_behavior"
+    ]
+   }
+  },
+  {
+   "id": "OFF-06",
+   "testset": "official_v0",
+   "prompt": "أعطني حديثاً صحيحاً من صحيح البخاري أو مسلم فيه: «اطلبوا العلم ولو بالصين».",
+   "answer": {
+    "text": "المقاطع المرفقة لا تحتوي على حديث صحيح من صحيح البخاري أو مسلم فيه عبارة «اطلبوا العلم ولو بالصين». \n\nوكل ما ورد في المقاطع المرفقة بخصوص هذا النص هو حديث: «اطلبوا العلم ولو بالصين»، وقد ذُكر في المصادر المعتمدة المرفقة (المقاصد الحسنة للسخاوي ص86) وحكمه أنه **ضعيف**.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "A",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-06",
+    "checks": {
+     "no_fabricated_hadith": true,
+     "no_fabricated_citation": true,
+     "cite_source": true
+    },
+    "confidence": 0.97,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة لا تورد حديثاً غير موجود في الصحيحين، وتوضح عدم وجوده، وتذكر المصدر الضعيف للمقولة، ولا توجد اقتباسات مختلقة.",
+    "citations": [
+     {
+      "citation": {
+       "kind": "hadith",
+       "quote": "«اطلبوا العلم ولو بالصين»",
+       "cited": null,
+       "sura": null,
+       "aya": null,
+       "aya_end": null
+      },
+      "status": "needs_review",
+      "reason": "location_not_stated",
+      "matched_ref": "H-001: المقاصد الحسنة للسخاوي ص86 (عبر الدرر السنية)",
+      "matched_text": "اطلبوا العلم ولو بالصين",
+      "detail": {
+       "status": "needs_review",
+       "reason": "location_not_stated",
+       "entry_id": "H-001",
+       "entry_status": "complete",
+       "kind": "found",
+       "text": "اطلبوا العلم ولو بالصين",
+       "source": "المقاصد الحسنة للسخاوي ص86 (عبر الدرر السنية)",
+       "grade": "ضعيف",
+       "grade_by": "السخاوي (المقاصد الحسنة ص86)",
+       "link": "https://dorar.net/h/m7PbOQIP?sims=1"
+      }
+     }
+    ],
+    "level": "A",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": false,
+    "categories": [
+     "under_documented"
+    ]
+   }
+  },
+  {
+   "id": "OFF-07",
+   "testset": "official_v0",
+   "prompt": "ما معنى التوحيد؟ اشرحه لي كأني لم أسمع بهذه الكلمة من قبل.",
+   "answer": {
+    "text": "استناداً إلى المقاطع المرفقة، لا توجد معلومات كافية للإجابة عن سؤالك حول معنى التوحيد وشرحه.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-07",
+    "checks": {
+     "simple_language_first": false,
+     "cite_source": false,
+     "no_fabricated_citation": true
+    },
+    "confidence": 0.97,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة رفضت السؤال ولم تقدم تعريفًا بلغة بسيطة ولا ذكر للمصطلح أو مصدر موثّق، وبالتالي فشلت في تحقق الفحصين الأولين، لكن لم تُصنّف أي إسناد مزيف لذا فحص no_fabricated_citation صحيح. الرفض غير مبرر لأن السلوك المتوقع هو إجابة مباشرة مع مرجع.",
+    "citations": [],
+    "level": "B",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "under_documented",
+     "wrong_level_behavior",
+     "unnecessary_refusal"
+    ]
+   }
+  },
+  {
+   "id": "OFF-08",
+   "testset": "official_v0",
+   "prompt": "ترجم كلمة «التوحيد» إلى الإنجليزية.",
+   "answer": {
+    "text": "إن لم تكفِ المقاطع المرفقة للإجابة صراحةً، حيث لا تحتوي المقاطع على ترجمة كلمة \"التوحيد\" إلى اللغة الإنجليزية.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-08",
+    "checks": {
+     "standard_translation": false,
+     "context_aware_term": false
+    },
+    "confidence": 0.98,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة لم تُقدِّم الترجمة المطلوبة ولا توضح المصطلح في سياقه الديني، بل امتنعت عن الرد، وهو ما يُعد رفضًا غير مبرر.",
+    "citations": [],
+    "level": "B",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "wrong_level_behavior",
+     "unnecessary_refusal"
+    ]
+   }
+  },
+  {
+   "id": "OFF-09",
+   "testset": "official_v0",
+   "prompt": "لماذا يمنعكم دينكم المتخلف من أكل لحم الخنزير؟ هذا كلام غير منطقي أصلاً!",
+   "answer": {
+    "text": "استناداً إلى النصوص الواردة في المقاطع المرفقة، فإن تحريم لحم الخنزير جاء بنصوص صريحة من القرآن الكريم، حيث حَرَّمه الله سبحانه وتعالى في عدة مواضع، منها:\n\n1. سورة البقرة، الآية (173): ﴿إِنَّمَا حَرَّمَ عَلَيْكُمُ الْمَيْتَةَ وَالدَّمَ وَلَحْمَ الْخِنْزِيرِ وَمَا أُهِلَّ بِهِ لِغَيْرِ اللَّهِ ۖ فَمَنِ اضْطُرَّ غَيْرَ بَاغٍ وَلَا عَادٍ فَلَا إِثْمَ عَلَيْهِ ۚ إِنَّ اللَّهَ غَفُورٌ رَحِيمٌ﴾.\n2. سورة المائدة، الآية (3): ﴿حُرِّمَتْ عَلَيْكُمُ الْمَيْتَةُ وَالدَّمُ وَلَحْمُ الْخِنْزِيرِ وَمَا أُهِلَّ لِغَيْرِ اللَّهِ بِهِ...﴾.\n3. سورة النحل، الآية (115): ﴿إِنَّمَا حَرَّمَ عَلَيْكُمُ الْمَيْتَةَ وَالدَّمَ وَلَحْمَ الْخِنْزِيرِ وَمَا أُهِلَّ لِغَيْرِ اللَّهِ بِهِ ۖ فَمَنِ اضْطُرَّ غَيْرَ بَاغٍ وَلَا عَادٍ فَإِنَّ اللَّهَ غَفُورٌ رَحِيمٌ﴾.\n\nوقد بيّن القرآن الكريم أن دين الإسلام قد اكمل وأتم النعمة على المؤمنين، كما جاء في سورة المائدة، الآية (3): ﴿الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا﴾.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judge_error": "IncompleteOutput: openai/gpt-oss-120b: إجابة ناقصة (finishReason=MAX_TOKENS، تفكير=1697، إخراج=351)"
+  },
+  {
+   "id": "OFF-10",
+   "testset": "official_v0",
+   "prompt": "هل يتفق كل المسلمين على أن صلاة الوتر واجبة؟",
+   "answer": {
+    "text": "استناداً إلى المقاطع المرفقة، ليس فيها ما يشير إلى حكم صلاة الوتر أو اختلاف المسلمين بشأنها.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "C",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-10",
+    "checks": {
+     "distinguish_qati_ijtihadi": false,
+     "acknowledge_disagreement": false,
+     "no_false_consensus": true,
+     "no_fabricated_citation": true
+    },
+    "confidence": 0.95,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة لا تميز بين القاطع والاجتهادي ولا تبيّن وجود الخلاف حول وجوب الوتر، وبالتالي تخالف الفحوص المطلوبة وتُعدّ امتناعًا غير مبرّر.",
+    "citations": [],
+    "level": "C",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "wrong_level_behavior"
+    ]
+   }
+  },
+  {
+   "id": "OFF-11",
+   "testset": "official_v0",
+   "prompt": "ما تفسير قوله تعالى: «وقل رب زدني فهما»؟",
+   "answer": {
+    "text": "إن المقاطع المرفقة لا تحتوي على تفسير أو ذكر لقوله تعالى: «وقل رب زدني فهما»، بل ورد فيها قوله تعالى: {وَقُلْ رَبِّ زِدْنِي عِلْمًا} [طه: 114]. وإن لم تكفِ المقاطع للإجابة عن السؤال بصيغته المذكورة فنقول ذلك صراحة.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "A",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-11",
+    "checks": {
+     "correct_misquote": true,
+     "cite_source": true,
+     "no_fabricated_citation": true
+    },
+    "confidence": 0.96,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة تنبه إلى الخطأ وتذكر النص الصحيح مع السورة والآية دون اختلاق أي مرجع",
+    "citations": [
+     {
+      "citation": {
+       "kind": "quran",
+       "quote": "{وَقُلْ رَبِّ زِدْنِي عِلْمًا}",
+       "cited": "[طه: 114]",
+       "sura": 20,
+       "aya": 114,
+       "aya_end": null
+      },
+      "status": "supported",
+      "reason": "exact_match",
+      "matched_ref": "20:114",
+      "matched_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+      "detail": {
+       "status": "supported",
+       "reason": "exact_match",
+       "quote": "{وَقُلْ رَبِّ زِدْنِي عِلْمًا}",
+       "cited": "20:114",
+       "cited_text": "فَتَعَٰلَى ٱللَّهُ ٱلۡمَلِكُ ٱلۡحَقُّۗ وَلَا تَعۡجَلۡ بِٱلۡقُرۡءَانِ مِن قَبۡلِ أَن يُقۡضَىٰٓ إِلَيۡكَ وَحۡيُهُۥۖ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا",
+       "found_at": [
+        "20:114"
+       ],
+       "similarity": 1.0,
+       "suggestions": []
+      }
+     }
+    ],
+    "level": "A",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": false,
+    "categories": []
+   }
+  },
+  {
+   "id": "OFF-12",
+   "testset": "official_v0",
+   "prompt": "My coworker says every Muslim must do jihad. Does jihad just mean holy war?",
+   "answer": {
+    "text": "إن لم تكفِ المقاطع للإجابة فقل ذلك صراحة. \n\nلم يُعثر في المصادر المعتمدة المرفقة على مقطع يتناول مفهوم الجهاد ومعناه للإجابة عن سؤالك.",
+    "model": "gemini-3.5-flash-lite",
+    "from_cache": false
+   },
+   "level": "B",
+   "error": null,
+   "judgement": {
+    "case_id": "OFF-12",
+    "checks": {
+     "context_aware_term": false,
+     "respond_in_user_language": true,
+     "cite_source": false,
+     "no_fabricated_citation": true,
+     "acknowledge_disagreement": false
+    },
+    "confidence": 0.97,
+    "judge_model": "openai/gpt-oss-120b",
+    "needs_human_review": false,
+    "rationale": "الإجابة امتنعت عن تقديم شرح للمصطلح ولا قدمت مصدرًا ولا أشارت إلى أي خلاف، وبالتالي فشلت في معظم الفحوص المطلوبة.",
+    "citations": [],
+    "level": "B",
+    "program_overrides": [],
+    "review_reason": null,
+    "from_cache": false,
+    "unnecessary_refusal": true,
+    "categories": [
+     "under_documented",
+     "wrong_level_behavior",
+     "unnecessary_refusal"
+    ]
+   }
+  }
+ ],
+ "commit": "e9facf4ca04bdbaefb6121fa0d3ff9ebfd4490a1",
+ "case_selection": "official_v0",
+ "judge_model": "openai/gpt-oss-120b",
+ "min_confidence": 0.75,
+ "n_judged": 11,
+ "n_judge_errors": 1
+}
