@@ -66,6 +66,39 @@ def test_request_shape_and_parse():
     assert (resp.output_tokens, resp.thoughts_tokens, resp.usage["promptTokenCount"]) == (5, 3, 7)
 
 
+def test_fixed_user_agent_header():
+    # Cloudflare أمام بعض المزوّدات يحجب User-Agent الافتراضي «Python-urllib» (403، error code 1010)
+    t = FakeTransport(ok())
+    OpenAICompatibleProvider(FAKE_KEY, BASE, t).call(LLMRequest("openai", "fixture-model", "سؤال"))
+    assert t.calls[0]["headers"]["User-Agent"] == "miyar/0.1"
+
+
+def test_user_agent_is_sent_by_default_urllib_transport(monkeypatch):
+    # النقل الحقيقي يمرّر الترويسة كما هي ولا يستبدلها بـ Python-urllib (بلا شبكة: urlopen وهمي)
+    seen = {}
+
+    class FakeHTTPResponse:
+        status = 200
+        headers = {}
+
+        def read(self):
+            return ok()[2]
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    def fake_urlopen(req, timeout=None):
+        seen["ua"] = req.get_header("User-agent")
+        return FakeHTTPResponse()
+
+    monkeypatch.setattr(llm.urllib.request, "urlopen", fake_urlopen)
+    OpenAICompatibleProvider(FAKE_KEY, BASE).call(LLMRequest("openai", "fixture-model", "سؤال"))
+    assert seen["ua"] == "miyar/0.1"
+
+
 def test_no_system_message_when_empty():
     t = FakeTransport(ok())
     OpenAICompatibleProvider(FAKE_KEY, BASE, t).call(LLMRequest("openai", "m", "سؤال"))
