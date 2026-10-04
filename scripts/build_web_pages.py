@@ -282,6 +282,8 @@ def facts() -> dict:
         "manual_valid": MANUAL_FILE.exists() and not manual_errors(manual_doc),
         "official_runs": len(runs),
         "published_runs": len(results.get("runs", [])),
+        # لقطة المراجعة البشرية في آخر تشغيل رسمي منشور (من results.json، لا من الحالات كلها)
+        "official_review": (results["runs"][-1].get("human_reviewed") if results.get("runs") else None),
         "quran_version": src["dump_version"],
         "quran_files": src["files"],
         "quran_ok": quran_files_ok(src),
@@ -845,6 +847,25 @@ CASE_PAGE = """
 
 
 # ---------- الحالة ----------
+def _rounds(n: int) -> str:
+    return {1: "جولة واحدة", 2: "جولتان"}.get(n, f"{n} جولات" if n <= 10 else f"{n} جولة")
+
+
+def accuracy_item(f: dict) -> tuple:
+    """«تشغيل رسمي مسجّل وقياس الدقة»: الدليل المكتوب (evaluation/official/) لا يشمل قياس اتفاق الحَكَم مع الوسوم البشرية،
+    فلا يُحتسب مكتملاً: «جاهز جزئياً» بصياغة تذكر ما سُجّل وما لم يُنفَّذ. وقبل أي تشغيل رسمي: «لم يُنفَّذ بعد»."""
+    if f["official_runs"] == 0:
+        return ("تشغيل رسمي مسجّل وقياس اتفاق أحكام الحَكَم مع الوسوم البشرية", False, "evaluation/official/", False)
+    hr = f.get("official_review") or {}
+    roles, total = hr.get("by_role") or {}, hr.get("total")
+    sc, sp = roles.get("source_check", 0), roles.get("specialist", 0)
+    reviewed = (f"المراجعة البشرية: {'حالة واحدة' if sc == 1 else f'{sc} حالات'} من {total} (تحقق مصادر) و{sp} مراجعة شرعية متخصصة"
+                if total else "المراجعة البشرية: لا بيانات")
+    text = (f"التشغيل الرسمي مسجّل ({_rounds(f['official_runs'])} مكتملة)؛ قياس اتفاق أحكام الحَكَم مع الوسوم البشرية لم يُنفَّذ، "
+            f"و{reviewed}")
+    return (text, False, "evaluation/official/", True)
+
+
 def status_items(f: dict) -> tuple[list, list]:
     st = f["state"]
     phase0 = [
@@ -870,7 +891,7 @@ def status_items(f: dict) -> tuple[list, list]:
          st["judge"] == "built", "miyar/judge.py"),
         ("وحدة حساب الدرجة والمقارنة وقرار البوابة (scoring)", st["scoring"] == "built", "miyar/scoring.py"),
         ("لوحة النتائج والمقارنة (تشغيلات منشورة)", f["published_runs"] > 0, "web/data/results.json"),
-        ("تشغيل رسمي مسجّل وقياس الدقة", f["official_runs"] > 0, "evaluation/official/"),
+        accuracy_item(f),
         ("وحدة Red Teaming", st["redteam"] == "built", "miyar/redteam.py"),
     ]
     return phase0, phase1
@@ -878,8 +899,9 @@ def status_items(f: dict) -> tuple[list, list]:
 
 def checklist(items) -> str:
     out = []
-    for text, done, evidence in items:
-        b = badge("ok", "اكتمل") if done else badge("todo", "لم يُنفَّذ بعد")
+    for text, done, evidence, *rest in items:
+        partial = bool(rest and rest[0]) and not done
+        b = badge("ok", "اكتمل") if done else badge("rev", "جاهز جزئياً") if partial else badge("todo", "لم يُنفَّذ بعد")
         ev = (f"الدليل: {link(evidence)}" if (ROOT / evidence).exists()
               else f'الملف <span class="mono">{_esc(evidence)}</span> غير موجود بعد')
         out.append(f'  <li>{b}<span class="what">{text}</span><span class="evidence">{ev}</span></li>')
