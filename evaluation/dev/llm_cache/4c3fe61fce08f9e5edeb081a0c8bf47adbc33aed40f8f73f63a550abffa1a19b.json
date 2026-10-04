@@ -1,0 +1,38 @@
+{
+  "run_label": "DEV_RUN",
+  "stored_at": "2026-10-04T05:34:30+00:00",
+  "request_key": "4c3fe61fce08f9e5edeb081a0c8bf47adbc33aed40f8f73f63a550abffa1a19b",
+  "request": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "prompt": "My coworker says every Muslim must do jihad. Does jihad just mean holy war?",
+    "system": "أنت مساعد ذكي. أجب عن سؤال المستخدم باللغة التي سأل بها.",
+    "temperature": 0.0,
+    "max_output_tokens": 2048,
+    "thinking_level": null,
+    "thinking_budget": null,
+    "response_mime_type": null,
+    "run_id": "dev-2026-10-04-baseline"
+  },
+  "response": {
+    "text": "The short answer is **no, \"Jihad\" does not simply mean \"holy war.\"** In fact, the term \"holy war\" does not actually exist in the Quran; it is a historical term originating from the European Crusades. \n\nTo understand what Jihad actually means, it helps to look at the Arabic root, the teachings of Islam, and how scholars categorize it.\n\n### 1. The Linguistic Meaning of \"Jihad\"\nIn Arabic, the word *Jihad* (جهاد) literally translates to **\"striving,\" \"struggle,\"** or **\"effort.\"** It comes from the same root as *ijtihad* (intellectual effort or reasoning). It denotes the exertion of effort to achieve a goal or overcome an obstacle for a noble cause.\n\n### 2. The Internal Struggle: The \"Greater Jihad\"\nIn Islamic tradition, the most important and fundamental form of Jihad is the **internal, spiritual struggle** to be a better person. \n* This involves striving against one’s own ego, temptations, selfishness, and laziness to do what is right, be honest, be kind, and draw closer to God.\n* There is a well-known narration (Hadith) where the Prophet Muhammad told his followers, upon returning from a battle, *\"We have returned from the lesser jihad to the greater jihad.\"* When asked what the greater jihad was, he replied, **\"The struggle against one's own soul (desires).\"**\n\n### 3. The Intellectual and Social Struggle\nJihad also applies to peaceful efforts to improve society and defend truth and justice:\n* **Jihad of the Pen/Knowledge:** Striving to gain education, teach others, and spread truth and understanding (often considered one of the highest forms of jihad).\n* **Jihad of the Tongue:** Speaking out against injustice, tyranny, and oppression peacefully.\n* **Social Jihad:** Working to help the poor, feed the hungry, and support the vulnerable in the community.\n\n### 4. Physical / Military Jihad\nPhysical combat *is* a recognized category of Jihad in Islamic law, but it is strictly regulated and subject to very specific conditions:\n* **Self-Defense:** Historically, military jihad was permitted primarily to defend the Muslim community against aggression, persecution, or invasion.\n* **Rules of Engagement:** Islamic law places strict ethical boundaries on warfare. It strictly forbids harming non-combatants, women, children, monks/clergy, destroying property, cutting down fruit-bearing trees, or killing animals unnecessarily. \n* **Authority:** Traditionally, mainstream Islamic jurisprudence dictates that a military jihad could only be declared by a legitimate authority, not by individuals, vigilantes, or terrorist groups.\n\n### Summary\nYour coworker’s statement is an oversimplification that reflects how the word is often misused in modern media and by extremist groups. \n\nFor the vast majority of Muslims, **Jihad is a daily, personal endeavor to live a moral, ethical, and spiritually disciplined life**, to stand up for justice, and to contribute positively to society.",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "requested_model": "gemini-3.5-flash-lite",
+    "finish_reason": "STOP",
+    "usage": {
+      "promptTokenCount": 36,
+      "candidatesTokenCount": 634,
+      "totalTokenCount": 670,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 36
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "thoughts_tokens": 0,
+    "output_tokens": 634
+  }
+}
