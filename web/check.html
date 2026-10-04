@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <meta name="description" content="مِعيار يختبر المساعد الذكي نفسه في المحتوى الإسلامي ويحكم على إجاباته، ولا يجيب هو عن الأسئلة. المسار الرابع: أدوات المعرفة والتحقق.">
-<title>النتائج — مِعيار</title>
+<title>تحقق من نص — مِعيار</title>
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
-<script type="module" src="assets/results.js"></script>
+<script type="module" src="assets/check.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
@@ -22,8 +22,8 @@
     <li><a href="cases.html">حالات الاختبار</a></li>
     <li><a href="status.html">الحالة</a></li>
     <li><a href="transparency.html">الشفافية والخصوصية</a></li>
-    <li><a href="results.html" aria-current="page">النتائج</a></li>
-    <li><a href="check.html">تحقق من نص</a></li>
+    <li><a href="results.html">النتائج</a></li>
+    <li><a href="check.html" aria-current="page">تحقق من نص</a></li>
   </ul></nav>
 <section class="status-card" aria-label="حالة المشروع">
   <p class="sc-title">حالة المشروع</p>
@@ -44,21 +44,34 @@
 </aside>
 <div class="content">
 <main id="main" tabindex="-1">
-<header class="page-head"><svg class="pattern" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="geo" width="64" height="64" patternUnits="userSpaceOnUse"><rect x="20" y="20" width="24" height="24"/><rect x="20" y="20" width="24" height="24" transform="rotate(45 32 32)"/><path d="M32 15V0M32 49V64M15 32H0M49 32H64M20 20L0 0M44 20L64 0M20 44L0 64M44 44L64 64"/><circle cx="32" cy="32" r="5"/></pattern></defs><rect class="pattern-fill" width="100%" height="100%" fill="url(#geo)"/></svg><div class="ph-inner"><h1>النتائج</h1>
+<header class="page-head"><svg class="pattern" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="geo" width="64" height="64" patternUnits="userSpaceOnUse"><rect x="20" y="20" width="24" height="24"/><rect x="20" y="20" width="24" height="24" transform="rotate(45 32 32)"/><path d="M32 15V0M32 49V64M15 32H0M49 32H64M20 20L0 0M44 20L64 0M20 44L0 64M44 44L64 64"/><circle cx="32" cy="32" r="5"/></pattern></defs><rect class="pattern-fill" width="100%" height="100%" fill="url(#geo)"/></svg><div class="ph-inner"><h1>تحقق من نص <span class="tag-secondary">وضع ثانوي</span></h1>
+<p class="lead">الصق نصاً فيه آيات أو أحاديث، فيستخرجها مِعيار بقواعد ثابتة ويطابقها حرفياً مع البيانات المعتمدة، داخل متصفحك.
+لا يُرسل النص إلى أي خادم، ولا يُستدعى أي نموذج لغوي.</p>
 </div></header>
-<div class="notice demo" role="note">
-  <p><strong>للعرض فقط: هذه ليست نتائج تقييم رسمية.</strong>
-  وضع «نتائج محفوظة» يعرض ملف نتائج محفوظاً مسبقاً دون أي استدعاء لنموذج لغوي، وهو <strong>فارغ حالياً</strong>:
-  لا نتائج تقييم رسمية فيه، ولا بيانات تجريبية مصطنعة.</p>
-  <p><strong>التقييم الرسمي يبدأ 4 أكتوبر 2026</strong> (أيام التحدي 4–6 أكتوبر)، ولا يُعرض هنا بعده إلا ناتج تشغيل رسمي
-  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N)، يحسبه سكربت النشر من سجلاته.</p>
+<div class="notice demo limits" role="note" id="check-limits">
+  <strong>حدود هذه الصفحة</strong>
+  <ul>
+    <li><strong>ليست تقييماً لمساعد:</strong> الوظيفة الأساسية لمِعيار اختبار المساعد كاملاً على مجموعة حالات (انظر <a href="results.html">النتائج</a>)؛ هذه الصفحة تفحص نصاً واحداً فقط.</li>
+    <li><strong>لا فتوى ولا حكم شرعي:</strong> تفحص نسبة النص إلى مصدره فقط، ولا تحكم على معنى ولا على مسألة.</li>
+    <li><strong>الآيات:</strong> مطابقة حرفية بعد توحيد التشكيل والهمزات مع نص Quranpedia (6236 آية). «مؤيَّد» فقط عند تطابق فعلي.</li>
+    <li><strong>الأحاديث محدودة جداً:</strong> تُطابَق مع <span id="hadith-count">المدخلات المكتملة</span> في الملف اليدوي وحدها؛ وكل حديث سواها «يحتاج تحقق»، وهذا لا يعني أنه ضعيف ولا صحيح.</li>
+    <li><strong>الاستخراج بقواعد ثابتة:</strong> الآية بين ﴿ ﴾ أو { } أو بين علامتي تنصيص يليها موضع بين قوسين مثل (البقرة: 255) أو (2:255)؛ والحديث بين علامتي تنصيص قبله «قال رسول الله» أو ﷺ، أو بعده «رواه» أو «أخرجه». ما لم يُكتب بهذه الصورة لا يُفحص.</li>
+  </ul>
 </div>
-<div id="results" aria-live="polite">
-  <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
-</div>
-<noscript><div class="notice empty"><strong>لم يُشغَّل أي تقييم رسمي بعد</strong>
-<span>(تحتاج هذه الصفحة إلى JavaScript لقراءة ملف النتائج.)</span></div></noscript>
-<p>انظر <a href="status.html">الحالة</a> لما تمّ وما لم يتم.</p>
+<form id="check-form" class="check-form" autocomplete="off">
+  <label for="check-text">النص</label>
+  <textarea id="check-text" rows="8" dir="auto" maxlength="20000" placeholder="مثال: قال تعالى: ﴿قل هو الله أحد﴾ (الإخلاص: 1)"></textarea>
+  <div class="check-actions">
+    <button type="submit" class="btn" id="check-run">تحقق</button>
+    <button type="button" class="btn ghost" id="check-clear">امسح</button>
+  </div>
+  <p class="muted" id="check-size">عند أول تحقق يُحمَّل نص المصحف مرة واحدة (نحو نصف ميغابايت مضغوطاً)، ثم يحفظه المتصفح.</p>
+</form>
+<div id="check-results" aria-live="polite"></div>
+<noscript><div class="notice empty"><strong>تحتاج هذه الصفحة إلى JavaScript.</strong></div></noscript>
+<p class="muted">المصادر: نص القرآن من <a href="https://quranpedia.net" rel="noopener">Quranpedia.net</a> (النسخة 2026-10-01)، والأحاديث من الملف اليدوي
+<span class="ltr" lang="en">data/hadith/manual_hadith.json</span> (روابطه إلى الدرر السنية أو المكتبة الشاملة). المنطق نفسه في
+<span class="ltr" lang="en">miyar/paste_check.py</span>، واختبار يضمن تطابق نتائج المتصفح مع بايثون.</p>
 </main>
 <footer class="site">
   <div class="foot-grid">
