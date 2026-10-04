@@ -1,4 +1,253 @@
 {
   "schema_version": 1,
-  "runs": []
+  "runs": [
+    {
+      "run_id": "official-2026-10-04-baseline-1",
+      "executed_at": "2026-10-04T23:05:44+03:00",
+      "assistant": "baseline",
+      "model": "gemini-3.5-flash-lite",
+      "testset": "official_v0",
+      "n_cases": 12,
+      "overall_score": 67.5,
+      "levels": {
+        "A": {
+          "n_cases": 2,
+          "score": 66.7,
+          "n_scored": 1
+        },
+        "B": {
+          "n_cases": 8,
+          "score": 76.0,
+          "n_scored": 8
+        },
+        "C": {
+          "n_cases": 1,
+          "score": null,
+          "n_scored": 0
+        },
+        "D": {
+          "n_cases": 1,
+          "score": 0.0,
+          "n_scored": 1
+        }
+      },
+      "wrong_citations": 0,
+      "n_scored": 10,
+      "human_review_needed": 2,
+      "referral": {
+        "passed": 0,
+        "failed": 1,
+        "undecided": 0
+      },
+      "human_reviewed": {
+        "approved": 1,
+        "total": 12,
+        "by_role": {
+          "specialist": 0,
+          "source_check": 1
+        }
+      },
+      "evaluation_record": "evaluation/official/official-2026-10-04-baseline-1.json"
+    },
+    {
+      "run_id": "official-2026-10-04-baseline-2",
+      "executed_at": "2026-10-04T23:15:39+03:00",
+      "assistant": "baseline",
+      "model": "gemini-3.5-flash-lite",
+      "testset": "official_v0",
+      "n_cases": 12,
+      "overall_score": 68.8,
+      "levels": {
+        "A": {
+          "n_cases": 2,
+          "score": 83.3,
+          "n_scored": 2
+        },
+        "B": {
+          "n_cases": 8,
+          "score": 74.5,
+          "n_scored": 7
+        },
+        "C": {
+          "n_cases": 1,
+          "score": null,
+          "n_scored": 0
+        },
+        "D": {
+          "n_cases": 1,
+          "score": 0.0,
+          "n_scored": 1
+        }
+      },
+      "wrong_citations": 1,
+      "n_scored": 10,
+      "human_review_needed": 2,
+      "referral": {
+        "passed": 0,
+        "failed": 1,
+        "undecided": 0
+      },
+      "human_reviewed": {
+        "approved": 1,
+        "total": 12,
+        "by_role": {
+          "specialist": 0,
+          "source_check": 1
+        }
+      },
+      "evaluation_record": "evaluation/official/official-2026-10-04-baseline-2.json"
+    },
+    {
+      "run_id": "official-2026-10-04-rag-2",
+      "executed_at": "2026-10-04T23:20:52+03:00",
+      "assistant": "rag",
+      "model": "gemini-3.5-flash-lite",
+      "testset": "official_v0",
+      "n_cases": 12,
+      "overall_score": 56.1,
+      "levels": {
+        "A": {
+          "n_cases": 2,
+          "score": 83.3,
+          "n_scored": 2
+        },
+        "B": {
+          "n_cases": 8,
+          "score": 54.0,
+          "n_scored": 8
+        },
+        "C": {
+          "n_cases": 1,
+          "score": 50.0,
+          "n_scored": 1
+        },
+        "D": {
+          "n_cases": 1,
+          "score": 25.0,
+          "n_scored": 1
+        }
+      },
+      "wrong_citations": 0,
+      "n_scored": 12,
+      "human_review_needed": 0,
+      "referral": {
+        "passed": 0,
+        "failed": 1,
+        "undecided": 0
+      },
+      "human_reviewed": {
+        "approved": 1,
+        "total": 12,
+        "by_role": {
+          "specialist": 0,
+          "source_check": 1
+        }
+      },
+      "evaluation_record": "evaluation/official/official-2026-10-04-rag-2.json"
+    },
+    {
+      "run_id": "official-2026-10-04-baseline-3",
+      "executed_at": "2026-10-04T23:25:42+03:00",
+      "assistant": "baseline",
+      "model": "gemini-3.5-flash-lite",
+      "testset": "official_v0",
+      "n_cases": 12,
+      "overall_score": 53.3,
+      "levels": {
+        "A": {
+          "n_cases": 2,
+          "score": 100.0,
+          "n_scored": 1
+        },
+        "B": {
+          "n_cases": 8,
+          "score": 54.3,
+          "n_scored": 7
+        },
+        "C": {
+          "n_cases": 1,
+          "score": null,
+          "n_scored": 0
+        },
+        "D": {
+          "n_cases": 1,
+          "score": 0.0,
+          "n_scored": 1
+        }
+      },
+      "wrong_citations": 2,
+      "n_scored": 9,
+      "human_review_needed": 3,
+      "referral": {
+        "passed": 0,
+        "failed": 1,
+        "undecided": 0
+      },
+      "human_reviewed": {
+        "approved": 1,
+        "total": 12,
+        "by_role": {
+          "specialist": 0,
+          "source_check": 1
+        }
+      },
+      "evaluation_record": "evaluation/official/official-2026-10-04-baseline-3.json"
+    }
+  ],
+  "gate": {
+    "rule": "تُمنع النسخة المرشحة إن: نقصت درجتها الكلية أو درجة أي مستوى عن المرجع، أو زادت إسناداتها الخاطئة، أو تعذّر حساب درجة فيها مع وجودها في المرجع، أو اختلفت مجموعة الحالات، أو ظهر حكم «مؤيَّد» خاطئ في حالة حرجة.",
+    "reference_run_id": "official-2026-10-04-baseline-3",
+    "candidate_run_id": "official-2026-10-04-rag-2",
+    "allow": false,
+    "reasons": [
+      "المستوى A: 83.3 أقل من المرجع 100.0",
+      "المستوى B: 54.0 أقل من المرجع 54.3"
+    ]
+  },
+  "stability": {
+    "baseline": {
+      "run_ids": [
+        "official-2026-10-04-baseline-1",
+        "official-2026-10-04-baseline-2",
+        "official-2026-10-04-baseline-3"
+      ],
+      "overall": {
+        "min": 53.3,
+        "max": 68.8,
+        "range": 15.5,
+        "n_runs": 3,
+        "n_with_score": 3
+      },
+      "levels": {
+        "A": {
+          "min": 66.7,
+          "max": 100.0,
+          "range": 33.3,
+          "n_runs": 3,
+          "n_with_score": 3
+        },
+        "B": {
+          "min": 54.3,
+          "max": 76.0,
+          "range": 21.7,
+          "n_runs": 3,
+          "n_with_score": 3
+        },
+        "C": {
+          "min": null,
+          "max": null,
+          "range": null,
+          "n_runs": 3,
+          "n_with_score": 0
+        },
+        "D": {
+          "min": 0.0,
+          "max": 0.0,
+          "range": 0.0,
+          "n_runs": 3,
+          "n_with_score": 3
+        }
+      }
+    }
+  }
 }
