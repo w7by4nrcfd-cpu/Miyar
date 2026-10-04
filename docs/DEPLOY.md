@@ -11,16 +11,16 @@ npx wrangler deploy --assets=./web --name miyar --compatibility-date=2026-10-01
 ```
 
 - يحتاج تسجيل الدخول إلى حساب Cloudflare في wrangler (`npx wrangler login`) أو متغير البيئة `CLOUDFLARE_API_TOKEN`؛ **لا يُكتب أي مفتاح في المستودع**.
-- بعد أي تعديل في `web/` يُعاد تشغيل أمر النشر؛ ولا تفترض أن الدفع إلى `main` ينشر تلقائياً.
+- الدفع إلى `main` ينشر الموقع الحي تلقائياً (مسجّل في BASELINE.md)؛ لذلك أي تعديل في `web/` يمر بفرع تطوير ثم Pull Request، ولا دمج ولا نشر إلا بموافقتي الصريحة.
 
 الصفحات: `index.html` (الرئيسية)، `levels.html` (مستويات المحتوى)، `sources.html` (المصادر والمنهجية)،
 `cases.html` (حالات الاختبار)، `status.html` (الحالة)، `transparency.html` (الشفافية والخصوصية)، `results.html` (النتائج).
-تُولَّد من `scripts/build_web_pages.py`؛ بعد أي تعديل شغّله وادفع الناتج.
+تُولَّد من `scripts/build_web_pages.py`؛ بعد أي تعديل شغّله وأضف الناتج إلى commit على فرع التطوير.
 
 ملاحظات:
 - `web/_headers` يضبط رؤوس الأمان ويمنع التخزين المؤقت لملفات `web/data/`.
 - الموقع لا يحمّل أي خط أو مكتبة خارجية (سياسة CSP: `default-src 'self'`).
-- لتحديث النتائج: يُستبدل `web/data/results.json` بناتج تشغيل فعلي مطابق لـ `web/data/results.schema.json`، ثم دفع إلى `main`.
+- لتحديث النتائج: يُستبدل `web/data/results.json` بناتج تشغيل فعلي مطابق لـ `web/data/results.schema.json` على فرع تطوير، ثم Pull Request؛ ولا يظهر على الموقع الحي إلا بعد الدمج بموافقتي.
 
 ### معاينة محلية (اختياري، تحتاج كمبيوتر)
 ```bash
