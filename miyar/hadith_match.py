@@ -1,7 +1,8 @@
 """مطابقة الأحاديث مع الملف اليدوي المعتمد (data/hadith/manual_hadith.json) — برمجية حتمية، بلا نموذج لغوي.
 
 المصدر الوحيد: الملف اليدوي (``miyar/hadith_manual.py``). لا مجموعة أحاديث خارجية، ولا بحث BM25 أو embeddings:
-المدخلات قليلة ومُدخلة يدوياً، فالمطابقة حرفية بعد توحيد النص العربي (``normalize``).
+المدخلات قليلة ومُدخلة يدوياً، فالمطابقة حرفية بعد توحيد النص العربي (``normalize``) وبحدود الكلمات: مقطع يطابق
+متتالية كلمات كاملة من نص المدخل (أو العكس)، ولا يُعدّ بتر حرف من أول كلمة أو آخرها مطابقة حرفية.
 
 القاعدة المعتمدة: **لا حديث بلا مصدر ودرجة معتمدة في البيانات.**
 - ``supported`` مؤيَّد: فقط إن طابق نص الاستشهاد مدخلاً ``found`` **مكتملاً** (نص، ومصدر، ورابط، ودرجة، وقائلها)،
@@ -78,8 +79,17 @@ def _entry_phrase(e: dict) -> str:
     return normalize(e.get("text") or e.get("query") or "")
 
 
+def _word_contains(whole: str, part: str) -> bool:
+    """هل ``part`` متتالية كلمات متصلة داخل ``whole`` (بحدود الكلمات لا الأحرف)؟ كلاهما موحَّد ومفصول بمسافات مفردة.
+
+    الاحتواء على مستوى الأحرف كان يعدّ حذف الحرف الأول أو الأخير من الكلمة الطرفية مطابقة حرفية
+    («طلبوا العلم ولو بالصين» داخل «اطلبوا العلم ولو بالصين»)؛ والمقطع المبتور كلمةً لا يُعدّ حرفياً.
+    """
+    return f" {part} " in f" {whole} "
+
+
 def find_entries(quote: str, doc: dict) -> list[dict]:
-    """مدخلات found/not_found التي يحوي نصُّها نصَّ الاستشهاد أو العكس (بعد التوحيد، بحد أدنى من الكلمات)."""
+    """مدخلات found/not_found التي يحوي نصُّها نصَّ الاستشهاد أو العكس (بعد التوحيد، بحدود الكلمات، بحد أدنى من الكلمات)."""
     q = normalize(quote or "")
     if len(q.split()) < MIN_MATCH_WORDS:
         return []
@@ -88,7 +98,7 @@ def find_entries(quote: str, doc: dict) -> list[dict]:
         if e.get("kind") not in ("found", "not_found"):
             continue
         p = _entry_phrase(e)
-        if len(p.split()) >= MIN_MATCH_WORDS and (p in q or q in p):
+        if len(p.split()) >= MIN_MATCH_WORDS and (_word_contains(q, p) or _word_contains(p, q)):
             out.append(e)
     return out
 

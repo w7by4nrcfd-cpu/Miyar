@@ -51,13 +51,16 @@ test("اقتراب حذف الحرف الواحد (كل المدخلات، كل 
     assert.equal(r.status, row.status, row.text);
     assert.notEqual(r.status, "supported", row.text);
     assert.equal(r.reason, row.reason, row.text);
+    assert.equal(r.entry_id, null, `عُدّ مطابقاً حرفياً (بحدود الكلمات لا الأحرف): ${row.text}`);
+    assert.ok(["near_match_not_literal", "no_manual_entry"].includes(r.reason), row.text);
     assert.equal(r.near ? r.near.entry_id : null, row.near_id, row.text);
     assert.equal(r.near ? r.near.q_word : null, row.q_word, row.text);
     assert.equal(r.near ? r.near.entry_word : null, row.entry_word, row.text);
     assert.equal(r.near ? r.near.similarity : null, row.similarity, row.text);
     if (r.near) near++;
   }
-  assert.ok(near > 150, `اقتراب في ${near} فقط`);
+  assert.ok(near > 200, `اقتراب في ${near} فقط`);
+  assert.equal(PARITY.near_fuzz.length, 238);
 });
 
 test("لا «مؤيَّد» مع اقتراب في أي حالة، والمؤيَّد الحديثي بلا اقتراب ومعه مدخل", () => {

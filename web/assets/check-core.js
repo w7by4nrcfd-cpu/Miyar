@@ -576,7 +576,8 @@ function findEntries(quote, doc) {
   return doc.entries.filter((e) => {
     if (!["found", "not_found"].includes(e.kind)) return false;
     const p = normalize(e.text || e.query || "");
-    return words(p).length >= MIN_MATCH_WORDS && (q.includes(p) || p.includes(q));
+    // بحدود الكلمات لا الأحرف (كما في hadith_match._word_contains): بتر حرف من أول كلمة أو آخرها ليس مطابقة حرفية
+    return words(p).length >= MIN_MATCH_WORDS && (` ${q} `.includes(` ${p} `) || ` ${p} `.includes(` ${q} `));
   });
 }
 const H = (status, reason, e = null) => ({ status, reason, entry_id: e ? e.id : null, entry: e });
