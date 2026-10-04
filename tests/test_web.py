@@ -197,7 +197,7 @@ def test_transparency_page_disclosures():
 @pytest.mark.parametrize("page", PAGES)
 def test_mode_bar_says_display_only_not_official(page):
     t = _text(page)
-    assert "للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026." in t
+    assert "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026." in t
 
 
 def test_results_page_says_demo_not_official():
