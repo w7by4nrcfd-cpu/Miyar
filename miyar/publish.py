@@ -24,7 +24,7 @@ from .hadith_manual import load_manual
 from .judge import BehaviorJudgement, Citation, CitationJudgement
 from .quran_match import SUPPORTED
 from .runner import OFFICIAL_RUN, Answer, CaseResult, RunRecord, load_cases
-from .scoring import LEVELS, score_run
+from .scoring import LEVELS, RunScore, gate_decision, score_run, stability
 
 ROOT = Path(__file__).resolve().parent.parent
 OFFICIAL_DIR = ROOT / "evaluation" / "official"
@@ -162,7 +162,7 @@ def build(official_dir: Path = OFFICIAL_DIR, cases: list[dict] | None = None,
     if errors:
         raise PublishError("\n".join(errors))
 
-    runs, case_files = [], {}
+    runs, case_files, scores = [], {}, []
     for path, rec in records:
         record = record_from_dict(rec)
         unknown = [c.case_id for c in record.cases if c.case_id not in by_case]
@@ -175,6 +175,7 @@ def build(official_dir: Path = OFFICIAL_DIR, cases: list[dict] | None = None,
         score = score_run(record, list(js.values()), cases)
         if score.overall_score is None:
             raise PublishError(f"{path.name}: لا درجة محسوبة (لم تُحتسب أي حالة)")
+        scores.append(score)
         runs.append({
             "run_id": record.run_id,
             "executed_at": record.executed_at,
@@ -183,8 +184,12 @@ def build(official_dir: Path = OFFICIAL_DIR, cases: list[dict] | None = None,
             "testset": "+".join(record.testsets),
             "n_cases": record.n_cases,
             "overall_score": score.overall_score,
-            "levels": {lv: {"n_cases": score.levels[lv].n_cases, "score": score.levels[lv].score} for lv in LEVELS},
+            "levels": {lv: {"n_cases": score.levels[lv].n_cases, "score": score.levels[lv].score,
+                            "n_scored": score.levels[lv].n_scored} for lv in LEVELS},
             "wrong_citations": score.wrong_citations,
+            "n_scored": score.n_scored,
+            "human_review_needed": score.human_review_needed,
+            "referral": dict(score.referral),
             "human_reviewed": record.human_reviewed,
             "evaluation_record": f"evaluation/official/{path.name}",
         })
@@ -203,7 +208,46 @@ def build(official_dir: Path = OFFICIAL_DIR, cases: list[dict] | None = None,
     runs.sort(key=order)
     for cf in case_files.values():
         cf["runs"].sort(key=order)
-    return {"schema_version": 1, "runs": runs}, dict(sorted(case_files.items()))
+    results = {"schema_version": 1, "runs": runs}
+    executed = {r["run_id"]: r["executed_at"] for r in runs}
+    scores.sort(key=lambda s: (executed[s.run_id], s.run_id))
+    gate = gate_view(scores)
+    if gate is not None:
+        results["gate"] = gate
+    stab = stability_view(scores)
+    if stab:
+        results["stability"] = stab
+    return results, dict(sorted(case_files.items()))
+
+
+# ---------- البوابة والثبات (من scoring، لا من الصفحة) ----------
+REFERENCE, CANDIDATE = "baseline", "rag"
+
+
+def _latest(scores: list[RunScore], assistant: str) -> RunScore | None:
+    xs = [s for s in scores if s.assistant == assistant]
+    return xs[-1] if xs else None
+
+
+def gate_view(scores: list[RunScore]) -> dict | None:
+    """قرار البوابة بين آخر تشغيل rag (المرشحة) وآخر تشغيل baseline (المرجع) بـ scoring.gate_decision.
+    None إن غاب أحدهما (فلا قرار يُعرض)."""
+    ref, cand = _latest(scores, REFERENCE), _latest(scores, CANDIDATE)
+    if ref is None or cand is None:
+        return None
+    d = gate_decision(cand, ref)
+    return {"rule": d.rule, "reference_run_id": ref.run_id, "candidate_run_id": cand.run_id,
+            "allow": d.allow, "reasons": list(d.reasons)}
+
+
+def stability_view(scores: list[RunScore]) -> dict:
+    """الثبات لكل مساعد له تشغيلان رسميان أو أكثر على مجموعة الحالات نفسها (scoring.stability). لا يُختار أفضل تشغيل."""
+    out = {}
+    for assistant in sorted({s.assistant for s in scores}):
+        xs = [s for s in scores if s.assistant == assistant]
+        if len(xs) >= 2 and len({tuple(sorted(s.case_ids)) for s in xs}) == 1:
+            out[assistant] = stability(xs)
+    return out
 
 
 def _dump(obj) -> str:

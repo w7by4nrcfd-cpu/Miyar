@@ -43,6 +43,12 @@ NAV = [
 ]
 
 DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية؛ التقييم الرسمي يبدأ 4 أكتوبر 2026."
+# بعد نشر أول تشغيل رسمي (web/data/results.json غير فارغ) تتغير الصياغة؛ ولا تُدّعى نتائج قبل ذلك
+PUBLISHED_NOTE = "نتائج محفوظة من تشغيلات رسمية مسجّلة في evaluation/official/، كل رقم مع N."
+
+
+def demo_note(f: dict) -> str:
+    return PUBLISHED_NOTE if f["published_runs"] else DEMO_NOTE
 
 LAYOUT = """<!doctype html>
 <html lang="ar" dir="rtl">
@@ -134,7 +140,7 @@ def status_card(f: dict) -> str:
     <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
     <button class="mode" type="button" aria-disabled="true" disabled title="التشغيل الحي غير متاح حالياً">○ تشغيل حي — معطّل حالياً</button>
   </div>
-  <p class="modenote">{DEMO_NOTE}</p>
+  <p class="modenote">{demo_note(f)}</p>
   <div class="sc-progress">
     <div class="sc-row"><span id="sc0">الأساس</span><span>{d0} من {len(p0)}</span></div>
     <progress value="{d0}" max="{len(p0)}" aria-labelledby="sc0">{d0} من {len(p0)}</progress>
@@ -411,7 +417,7 @@ def home(f: dict) -> str:
   <li><a href="levels.html">مستويات المحتوى</a><span>المستويات الأربعة A–D والسلوك المتوقع في كل منها.</span></li>
   <li><a href="sources.html">المصادر والمنهجية</a><span>سجل المصادر للمجالات التسعة، وأصناف الحكم، وكيف يُتحقق من الإسناد.</span></li>
   <li><a href="cases.html">حالات الاختبار</a><span>الحالات كما هي في المستودع، مع البحث والتصفية.</span></li>
-  <li><a href="status.html">الحالة</a><span>ما اكتمل وما يُنفَّذ في 4–6 أكتوبر. <strong>لا توجد نتائج تقييم رسمية بعد.</strong></span></li>
+  <li><a href="status.html">الحالة</a><span>ما اكتمل وما يُنفَّذ في 4–6 أكتوبر. <strong>{"لا توجد نتائج تقييم رسمية بعد." if not f["published_runs"] else "النتائج الرسمية المنشورة في صفحة النتائج."}</strong></span></li>
   <li><a href="transparency.html">الشفافية والخصوصية</a><span>أداة مدعومة بالذكاء الاصطناعي، لا تجمع بياناتك.</span></li>
 </ul>
 </section>
@@ -863,15 +869,25 @@ def transparency(f: dict) -> str:
 """
 
 
-RESULTS = """
-<h1>النتائج</h1>
-<div class="notice demo" role="note">
+RESULTS_EMPTY_NOTE = """<div class="notice demo" role="note">
   <p><strong>للعرض فقط: هذه ليست نتائج تقييم رسمية.</strong>
   وضع «نتائج محفوظة» يعرض ملف نتائج محفوظاً مسبقاً دون أي استدعاء لنموذج لغوي، وهو <strong>فارغ حالياً</strong>:
   لا نتائج تقييم رسمية فيه، ولا بيانات تجريبية مصطنعة.</p>
   <p><strong>التقييم الرسمي يبدأ 4 أكتوبر 2026</strong> (أيام التحدي 4–6 أكتوبر)، ولا يُعرض هنا بعده إلا ناتج تشغيل رسمي
-  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N). صفحات النتائج والمقارنة تُبنى في أيام التحدي.</p>
-</div>
+  مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N)، يحسبه سكربت النشر من سجلاته.</p>
+</div>"""
+
+RESULTS_PUBLISHED_NOTE = """<div class="notice" role="note">
+  <p><strong>نتائج من تشغيلات رسمية مسجّلة في <span class="ltr" lang="en">evaluation/official/</span>.</strong>
+  الأرقام يحسبها سكربت النشر من أحكام السجلات، ولا يُعرض رقم بلا عدد حالاته (N). الحكم الآلي مساعد للمراجعة لا بديل عنها.</p>
+</div>"""
+
+
+def results_page(f: dict) -> str:
+    note = RESULTS_PUBLISHED_NOTE if f["published_runs"] else RESULTS_EMPTY_NOTE
+    return f"""
+<h1>النتائج</h1>
+{note}
 <div id="results" aria-live="polite">
   <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
 </div>
@@ -889,7 +905,7 @@ def pages(f: dict) -> dict:
         "cases.html": ("حالات الاختبار — مِعيار", cases_page(f), '<script type="module" src="assets/cases.js"></script>\n'),
         "status.html": ("الحالة — مِعيار", status(f), ""),
         "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f), ""),
-        "results.html": ("النتائج — مِعيار", RESULTS, '<script type="module" src="assets/results.js"></script>\n'),
+        "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
     }
 
 
