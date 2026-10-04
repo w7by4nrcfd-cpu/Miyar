@@ -11,7 +11,7 @@ import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { QuranIndex, checkText, entryStatus, normalize, pyRound3, ratio } from "../../web/assets/check-core.js";
+import { QuranIndex, checkText, entryStatus, hintsFor, normalize, pyRound3, ratio, wordDiff } from "../../web/assets/check-core.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WEB = join(ROOT, "web");
@@ -35,12 +35,53 @@ test("نتائج المتصفح تطابق بايثون حرفياً على كل
   }
 });
 
+test("التلميحات للنص غير المستخرج تطابق بايثون حرفياً", () => {
+  for (const c of PARITY.cases) {
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(hintsFor(c.text, index, HADITH))), c.hints, c.text.slice(0, 80));
+  }
+  const kinds = new Set(PARITY.cases.flatMap((c) => c.hints.map((h) => h.match)));
+  assert.deepEqual([...kinds].sort(), ["literal", "near"]);
+});
+
+test("اقتراب حذف الحرف الواحد (كل المدخلات، كل حرف) يطابق بايثون ولا يُنتج «مؤيَّد»", () => {
+  assert.ok(PARITY.near_fuzz.length > 200);
+  let near = 0;
+  for (const row of PARITY.near_fuzz) {
+    const [r] = checkText(row.text, index, HADITH);
+    assert.equal(r.status, row.status, row.text);
+    assert.notEqual(r.status, "supported", row.text);
+    assert.equal(r.reason, row.reason, row.text);
+    assert.equal(r.near ? r.near.entry_id : null, row.near_id, row.text);
+    assert.equal(r.near ? r.near.q_word : null, row.q_word, row.text);
+    assert.equal(r.near ? r.near.entry_word : null, row.entry_word, row.text);
+    assert.equal(r.near ? r.near.similarity : null, row.similarity, row.text);
+    if (r.near) near++;
+  }
+  assert.ok(near > 150, `اقتراب في ${near} فقط`);
+});
+
+test("لا «مؤيَّد» مع اقتراب في أي حالة، والمؤيَّد الحديثي بلا اقتراب ومعه مدخل", () => {
+  for (const c of PARITY.cases) for (const r of checkText(c.text, index, HADITH)) {
+    if (r.kind !== "hadith") continue;
+    if (r.near) assert.equal(r.status, "needs_review");
+    if (r.status === "supported") { assert.equal(r.near, null); assert.ok(r.entry && r.entry_id); }
+  }
+});
+
+test("فروق الكلمات (LCS) كما في بايثون", () => {
+  assert.deepStrictEqual(wordDiff("a b c d".split(" "), "a x c".split(" ")), [
+    { q: [1, 2], w: [1, 2], q_words: ["b"], w_words: ["x"] }, { q: [3, 4], w: [3, 3], q_words: ["d"], w_words: [] }]);
+  assert.deepStrictEqual(wordDiff(["a"], ["a"]), []);
+});
+
 test("الحالات تغطي كل فرع: مؤيَّد ولم تُطابَق ويحتاج تحقق، للآيات والأحاديث", () => {
   const seen = new Set(PARITY.cases.flatMap((c) => c.result.map((r) => `${r.kind}:${r.status}`)));
   for (const k of ["quran:supported", "quran:wrong_or_missing", "quran:needs_review", "hadith:supported", "hadith:needs_review"]) assert.ok(seen.has(k), k);
   const reasons = new Set(PARITY.cases.flatMap((c) => c.result.map((r) => r.reason)));
   for (const r of ["exact_match", "exact_match_unreferenced", "wrong_reference", "invalid_reference", "altered_text",
-    "altered_text_unreferenced", "not_found", "quote_too_short", "matched_manual_entry", "no_manual_entry"]) assert.ok(reasons.has(r), r);
+    "altered_text_unreferenced", "not_found", "quote_too_short", "matched_manual_entry", "no_manual_entry",
+    "near_match_not_literal"]) assert.ok(reasons.has(r), r);
+  assert.ok(PARITY.cases.some((c) => c.result.some((r) => r.diff && r.diff.chunks.length)), "فرق كلمات للآيات");
 });
 
 test("ملف الأحاديث للمتصفح فيه المدخلات المكتملة فقط", () => {
@@ -145,6 +186,52 @@ test("صفحة التحقق في المتصفح", { skip: !pw && !process.env.CI
         await page.waitForSelector("#check-results .notice");
         assert.match(await page.locator("#check-results").innerText(), /لم يُستخرج أي نص للفحص/);
       });
+      await t.test(`${width} ${scheme}: حديث حُذف منه حرف ← «لم يُطابَق حرفياً» وأقرب مدخل بالكلمة المختلفة، ولا «مؤيَّد»`, async () => {
+        await page.fill("#check-text", "قال رسول الله ﷺ: «اطلبوا العلم ولو بالصن» رواه البخاري 1.");
+        await page.click("#check-run");
+        await page.waitForSelector(".near-card");
+        const card = page.locator(".check-card").first();
+        const text = await card.innerText();
+        for (const needle of ["لم يُطابَق حرفياً", "يحتاج تحقق", "أقرب مدخل", "H-001", "بالصن", "بالصين", "هذا ليس تأييداً", "للمقارنة فقط"]) {
+          assert.ok(text.includes(needle), needle);
+        }
+        assert.ok(!text.includes("مؤيَّد"), "ظهر «مؤيَّد» مع نص غير مطابق");
+        assert.equal(await card.locator(".badge.b-ok").count(), 0);
+        const marks = await card.locator("mark.diff").allInnerTexts();
+        assert.ok(marks.includes("بالصن") && marks.includes("بالصين"), `الإبراز: ${marks}`);
+        assert.ok(marks.length >= 4, "إبراز في النص وفي المدخل وفي سطر الفرق");
+        const l = await layout();
+        assert.ok(l.overflow <= 0, `تمرير أفقي ${l.overflow}px`);
+        assert.deepEqual(l.low, [], "تباين أقل من 4.5:1");
+      });
+
+      await t.test(`${width} ${scheme}: آية حُذف منها حرف ← إبراز الكلمة المختلفة في النص وفي نص الموضع`, async () => {
+        await page.fill("#check-text", "قال تعالى: ﴿قل هو الله أح﴾ (الإخلاص: 1).");
+        await page.click("#check-run");
+        await page.waitForSelector(".diff-line");
+        const text = await page.locator("#check-results").innerText();
+        for (const needle of ["لم تُطابَق", "نقل محرّف", "الكلمة المختلفة", "كتبتَ «اح»", "«احد»"]) assert.ok(text.includes(needle), needle);
+        const marks = await page.locator("#check-results mark.diff").allInnerTexts();
+        assert.ok(marks.includes("اح") && marks.some((m) => m.startsWith("أَحَد")), `الإبراز: ${marks}`);
+        assert.equal(await page.locator("#check-results .check-card .badge.b-ok").count(), 0);
+        const l = await layout();
+        assert.ok(l.overflow <= 0, `تمرير أفقي ${l.overflow}px`);
+        assert.deepEqual(l.low, [], "تباين أقل من 4.5:1");
+      });
+
+      await t.test(`${width} ${scheme}: نص مقتبس بلا علامة نسبة ← تلميح بلا حكم (لا «مؤيَّد»)`, async () => {
+        await page.fill("#check-text", "قال رسول اله: «اطلبوا العلم ولو بالصن»");
+        await page.click("#check-run");
+        await page.waitForSelector(".hint-card");
+        const text = await page.locator("#check-results").innerText();
+        for (const needle of ["لم يُستخرج أي استشهاد للفحص", "نصوص لم تُفحص", "لم يُفحص", "علامة نسبة", "H-001", "ولا حكم"]) assert.ok(text.includes(needle), needle);
+        assert.ok(!text.includes("مؤيَّد"));
+        assert.equal(await page.locator("#check-results .badge.b-ok, #check-results .badge.b-bad").count(), 0, "شارة حكم على نص لم يُفحص");
+        const l = await layout();
+        assert.ok(l.overflow <= 0, `تمرير أفقي ${l.overflow}px`);
+        assert.deepEqual(l.low, [], "تباين أقل من 4.5:1");
+      });
+
       assert.deepEqual(errors, []);
       assert.deepEqual(external, [], "طلب خارجي");
       await ctx.close();
