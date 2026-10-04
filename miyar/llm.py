@@ -20,7 +20,11 @@
 - **سجل حدود الاستخدام:** كل رد 429 يُسجَّل لكل تشغيل (العدد والوقت والنموذج ومدة الانتظار) في ``rate_limits.json``.
 - **وسم التشغيل:** كل ملف في المخزن يحمل ``run_label`` (افتراضياً ``DEV_RUN``)، ومخزن التطوير في ``evaluation/dev/``.
 
-المزوّدات المنفّذة: Gemini (REST ``generateContent``). Anthropic وواجهات OpenAI المتوافقة تُضاف عند الحاجة.
+المزوّدات المنفّذة (يُختار بـ ``MIYAR_LLM_PROVIDER``):
+- ``gemini`` (الافتراضي): Gemini عبر REST ``generateContent``، بالمفتاح ``GEMINI_API_KEY``.
+- ``openai``: أي واجهة متوافقة مع OpenAI (``POST {base_url}/chat/completions``)، بالعنوان ``MIYAR_OPENAI_BASE_URL``
+  والمفتاح ``MIYAR_OPENAI_API_KEY``. إعدادات التفكير الخاصة بـ Gemini لا تُرسل إليها.
+Anthropic يُضاف عند الحاجة.
 """
 
 from __future__ import annotations
@@ -41,6 +45,9 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CACHE_DIR = ROOT / "evaluation" / "dev" / "llm_cache"
 DEV_RUN = "DEV_RUN"
 MODES = ("cached", "live")
+PROVIDERS = ("gemini", "openai")
+OPENAI_BASE_URL_VAR = "MIYAR_OPENAI_BASE_URL"
+OPENAI_KEY_VAR = "MIYAR_OPENAI_API_KEY"
 
 
 # ---------- الأخطاء ----------
@@ -205,6 +212,82 @@ class GeminiProvider:
         )
 
 
+class OpenAICompatibleProvider:
+    """واجهة متوافقة مع OpenAI: POST {base_url}/chat/completions مع الترويسة Authorization: Bearer.
+
+    تُوحَّد الاستجابة مع Gemini: ``finish_reason`` «length» ← «MAX_TOKENS» (فلا تُخزَّن الإجابة المقطوعة)، و«stop» ← «STOP»؛
+    والاستخدام بمفاتيح Gemini (``promptTokenCount`` و``candidatesTokenCount`` و``thoughtsTokenCount``) مع الأصل في ``openai``.
+    """
+
+    name = "openai"
+    FINISH = {"stop": "STOP", "length": "MAX_TOKENS", "content_filter": "SAFETY"}
+
+    def __init__(self, api_key: str, base_url: str, transport: Transport = urllib_transport, timeout: float = 120.0):
+        if not api_key:
+            raise MissingCredentials(f"{OPENAI_KEY_VAR} غير مضبوط")
+        self.base_url = validate_base_url(base_url)
+        self._key = api_key
+        self._transport = transport
+        self._timeout = timeout
+
+    def call(self, req: LLMRequest) -> LLMResponse:
+        messages = ([{"role": "system", "content": req.system}] if req.system else []) + [
+            {"role": "user", "content": req.prompt}
+        ]
+        body: dict = {
+            "model": req.model,
+            "messages": messages,
+            "temperature": req.temperature,
+            "max_tokens": req.max_output_tokens,
+        }
+        if req.response_mime_type == "application/json":
+            body["response_format"] = {"type": "json_object"}
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self._key}"}
+        status, resp_headers, raw = self._transport(
+            f"{self.base_url}/chat/completions", headers, json.dumps(body).encode("utf-8"), self._timeout
+        )
+        text = _redact(raw.decode("utf-8", errors="replace"), self._key)
+        if status == 429:
+            raise RateLimited(f"OpenAI-compatible 429: {text[:300]}", _retry_after(resp_headers, text))
+        if status == 503:
+            raise ServiceUnavailable(f"OpenAI-compatible 503: {text[:300]}")
+        if status != 200:
+            raise LLMError(f"OpenAI-compatible HTTP {status}: {text[:300]}")
+        data = json.loads(text)
+        choices = data.get("choices") or []
+        if not choices:
+            raise LLMError("OpenAI-compatible: لا توجد اختيارات في الاستجابة")
+        choice = choices[0]
+        content = (choice.get("message") or {}).get("content") or ""
+        u = data.get("usage") or {}
+        reasoning = (u.get("completion_tokens_details") or {}).get("reasoning_tokens") or 0
+        usage = {
+            "promptTokenCount": u.get("prompt_tokens") or 0,
+            "candidatesTokenCount": (u.get("completion_tokens") or 0) - reasoning,
+            "thoughtsTokenCount": reasoning,
+            "openai": u,
+        }
+        reason = choice.get("finish_reason")
+        return LLMResponse(
+            text=content,
+            provider=self.name,
+            model=data.get("model") or req.model,
+            finish_reason=self.FINISH.get(reason, reason),
+            usage=usage,
+        )
+
+
+def validate_base_url(url: str) -> str:
+    """https فقط (وhttp لـ localhost وحده)، بلا مسار استعلام؛ يُعاد دون الشرطة الأخيرة."""
+    from urllib.parse import urlparse
+
+    u = urlparse((url or "").strip())
+    local = u.hostname in ("localhost", "127.0.0.1")
+    if not u.hostname or u.query or u.fragment or not (u.scheme == "https" or (u.scheme == "http" and local)):
+        raise LLMError(f"{OPENAI_BASE_URL_VAR} غير صالح: يجب أن يكون عنوان https كاملاً بلا استعلام")
+    return url.strip().rstrip("/")
+
+
 def _retry_after(headers: dict, body_text: str) -> float | None:
     for k, v in headers.items():
         if k.lower() == "retry-after":
@@ -334,6 +417,7 @@ class LLMClient:
         min_output_tokens: int = 0,
         thinking: dict | None = None,
         run_id: str | None = None,
+        provider_name: str | None = None,
     ):
         if mode not in MODES:
             raise ValueError(f"وضع غير معروف: {mode}")
@@ -350,8 +434,12 @@ class LLMClient:
         self.min_output_tokens = min_output_tokens
         self.run_id = run_id  # يُطبَّق على كل طلب لم يحدد معرّفه
         self.thinking = thinking  # دالة النموذج ← إعداد التفكير، تُطبَّق إن لم يحدده الطلب
+        # اسم المزوّد في بصمة الطلب (ولو في وضع cached بلا مفتاح)؛ مع gemini لا تتغير بصمات الطلبات المخزنة
+        self.provider_name = provider_name or (provider.name if provider is not None else None)
 
     def _prepare(self, req: LLMRequest) -> LLMRequest:
+        if self.provider_name and req.provider != self.provider_name:
+            req = replace(req, provider=self.provider_name)
         if self.run_id is not None and req.run_id is None:
             req = replace(req, run_id=self.run_id)
         if req.max_output_tokens < self.min_output_tokens:
@@ -463,20 +551,33 @@ def client_from_env(
         raise LLMError(f"{var} غير مضبوط")
     store = ResponseStore(env.get("MIYAR_LLM_CACHE_DIR") or DEFAULT_CACHE_DIR, env.get("MIYAR_RUN_LABEL", DEV_RUN))
     provider: Provider | None = None
-    if provider_name != "gemini":
-        raise LLMError(f"المزوّد {provider_name} غير منفّذ بعد (المتاح: gemini)")
-    key = env.get("GEMINI_API_KEY", "")
-    if key:
-        provider = GeminiProvider(key, transport)
-    elif mode == "live":
-        raise MissingCredentials("GEMINI_API_KEY غير مضبوط")
+    if provider_name == "gemini":
+        key = env.get("GEMINI_API_KEY", "")
+        if key:
+            provider = GeminiProvider(key, transport)
+        elif mode == "live":
+            raise MissingCredentials("GEMINI_API_KEY غير مضبوط")
+    elif provider_name == "openai":
+        base_url = env.get(OPENAI_BASE_URL_VAR, "")
+        if not base_url:
+            raise LLMError(f"{OPENAI_BASE_URL_VAR} غير مضبوط (مطلوب مع MIYAR_LLM_PROVIDER=openai)")
+        validate_base_url(base_url)
+        key = env.get(OPENAI_KEY_VAR, "")
+        if key:
+            provider = OpenAICompatibleProvider(key, base_url, transport)
+        elif mode == "live":
+            raise MissingCredentials(f"{OPENAI_KEY_VAR} غير مضبوط")
+    else:
+        raise LLMError(f"المزوّد {provider_name} غير منفّذ (المتاح: {', '.join(PROVIDERS)})")
     max_calls = int(env.get("MIYAR_LIVE_MAX_CALLS_PER_DAY", "0") or 0)
     run_id = env.get("MIYAR_RUN_ID") or None
     if role == "judge":
-        fallback = env.get(JUDGE_FALLBACK_VAR, DEFAULT_JUDGE_FALLBACK)
+        # الاحتياط الافتراضي اسم نموذج Gemini، فلا يُطبَّق على مزوّد آخر إلا إن ضُبط المتغير صراحة
+        fallback = env.get(JUDGE_FALLBACK_VAR, DEFAULT_JUDGE_FALLBACK if provider_name == "gemini" else "")
         fallbacks = tuple(m for m in [fallback] if m)
         return LLMClient(
             provider, store, mode, max_calls, fallbacks, DEFAULT_MAX_ATTEMPTS,
             min_output_tokens=JUDGE_MIN_OUTPUT_TOKENS, thinking=JUDGE_THINKING, run_id=run_id,
+            provider_name=provider_name,
         ), model
-    return LLMClient(provider, store, mode, max_calls, run_id=run_id), model
+    return LLMClient(provider, store, mode, max_calls, run_id=run_id, provider_name=provider_name), model

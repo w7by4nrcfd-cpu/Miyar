@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from miyar.extract import KIND_QURAN, ExtractionError, build_request, extract, parse_output, validate
+from miyar.extract import KIND_HADITH, KIND_QURAN, ExtractionError, build_request, extract, parse_output, validate
 from miyar.judge import Citation
 from miyar.llm import CacheMiss, client_from_env
 from miyar.quran_match import QuranIndex
@@ -99,10 +99,29 @@ def test_numeric_location_and_invalid_numbers():
     assert kept[0].notes == ["location_incomplete_or_invalid"]
 
 
-def test_non_quran_items_are_set_aside_for_day_2():
-    raw = [{"kind": "hadith", "quote": "إجابة FIXTURE", "cited": None}]
+def test_unknown_kinds_are_rejected():
+    raw = [{"kind": "other", "quote": "إجابة FIXTURE", "cited": None}]
     kept, rejected = validate(raw, ANSWER, IDX)
-    assert kept == [] and rejected[0]["reason"] == "kind_not_supported_yet"
+    assert kept == [] and rejected[0]["reason"] == "kind_not_supported"
+
+
+HADITH_ANSWER = "إجابة FIXTURE: قال ﷺ «إنه سيأتيكم أقوام من بعدي يطلبون العلم» رواه ابن ماجه 248. وهذا شرح عام."
+
+
+def test_hadith_quote_and_cited_kept_only_if_in_answer():
+    raw = [{"kind": "hadith", "quote": "إنه سيأتيكم أقوام من بعدي يطلبون العلم", "cited": "رواه ابن ماجه 248"},
+           {"kind": "hadith", "quote": "حديث FIXTURE غير موجود في الإجابة", "cited": None}]
+    kept, rejected = validate(raw, HADITH_ANSWER, IDX)
+    assert [(c.kind, c.cited, c.sura) for c in kept] == [(KIND_HADITH, "رواه ابن ماجه 248", None)]
+    assert kept[0].as_citation() == Citation(kind="hadith", quote=raw[0]["quote"], cited="رواه ابن ماجه 248")
+    assert rejected[0]["reason"] == "quote_not_in_answer"
+
+
+def test_hadith_cited_not_in_answer_is_dropped():
+    # المستخرِج لا يضيف موضعاً لم يذكره المساعد
+    raw = [{"kind": "hadith", "quote": "إنه سيأتيكم أقوام من بعدي يطلبون العلم", "cited": "صحيح البخاري 1"}]
+    kept, _ = validate(raw, HADITH_ANSWER, IDX)
+    assert (kept[0].cited, kept[0].notes) == (None, ["cited_not_in_answer"])
 
 
 def test_parse_output_accepts_fences_and_rejects_bad_shapes():
