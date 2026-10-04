@@ -52,7 +52,7 @@ def test_valid_quote_and_location_are_kept():
     assert rejected == [] and len(kept) == 1
     c = kept[0]
     assert (c.kind, c.sura, c.aya, c.cited, c.notes) == (KIND_QURAN, 2, 255, "البقرة: 255", [])
-    assert c.as_citation() == Citation(kind="quran", quote=QUOTE, cited="البقرة: 255")
+    assert c.as_citation() == Citation(kind="quran", quote=QUOTE, cited="البقرة: 255", sura=2, aya=255)
 
 
 def test_quote_not_in_answer_is_rejected_extractor_cannot_correct_or_invent():

@@ -185,6 +185,15 @@ def extract_state() -> str:
     return "built" if "KIND_HADITH" in text else "partial"
 
 
+def judge_state() -> str:
+    """الحكم «جاهز» حين يحكم على الأحاديث ويصنّف الأخطاء في الأصناف الستة؛ وقبل ذلك «جاهز جزئياً»."""
+    if module_state("judge") != "built":
+        return "todo"
+    text = (ROOT / "miyar" / "judge.py").read_text(encoding="utf-8")
+    full = "def classify_error" in text and "hadith_matching_not_built" not in text
+    return "built" if full else "partial"
+
+
 def module_built_at(path: Path) -> bool:
     return _module_state_at(path) == "built"
 
@@ -278,7 +287,7 @@ def facts() -> dict:
             "runner": module_state("runner"),
             "extract": extract_state(),
             "hadith_match": any_module_built("hadith_match", "hadith_search"),
-            "judge": module_state("judge"),
+            "judge": judge_state(),
             "scoring": module_state("scoring"),
             "redteam": module_state("redteam"),
         },
@@ -297,13 +306,15 @@ def pipeline(f: dict) -> list[dict]:
                  ("جاهزة" if st["hadith_match"] == "built" else "لم تُبنَ")) if st["quran_match"] == "built" else "الآيات والأحاديث"
     extract_sub = ("الآيات مع موضعها: جاهز؛ الأحاديث: لم تُبنَ" if st["extract"] == "partial"
                    else "كل آية أو حديث نسبه المساعد مع موضعه")
+    judge_sub = ("الآيات والسلوك الأولي: جاهز؛ الأحاديث: لم تُبنَ" if st["judge"] == "partial"
+                 else "مؤيَّد / يحتاج تحقق / خاطئ، وسلوك المستوى")
     return [
         {"title": "سؤال موسوم", "sub": f"{f['n']} حالة موسومة بالمستوى A–D والسلوك المتوقع",
          "state": "built" if f["n"] else "todo"},
         {"title": "إجابة المساعد", "sub": "المساعد المُختبَر يجيب (baseline و rag)", "state": run_state},
         {"title": "استخراج الاستشهاد", "sub": extract_sub, "state": st["extract"]},
         {"title": "مطابقة المصدر", "sub": match_sub, "state": match_state},
-        {"title": "حكم", "sub": "مؤيَّد / يحتاج تحقق / خاطئ، وسلوك المستوى", "state": st["judge"]},
+        {"title": "حكم", "sub": judge_sub, "state": st["judge"]},
         {"title": "درجة وقرار", "sub": "درجة لكل مستوى، ومقارنة، وقرار نشر أو منع", "state": st["scoring"]},
     ]
 
@@ -737,7 +748,9 @@ def status_items(f: dict) -> tuple[list, list]:
         ("استخراج الاستشهادات من الإجابات" + (" (الآيات جاهزة؛ الأحاديث لم تُبنَ)" if st["extract"] == "partial" else ""),
          st["extract"] == "built", "miyar/extract.py"),
         ("مطابقة الأحاديث مع الملف اليدوي", st["hadith_match"] == "built", "miyar/hadith_match.py"),
-        ("حكم السلوك حسب المستوى A–D", st["judge"] == "built", "miyar/judge.py"),
+        ("حكم السلوك حسب المستوى A–D" + (" (حكم إسناد الآيات وحكم السلوك الأولي بالثقة والإحالة جاهزان؛ "
+                                         "الأحاديث وأصناف الحكم الستة لم تُبنَ)" if st["judge"] == "partial" else ""),
+         st["judge"] == "built", "miyar/judge.py"),
         ("الدرجة والمقارنة وقرار البوابة", st["scoring"] == "built", "miyar/scoring.py"),
         ("لوحة النتائج والمقارنة (تشغيلات منشورة)", f["published_runs"] > 0, "web/data/results.json"),
         ("تشغيل رسمي مسجّل وقياس الدقة", f["official_runs"] > 0, "evaluation/official/"),
