@@ -13,6 +13,7 @@ from miyar import publish
 from miyar.judge import BehaviorJudgement, Citation, CitationJudgement
 from miyar.publish import PublishError, build, diff, judgement_from_dict, judgement_to_dict, planned_files, write
 from miyar.quran_match import NEEDS_REVIEW, SUPPORTED, WRONG_OR_MISSING
+from miyar.scoring import GATE_RULE
 from tests.test_official_runs import record_errors as guard_record_errors
 from tests.test_official_runs import results_errors
 
@@ -78,10 +79,13 @@ def test_results_computed_from_judgements_and_match_schema(dirs):
     put(official, record())
     results, case_files, _ = run(official, out)
     (r,) = results["runs"]
-    assert set(r) == set(SCHEMA["$defs"]["run"]["required"])
+    run_schema = SCHEMA["$defs"]["run"]
+    assert set(run_schema["required"]) <= set(r) <= set(run_schema["properties"])
     assert r["overall_score"] == 75.0  # FX-1: 1 من 2، FX-2: 1 من 1؛ EXT-029 محالة فلا تُحتسب
-    assert r["levels"] == {"A": {"n_cases": 2, "score": 50.0}, "B": {"n_cases": 0, "score": None},
-                           "C": {"n_cases": 0, "score": None}, "D": {"n_cases": 1, "score": 100.0}}
+    assert r["levels"] == {"A": {"n_cases": 2, "score": 50.0, "n_scored": 1}, "B": {"n_cases": 0, "score": None, "n_scored": 0},
+                           "C": {"n_cases": 0, "score": None, "n_scored": 0}, "D": {"n_cases": 1, "score": 100.0, "n_scored": 1}}
+    assert (r["n_scored"], r["human_review_needed"], r["referral"]) == (2, 1, {"passed": 1, "failed": 0, "undecided": 0})
+    assert "gate" not in results and "stability" not in results  # مساعد واحد وتشغيل واحد: لا قرار ولا ثبات
     assert (r["wrong_citations"], r["testset"], r["evaluation_record"]) == (1, "synthetic",
                                                                             "evaluation/official/official-2026-10-06-1.json")
     assert sum(lv["n_cases"] for lv in r["levels"].values()) == r["n_cases"] == 3
@@ -205,3 +209,39 @@ def test_needs_review_citation_is_published_without_matched_text(dirs):
     _, case_files, _ = run(official, out)
     (cit,) = case_files["FX-1"]["runs"][0]["judgement"]["citations"]
     assert (cit["status"], cit["matched_text"]) == (NEEDS_REVIEW, None)
+
+
+# ---------- البوابة والثبات (S3.2 وS4.2) ----------
+def test_gate_compares_latest_rag_to_latest_baseline(dirs):
+    official, out = dirs
+    put(official, record("official-2026-10-06-1-baseline", assistant="baseline", at="2026-10-06T12:00:00+03:00"))
+    weaker = {"FX-1": judgement("FX-1", {"a": False, "b": False}), "FX-2": judgement("FX-2", {"refer_to_qualified": True})}
+    put(official, record("official-2026-10-06-1-rag", assistant="rag", at="2026-10-06T12:10:00+03:00", judgements=weaker))
+    results, _, _ = run(official, out)
+    g = results["gate"]
+    assert (g["reference_run_id"], g["candidate_run_id"], g["allow"]) == (
+        "official-2026-10-06-1-baseline", "official-2026-10-06-1-rag", False)
+    assert g["rule"] == GATE_RULE
+    assert any("المستوى A" in r for r in g["reasons"])
+    assert results_errors(results, root=official.parent.parent) == []
+
+
+def test_gate_changes_when_record_changes(dirs):
+    official, out = dirs
+    put(official, record("official-2026-10-06-1-baseline", assistant="baseline", at="2026-10-06T12:00:00+03:00"))
+    put(official, record("official-2026-10-06-1-rag", assistant="rag", at="2026-10-06T12:10:00+03:00"))
+    results, _, _ = run(official, out)
+    assert results["gate"]["allow"] is True  # المرشحة مساوية للمرجع: لا تراجع
+
+
+def test_stability_across_runs_per_assistant(dirs):
+    official, out = dirs
+    put(official, record("official-2026-10-06-1-baseline", assistant="baseline", at="2026-10-06T12:00:00+03:00"))
+    other = {"FX-1": judgement("FX-1", {"a": True, "b": True}), "FX-2": judgement("FX-2", {"refer_to_qualified": True})}
+    put(official, record("official-2026-10-06-2-baseline", assistant="baseline", at="2026-10-06T14:00:00+03:00",
+                         judgements=other))
+    results, _, _ = run(official, out)
+    st = results["stability"]["baseline"]
+    assert st["run_ids"] == ["official-2026-10-06-1-baseline", "official-2026-10-06-2-baseline"]
+    assert (st["levels"]["A"]["min"], st["levels"]["A"]["max"], st["levels"]["A"]["range"]) == (50.0, 100.0, 50.0)
+    assert "gate" not in results

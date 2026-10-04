@@ -134,3 +134,53 @@ test("الـfixture موسوم صراحةً بأنه ليس نتيجة حقيق�
     assert.match(FIXTURE_RUN[key], /FIXTURE/);
   }
 });
+
+// ---------- المقارنة والبوابة والثبات (S3/S4) — بيانات FIXTURE مصطنعة ----------
+import { comparisonRows, latestByAssistant, levelCell, noSpecialistReview, stripIsolates } from "../../web/assets/results-core.js";
+
+const fxRun = (patch) => ({ ...structuredClone(FIXTURE_RUN), n_scored: 11, human_review_needed: 1,
+  referral: { passed: 1, failed: 0, undecided: 0 }, ...patch });
+const FX_BASE = fxRun({ run_id: "FIXTURE-base-1", assistant: "baseline", executed_at: "2000-01-01T00:00:00Z" });
+const FX_RAG = fxRun({ run_id: "FIXTURE-rag-1", assistant: "rag", executed_at: "2000-01-01T00:10:00Z" });
+const FX_GATE = { rule: "FIXTURE rule", reference_run_id: "FIXTURE-base-1", candidate_run_id: "FIXTURE-rag-1",
+  allow: false, reasons: ["FIXTURE reason"] };
+
+test("ملف فيه gate وstability صالح → ok مع القرار", () => {
+  const data = { schema_version: 1, runs: [FX_BASE, FX_RAG], gate: FX_GATE,
+    stability: { baseline: { run_ids: ["FIXTURE-base-1", "FIXTURE-rag-1"], overall: {}, levels: {} } } };
+  const view = interpretResults(json(data));
+  assert.equal(view.state, "ok");
+  assert.equal(view.gate.allow, false);
+  assert.deepEqual(Object.keys(view.stability), ["baseline"]);
+});
+
+test("gate يشير إلى تشغيل غير منشور → غير صالح", () => {
+  const data = { schema_version: 1, runs: [FX_BASE], gate: FX_GATE };
+  const view = interpretResults(json(data));
+  assert.equal(view.state, "invalid");
+  assert.ok(view.errors.some((e) => e.includes("candidate_run_id")));
+});
+
+test("مستوى بلا حالة محتسبة: درجته null صالحة؛ وnull مع محتسب > 0 غير صالحة", () => {
+  const good = fxRun({ levels: { ...FIXTURE_RUN.levels, C: { n_cases: 1, score: null, n_scored: 0 } } });
+  assert.equal(validateResults({ schema_version: 1, runs: [good] }).length, 0);
+  const bad = fxRun({ levels: { ...FIXTURE_RUN.levels, C: { n_cases: 1, score: null, n_scored: 1 } } });
+  assert.ok(validateResults({ schema_version: 1, runs: [bad] }).length > 0);
+  const tooMany = fxRun({ levels: { ...FIXTURE_RUN.levels, C: { n_cases: 1, score: 50, n_scored: 2 } } });
+  assert.ok(validateResults({ schema_version: 1, runs: [tooMany] }).length > 0);
+});
+
+test("آخر تشغيل لكل مساعد، baseline ثم rag", () => {
+  const older = { ...FX_BASE, run_id: "FIXTURE-base-0", executed_at: "1999-01-01T00:00:00Z" };
+  assert.deepEqual(latestByAssistant([FX_RAG, older, FX_BASE]).map((r) => r.run_id), ["FIXTURE-base-1", "FIXTURE-rag-1"]);
+});
+
+test("صفوف المقارنة تنقل القيم كما هي مع N", () => {
+  const rows = comparisonRows([FX_BASE, FX_RAG]);
+  assert.equal(rows[0][0], "الدرجة الكلية");
+  assert.deepEqual(rows[0][1].map(stripIsolates), ["50 (N = 12، المحتسب 11)", "50 (N = 12، المحتسب 11)"]);
+  assert.equal(rows.length, 1 + 4 + 5);
+  assert.equal(stripIsolates(levelCell({ n_cases: 0, score: null })), "لا حالات (N = 0)");
+  assert.equal(stripIsolates(levelCell({ n_cases: 2, score: null, n_scored: 0 })), "لا درجة (N = 2، المحتسب 0)");
+  assert.equal(noSpecialistReview([FX_BASE, FX_RAG]), true);
+});
