@@ -273,3 +273,13 @@ export function gateRuleNote(rule) {
 
 /** حالة قياس الاتفاق: نص فقط؛ عدم القياس لا يعني 0% ولا 100%. */
 export const AGREEMENT_NOTE = "اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد.";
+
+/** مقام كل سبب منع على مستوى (من levels في results.json): «(المرشحة من 2، والمرجع من 1)»؛ أو null لسبب ليس مستوى. */
+export function reasonDenominator(reason, gate, runs) {
+  const m = /^المستوى ([A-D]):/.exec(reason ?? "");
+  if (!m || !gate) return null;
+  const byId = Object.fromEntries(runs.map((r) => [r.run_id, r]));
+  const c = byId[gate.candidate_run_id]?.levels?.[m[1]], r = byId[gate.reference_run_id]?.levels?.[m[1]];
+  if (!c || !r) return null;
+  return `(المرشحة من ${c.n_scored}، والمرجع من ${r.n_scored})`;
+}

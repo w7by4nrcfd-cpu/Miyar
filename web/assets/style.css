@@ -458,3 +458,12 @@ main > h2, main section > h2 { scroll-margin-top: 96px; }
 .replay-rationale blockquote { margin: var(--s1) 0 0; padding: var(--s2); background: var(--surface-2); border-radius: var(--radius-sm); overflow-wrap: anywhere; }
 .replay-all .replay-step + .replay-step { margin-top: var(--s3); }
 .hero-note { margin: var(--s1) 0 0; color: var(--muted); }
+
+/* فهرس الحالات على الجوال: كل حالة سطر مضغوط (المعرّف، المستوى، النوع، حرجة، المراجعة) بدل بطاقة طويلة؛ والتسميات باقية */
+@media (max-width: 767px) {
+  table#cases tr { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s0) var(--s2); padding: var(--s1) var(--s2); margin-bottom: var(--s1); }
+  table#cases tr > th, table#cases tr > td { width: auto; padding: 0; border: 0; background: transparent; }
+  table#cases td[data-label]::before { content: attr(data-label) ":"; display: inline; margin-inline-end: var(--s0); }
+  table#cases td:empty { display: none; }
+  table#cases td[data-label="المستوى"]::before, table#cases td[data-label="نوع الحالة"]::before { content: none; }
+}

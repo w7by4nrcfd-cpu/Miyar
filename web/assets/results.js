@@ -1,7 +1,7 @@
 // صفحة النتائج: تقرأ data/results.json (ناتج scripts/publish_results.py من evaluation/official/) وتعرضه دون أي رقم مصطنع.
 import {
   AGREEMENT_NOTE, comparisonCaveat, comparisonRows, gateRuleNote, interpretResults, latestByAssistant, LEVELS, officialRunsHeadline,
-  overallScoresNote,
+  overallScoresNote, reasonDenominator,
 } from "./results-core.js";
 
 const RESULTS_URL = "data/results.json";
@@ -81,18 +81,23 @@ function gateSection(gate, latest, runs) {
       " المرشحة ", ltr(gate.candidate_run_id), " مقابل المرجع ", ltr(gate.reference_run_id), "."),
   );
   const reasons = el("ul", { class: "gate-reasons" });
-  for (const r of gate.reasons) reasons.append(el("li", {}, r));
+  for (const r of gate.reasons) {
+    const d = reasonDenominator(r, gate, runs);
+    reasons.append(el("li", {}, r, d ? el("span", { class: "muted small" }, ` ${d}`) : null));
+  }
   const scores = overallScoresNote(gate, runs);
   sec.append(el("h3", {}, "السبب"), reasons,
     ...(scores ? [el("p", { class: "muted small", id: "gate-overall" }, scores)] : []),
-    el("p", { class: "notice demo", role: "note", id: "gate-sensitivity" },
-      el("strong", {}, "القرار حساس لاختيار الجولة المرجعية. "),
-      "يُحسب القرار مقابل آخر جولة baseline منشورة، وجولات baseline تتفاوت درجاتها فيما بينها؛ فقد تتغير الأسباب وهوامشها بتغيير الجولة المرجعية. "
-      + "لا تُختار جولة مرجعية بحسب النتيجة."),
-    el("p", { class: "small" }, el("strong", {}, "القاعدة: "), gate.rule),
-    ...(gateRuleNote(gate.rule) ? [el("p", { class: "muted small", id: "gate-unmeasured" }, gateRuleNote(gate.rule))] : []),
-    el("p", { class: "muted small" }, "القرار محسوب من السجلين الرسميين، لا من هذه الصفحة."),
-    caveat(latest, "gate-caveat"));
+    el("p", { class: "small", id: "gate-sensitivity" },
+      el("strong", {}, "القرار حساس لاختيار الجولة المرجعية"), "؛ ولا تُختار جولة مرجعية بحسب النتيجة."),
+    // التفاصيل الثانوية مطوية (في DOM، وتُفتح بلوحة المفاتيح)
+    el("details", { class: "tech", id: "gate-details" }, el("summary", {}, "قاعدة البوابة وحدودها"),
+      el("div", { class: "tech-body" },
+        el("p", { class: "small" }, "يُحسب القرار مقابل آخر جولة baseline منشورة، وجولات baseline تتفاوت درجاتها فيما بينها؛ فقد تتغير الأسباب وهوامشها بتغيير الجولة المرجعية."),
+        el("p", { class: "small" }, el("strong", {}, "القاعدة: "), gate.rule),
+        ...(gateRuleNote(gate.rule) ? [el("p", { class: "muted small", id: "gate-unmeasured" }, gateRuleNote(gate.rule))] : []),
+        el("p", { class: "muted small" }, "القرار محسوب من السجلين الرسميين، لا من هذه الصفحة."),
+        caveat(latest, "gate-caveat"))));
   return sec;
 }
 
@@ -111,13 +116,17 @@ function stabilitySection(stability) {
         el("td", { "data-label": "الأدنى" }, cell(v.min)), el("td", { "data-label": "الأعلى" }, cell(v.max)),
         el("td", { "data-label": "الفرق" }, cell(v.range)), el("td", { "data-label": "تشغيلات بدرجة" }, `${v.n_with_score} من ${v.n_runs}`)));
     }
-    sec.append(el("h3", {}, ltr(assistant), ` — التشغيلات: ${st.run_ids.join("، ")}`),
-      el("div", { class: "table-wrap", role: "region", "aria-label": `ثبات ${assistant}`, tabindex: "0" },
-        el("table", { class: "stack" },
-          el("thead", {}, el("tr", {}, ...["المقياس", "الأدنى", "الأعلى", "الفرق", "تشغيلات بدرجة"].map((h) => el("th", { scope: "col" }, h)))),
-          body)));
+    // سطر ظاهر من الملف نفسه (الكلية)، والجدول الكامل لكل مستوى في طبقة مطوية
+    const o = st.overall;
+    sec.append(el("p", { class: "stab-line", title: st.run_ids.join("، ") }, ltr(assistant),
+      ` — الدرجة الكلية بين ${o.min} و${o.max} عبر ${o.n_runs} جولات (الفرق ${o.range}).`),
+      el("details", { class: "tech" }, el("summary", {}, `ثبات ${assistant} لكل مستوى`),
+        el("div", { class: "table-wrap", role: "region", "aria-label": `ثبات ${assistant}`, tabindex: "0" },
+          el("table", { class: "stack" },
+            el("thead", {}, el("tr", {}, ...["المقياس", "الأدنى", "الأعلى", "الفرق", "تشغيلات بدرجة"].map((h) => el("th", { scope: "col" }, h)))),
+            body)),
+        el("p", { class: "muted small" }, "تُعرض التشغيلات كلها؛ لا يُختار أفضلها.")));
   }
-  sec.append(el("p", { class: "muted" }, "تُعرض التشغيلات كلها؛ لا يُختار أفضلها."));
   return sec;
 }
 
@@ -129,11 +138,11 @@ function singleRunNotes(runs, stability) {
   for (const [assistant, n] of Object.entries(counts)) {
     if (n !== 1 || stability[assistant]) continue;
     const why = assistant === "rag"
-      ? " السبب في هذا التشغيل حد Groq اليومي المجاني: الجولات الناقصة لم تُحتسب وحُفظت منفصلة (انظر التفاصيل التقنية أدناه)."
+      ? " (حد Groq اليومي المجاني؛ والجولات الناقصة محفوظة منفصلة)"
       : "";
     notes.push(el("p", { class: "notice demo single-run", role: "note" },
-      el("strong", {}, `لـ ${assistant} جولة مكتملة واحدة فقط، فالثبات غير قابل للقياس له. `),
-      "ولا يصح الاستدلال من جولة واحدة على استقراره." + why));
+      el("strong", {}, `لـ ${assistant} جولة مكتملة واحدة فقط`), why,
+      "، فلا يُقاس ثباته ولا يُستدل منها على استقراره."));
   }
   return notes;
 }
@@ -143,13 +152,12 @@ function renderOk(root, view) {
   const nodes = [
     el("div", { class: "notice", role: "status", id: "results-notice" },
       el("strong", {}, officialRunsHeadline(view.runs.length), " المستودع."),
-      el("span", {}, " كل رقم من سجله المذكور ومعه عدد الحالات N، ويحسبه سكربت النشر من أحكام السجلات. الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
+      el("span", {}, " الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
     gateSection(view.gate, latest, view.runs),
     // «ماذا اكتشف مِعيار؟» قسم ثابت مولَّد من السجلات الرسمية؛ يُنقل إلى ما بعد قرار البوابة مباشرة
     ...(document.getElementById("discovered") ? [document.getElementById("discovered")] : []),
     el("h2", { id: "compare-h" }, "المقارنة: baseline مقابل rag"),
-    el("p", {}, "rag هو نموذج baseline نفسه مع بحث في المصادر المعتمدة فقط (آيات Quranpedia ومدخلات الملف اليدوي المكتملة)، "
-      + "ومِعيار لا يستعمل محرك حكمه داخل أي مساعد. الحالة المحالة إلى مراجعة بشرية أو المتعذّرة لا تُحتسب في الدرجة."),
+    el("p", {}, "rag هو baseline نفسه مع بحث في المصادر المعتمدة فقط؛ ومِعيار لا يستعمل محرك حكمه داخل أي مساعد."),
     comparisonTable(latest),
     caveat(latest, "compare-caveat"),
   ];

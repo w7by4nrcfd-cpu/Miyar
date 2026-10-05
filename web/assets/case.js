@@ -110,18 +110,15 @@ function citationsTable(cits, labels) {
 }
 
 function runCard(run, c, meta) {
+  // الترتيب للمحكّم: الحكم ← الاستشهادات والمطابقة ← فحوص السلوك ← الإجابة الكاملة وتفاصيل الحكم (مطويتان)
   const j = run.judgement;
   const v = verdict(j, meta.categories);
   const card = el("article", { class: "answer-card", "aria-label": `إجابة ${run.assistant}` },
     el("header", {}, el("h3", {}, ltr(run.assistant)),
-      el("p", { class: "muted small" }, ltr(run.run_id), " · ", ltr(run.answer_model ?? "—"))),
-    el("p", { class: "frame-label" }, "إجابة المساعد المُختبَر — ليست من مِعيار"));
-  card.append(run.error
-    ? el("p", { class: "notice error" }, "تعذّر جواب المساعد في هذا التشغيل.")
-    : el("div", { class: "answer", dir: "auto" }, run.answer ?? ""));
-  card.append(el("h4", {}, "الاستشهادات المستخرجة وحكم كل منها"), citationsTable(j?.citations ?? [], meta.citation_status_labels));
+      el("p", { class: "muted small" }, ltr(run.run_id), " · ", ltr(run.answer_model ?? "—"))));
   const verdictCls = { ok: "b-ok", error: "b-bad", review: "b-rev", none: "b-todo" }[v.kind];
   card.append(el("h4", {}, "الحكم"), el("p", { class: "verdict-line" }, badge(verdictCls, v.text)));
+  card.append(el("h4", {}, "الاستشهادات المستخرجة وحكم كل منها"), citationsTable(j?.citations ?? [], meta.citation_status_labels));
   if (j && !j.needs_human_review) {
     const list = el("ul", { class: "checks" });
     for (const k of c.checks) {
@@ -129,13 +126,19 @@ function runCard(run, c, meta) {
       list.append(el("li", {}, badge(val === true ? "b-ok" : val === false ? "b-bad" : "b-todo", checkText(val)), " ", el("code", {}, k.name)));
     }
     const summary = checksSummary(j);
-    card.append(list, summary ? el("p", { class: "muted small" }, summary) : null);
+    card.append(el("h4", {}, "فحوص السلوك"), list, summary ? el("p", { class: "muted small" }, summary) : null);
   }
+  card.append(el("p", { class: "frame-label" }, "إجابة المساعد المُختبَر — ليست من مِعيار"));
+  card.append(run.error
+    ? el("p", { class: "notice error" }, "تعذّر جواب المساعد في هذا التشغيل.")
+    : el("details", { class: "tech answer-details" }, el("summary", {}, "عرض إجابة المساعد كاملة"),
+      el("div", { class: "answer", dir: "auto" }, run.answer ?? "")));
   if (j) {
-    card.append(el("dl", { class: "kv" },
-      el("dt", {}, "ثقة الحَكَم"), el("dd", {}, j.confidence.toFixed(2)),
-      el("dt", {}, "سبب الحكم"), el("dd", { dir: "auto" }, j.rationale || "—"),
-      el("dt", {}, "نموذج الحَكَم"), el("dd", {}, ltr(j.judge_model || "—"))));
+    card.append(el("details", { class: "tech" }, el("summary", {}, "تفاصيل الحكم"),
+      el("dl", { class: "kv tech-body" },
+        el("dt", {}, "ثقة الحَكَم"), el("dd", {}, j.confidence.toFixed(2)),
+        el("dt", {}, "سبب الحكم"), el("dd", { dir: "auto" }, j.rationale || "—"),
+        el("dt", {}, "نموذج الحَكَم"), el("dd", {}, ltr(j.judge_model || "—")))));
   }
   card.append(el("p", { class: "more" }, el("a",
     { href: `replay.html?case=${encodeURIComponent(c.id)}&run=${encodeURIComponent(run.run_id)}&step=1` }, "أعد عرض هذه الإجابة خطوة بخطوة")));

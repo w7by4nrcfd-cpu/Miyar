@@ -73,7 +73,7 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
         await page.route("**/data/results.json", (route) =>
           route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(FIXTURE_RESULTS) }));
         await page.goto(base + "results.html", { waitUntil: "networkidle" });
-        const text = (await page.locator("#results").innerText()).replace(/[\u2066-\u2069]/g, "");
+        const text = (await page.locator("#results").textContent()).replace(/[\u2066-\u2069]/g, "");
         for (const needle of ["المقارنة: baseline مقابل rag", "حجب rag", "FIXTURE قاعدة البوابة", "المراجعة الشرعية: مراجعة واحدة لحالة واحدة من 12 (OFF-06)",
           "80 (N = 12، المحتسب 11)", "لا درجة (N = 1، المحتسب 0)", "الثبات يحتاج تشغيلين رسميين"]) {
           assert.ok(text.includes(needle), needle);
@@ -98,8 +98,12 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
         assert.ok((await page.locator("details#results-tech").textContent()).includes("evaluation/official/"));
         assert.equal(await page.locator("h1 + .notice").count(), 0, "لا بطاقة ثابتة قبل بطاقة JavaScript");
         // التنبيه ثابت بجوار المقارنة وبجوار قرار البوابة، مع N من الملف
+        // قاعدة البوابة وحدودها مطوية افتراضياً؛ وتنبيه المقارنة ظاهر مرة واحدة تحت المقارنة
+        assert.equal(await page.locator("#gate-details").evaluate((d) => d.open), false);
+        assert.ok(await page.locator("#compare-caveat").isVisible());
+        assert.equal(await page.locator("#gate-caveat").isVisible(), false);
         for (const id of ["#compare-caveat", "#gate-caveat"]) {
-          const caveat = (await page.locator(id).innerText()).replace(/[\u2066-\u2069]/g, "");
+          const caveat = (await page.locator(id).textContent()).replace(/[\u2066-\u2069]/g, "");
           assert.match(caveat, /تميل لصالح rag/);
           assert.match(caveat, /N = 12/);
         }

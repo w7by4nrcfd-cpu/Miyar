@@ -135,7 +135,7 @@ def test_old_about_page_removed_and_nav_has_four_items():
 
 def test_home_defines_miyar_in_one_sentence_and_track_four():
     t = _text("index.html")
-    assert "يختبر المساعد الذكي نفسه ويحكم على إجاباته" in t
+    assert "يختبر المساعد الذكي نفسه" in t and "لا يولّد آية ولا حديثاً ولا حكماً" in t
     assert "ولا يجيب هو" in t
     assert "المسار الرابع: أدوات المعرفة والتحقق" in t
 
@@ -284,7 +284,7 @@ def test_transparency_page_disclosures():
 def test_mode_bar_says_display_only_not_official(page):
     t = _text(page)
     if _published_runs():
-        assert "نتائج محفوظة من تشغيلات رسمية مسجّلة في evaluation/official/، كل رقم مع N." in t
+        assert "نتائج محفوظة من تشغيلات رسمية مسجّلة في المستودع، كل رقم مع N." in t
         assert "لا توجد نتائج تقييم رسمية بعد" not in t
     else:
         assert "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026." in t
@@ -493,7 +493,7 @@ def test_discovered_section_numbers_recomputed_from_official_records():
     h = _page("results.html")
     sec = h[h.index('id="discovered"'):h.index("</section>", h.index('id="discovered"'))]
     t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", sec))
-    assert f"= {answers} إجابة مُقيَّمة" in t
+    assert f"{answers} إجابة مُقيَّمة" in t
     assert f"{len(cits)} استشهاداً استخرجها مِعيار من {with_cit} إجابة فيها استشهاد (من {answers})" in t
     nq = sum(v for (k, _), v in st.items() if k == "quran")
     assert (f"الآيات ({nq}): {st[('quran', 'supported')]} مؤيَّد" in t and f"و{st[('quran', 'needs_review')]} يحتاج تحقق" in t

@@ -27,7 +27,7 @@ function main() {
   const count = document.getElementById("count");
   const noMatch = document.getElementById("no-match");
   const rows = [...table.tBodies[0].rows].map((tr) => ({
-    tr, level: tr.dataset.level, type: tr.dataset.type, text: tr.textContent,
+    tr, level: tr.dataset.level, type: tr.dataset.type, text: `${tr.textContent} ${tr.dataset.search ?? ""}`,
   }));
   const total = rows.length;
   const form = q.closest("form");
