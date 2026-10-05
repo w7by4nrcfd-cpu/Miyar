@@ -73,17 +73,10 @@ test("تخطيط الصفحات في المتصفح", { skip: !pw && !required ?
           });
           assert.equal(info.dir, "rtl");
           if (p === "index.html") {
-            // نصوص رسم مسار العمل داخل صناديقها
-            const spill = await page.evaluate(() => {
-              const svg = document.querySelector("figure.flow > svg");
-              const texts = [...svg.querySelectorAll("text")];
-              return [...svg.querySelectorAll("rect.node")].flatMap((r) => {
-                const rb = r.getBBox();
-                return texts.filter((t) => { const tb = t.getBBox(); return tb.y >= rb.y && tb.y < rb.y + rb.height && (tb.x < rb.x || tb.x + tb.width > rb.x + rb.width); })
-                  .map((t) => t.textContent);
-              });
-            });
-            assert.deepEqual(spill, [], "نص يخرج من صندوقه في رسم مسار العمل");
+            // ثلاث بطاقات «كيف يعمل» بأيقونات مضمّنة، ولمحة النتائج
+            assert.equal(await page.locator(".card.how").count(), 3);
+            assert.equal(await page.locator(".card.how .how-icon svg").count(), 3);
+            assert.equal(await page.locator(".glance").count(), 1);
           }
           assert.ok(info.scroll <= info.width, `تمرير أفقي: ${info.scroll} > ${info.width}`);
           assert.deepEqual(info.low, [], "نص بتباين أقل من 4.5:1");

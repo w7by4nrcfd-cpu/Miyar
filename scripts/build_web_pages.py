@@ -72,13 +72,14 @@ LAYOUT = """<!doctype html>
 <body>
 <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
 <div class="shell">
-<aside class="sidebar" aria-label="القائمة الجانبية">
+<header class="topbar">
+  <div class="topbar-inner">
   <a class="brand" href="index.html" aria-label="مِعيار — الرئيسية"><span class="brand-mark" aria-hidden="true">{brand_mark}</span><span class="brand-text"><span class="brand-name">مِعيار</span><span class="brand-sub">اختبار المساعد الذكي</span></span></a>
   <nav class="main" aria-label="التنقل الرئيسي"><ul>
 {nav}
   </ul></nav>
-{status_card}
-</aside>
+  </div>
+</header>
 <div class="content">
 <main id="main" tabindex="-1">
 {body}
@@ -155,7 +156,6 @@ def status_card(f: dict) -> str:
     <div class="sc-row"><span id="sc1">نواة التقييم (4–6 أكتوبر)</span><span>{d1} من {len(p1)}</span></div>
     <progress value="{d1}" max="{len(p1)}" aria-labelledby="sc1">{d1} من {len(p1)}</progress>
   </div>
-  <a class="sc-link" href="status.html">تفاصيل الحالة</a>
 </section>"""
 
 
@@ -294,6 +294,7 @@ def facts() -> dict:
         "red_team": red_team_facts(sets),
         "official_runs": len(runs),
         "published_runs": len(results.get("runs", [])),
+        "results": results,
         # لقطة المراجعة البشرية في آخر تشغيل رسمي منشور (من results.json، لا من الحالات كلها)
         "official_review": (results["runs"][-1].get("human_reviewed") if results.get("runs") else None),
         "quran_version": src["dump_version"],
@@ -320,97 +321,73 @@ def facts() -> dict:
     return f
 
 
-# ---------- مسار العمل ----------
-def pipeline(f: dict) -> list[dict]:
-    st = f["state"]
-    run_state = "built" if st["assistants"] == "built" and st["runner"] == "built" else "todo"
-    match_state = ("built" if st["quran_match"] == "built" and st["hadith_match"] == "built" else
-                   "partial" if st["quran_match"] == "built" else "todo")
-    match_sub = ("الآيات: مطابقة حرفية جاهزة؛ الأحاديث: " +
-                 ("جاهزة" if st["hadith_match"] == "built" else "لم تُبنَ")) if st["quran_match"] == "built" else "الآيات والأحاديث"
-    extract_sub = ("الآيات مع موضعها: جاهز؛ الأحاديث: لم تُبنَ" if st["extract"] == "partial"
-                   else "كل آية أو حديث نسبه المساعد مع موضعه")
-    judge_sub = (("الإسناد والسلوك الأولي: جاهز؛ الأصناف الستة: لم تُبنَ" if st["hadith_match"] == "built"
-                  else "الآيات والسلوك الأولي: جاهز؛ الأحاديث: لم تُبنَ") if st["judge"] == "partial"
-                 else "مؤيَّد / يحتاج تحقق / خاطئ، وسلوك المستوى")
-    return [
-        {"title": "سؤال موسوم", "sub": f"{f['n']} حالة موسومة بالمستوى A–D والسلوك المتوقع",
-         "state": "built" if f["n"] else "todo"},
-        {"title": "إجابة المساعد", "sub": "المساعد المُختبَر يجيب (baseline و rag)", "state": run_state},
-        {"title": "استخراج الاستشهاد", "sub": extract_sub, "state": st["extract"]},
-        {"title": "مطابقة المصدر", "sub": match_sub, "state": match_state},
-        {"title": "حكم", "sub": judge_sub, "state": st["judge"]},
-        {"title": "درجة وقرار", "sub": "درجة لكل مستوى، ومقارنة، وقرار نشر أو منع", "state": st["scoring"]},
-    ]
-
-
 STATE_TEXT = {"built": "جاهز", "partial": "جاهز جزئياً", "todo": "لم يُبنَ بعد"}
 STATE_BADGE = {"built": "ok", "partial": "rev", "todo": "todo"}
 
 
-def flow_svg(steps: list[dict]) -> str:
-    """رسم SVG ثابت عمودي لمسار العمل؛ الألوان من متغيرات CSS (فاتح وداكن)."""
-    w, box_h, gap, x0 = 420, 74, 30, 12
-    h = len(steps) * box_h + (len(steps) - 1) * gap + 8
-    parts = [f'<svg viewBox="0 0 {w} {h}" role="img" aria-labelledby="flow-title flow-desc" xmlns="http://www.w3.org/2000/svg">',
-             '<title id="flow-title">مسار عمل مِعيار</title>',
-             '<desc id="flow-desc">' + "، ثم ".join(f'{s["title"]} ({STATE_TEXT[s["state"]]})' for s in steps) + "</desc>"]
-    for i, s in enumerate(steps):
-        y = 4 + i * (box_h + gap)
-        cls = s["state"]
-        parts.append(f'<rect class="node {cls}" x="{x0}" y="{y}" width="{w - 2 * x0}" height="{box_h}" rx="12"/>')
-        cx = w - x0 - 26
-        parts.append(f'<circle class="num" cx="{cx}" cy="{y + box_h / 2}" r="15"/>')
-        parts.append(f'<text class="num-t" x="{cx}" y="{y + box_h / 2 + 5}" text-anchor="middle">{"١٢٣٤٥٦٧٨٩"[i]}</text>')
-        tx = w - x0 - 52
-        parts.append(f'<text class="title" x="{tx}" y="{y + 26}" direction="rtl" text-anchor="start">{_esc(s["title"])}</text>')
-        parts.append(f'<text class="st-{cls}" x="{x0 + 14}" y="{y + 26}" direction="rtl" text-anchor="end">{STATE_TEXT[cls]}</text>')
-        parts.append(f'<text class="sub" x="{tx}" y="{y + 54}" direction="rtl" text-anchor="start">{_esc(s["sub"])}</text>')
-        if i < len(steps) - 1:
-            ay = y + box_h
-            parts.append(f'<path class="arrow" d="M{w / 2} {ay + 2} V{ay + gap - 9}"/>')
-            parts.append(f'<path class="arrowhead" d="M{w / 2 - 6} {ay + gap - 10} L{w / 2 + 6} {ay + gap - 10} L{w / 2} {ay + gap - 2} Z"/>')
-    parts.append("</svg>")
-    return "\n".join(parts)
+# ---------- الرئيسية ----------
+HOW_ICONS = {
+    # أيقونات مضمّنة مرسومة للمشروع (بلا مكتبة): أسئلة موسومة، ومطابقة نص، وميزان قرار
+    "ask": '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+    "match": '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h7M4 12h7M4 17h7"/><path d="M14 9l2.5 2.5L21 7"/><path d="M14 17h7"/></svg>',
+    "gate": '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v16M6 20h12M5 8h14M5 8l-3 6h6zM19 8l-3 6h6z"/></svg>',
+}
+
+
+def results_glance(f: dict) -> str:
+    """لمحة نتائج من web/data/results.json (لا أرقام مكتوبة يدوياً)."""
+    res = f["results"]
+    runs = res.get("runs", [])
+    if not runs:
+        return '<p class="muted">لا نتائج رسمية منشورة بعد.</p>'
+    n_cases = sorted({r["n_cases"] for r in runs})
+    by = {}
+    for r in runs:
+        by[r["assistant"]] = by.get(r["assistant"], 0) + 1
+    split = "، ".join(f'<span class="ltr" lang="en">{_esc(a)} ×{k}</span>' for a, k in sorted(by.items()))
+    gate = res.get("gate")
+    if gate:
+        verdict = (badge("ok", "نشر rag") if gate["allow"] else badge("bad", "منع rag"))
+        short = lambda rid: "-".join(rid.split("-")[-2:])  # noqa: E731 — rag-2 من official-2026-10-04-rag-2
+        gate_text = (f'{verdict}<span class="small muted">المرشحة <span class="ltr" lang="en" title="{_attr(gate["candidate_run_id"])}">{_esc(short(gate["candidate_run_id"]))}</span> '
+                     f'مقابل المرجع <span class="ltr" lang="en" title="{_attr(gate["reference_run_id"])}">{_esc(short(gate["reference_run_id"]))}</span>؛ والقرار حساس لاختيار الجولة المرجعية.</span>')
+    else:
+        gate_text = '<span class="muted">لا قرار بوابة</span>'
+    return f"""<div class="glance">
+  <div class="stat"><span class="stat-label">الجولات الرسمية</span><span class="stat-value">{len(runs)}</span><span class="small muted">{split}</span></div>
+  <div class="stat"><span class="stat-label">الحالات في كل جولة</span><span class="stat-value"><span class="ltr" lang="en">N = {"/".join(map(str, n_cases))}</span></span><span class="small muted">أمثلة الحزمة العلمية</span></div>
+  <div class="stat"><span class="stat-label">قرار البوابة</span>{gate_text}</div>
+</div>
+<p><a href="results.html">التفاصيل في صفحة النتائج</a></p>"""
 
 
 def home(f: dict) -> str:
-    steps = pipeline(f)
     return f"""
 <header class="hero">
 {pattern_svg()}
-<div class="hero-grid">
-  <div class="hero-text">
-    <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
-    <p class="lead hero-line">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> بأسئلة موسومة، ويتحقق من آياته وأحاديثه، <strong>ولا يجيب هو عن الأسئلة الدينية</strong>.</p>
-    <p class="lead hero-line">جرّب الآن التحقق من آية أو حديث تلصقه (وضع ثانوي، ليس تقييماً لمساعد)، أو شاهد نتائج اختبار المساعدين.</p>
-    <p class="hero-buttons"><a class="btn btn-try" href="check.html">جرّب التحقق</a><a class="btn btn-try ghost" href="results.html">شاهد النتائج</a></p>
-  </div>
-  <figure class="flow">
-    <figcaption>مسار العمل: حالة كل مرحلة محسوبة من كود المستودع</figcaption>
-{flow_svg(steps)}
-  </figure>
+<div class="hero-text">
+  <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
+  <p class="lead hero-line">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> بأسئلة موسومة، ويتحقق من آياته وأحاديثه، <strong>ولا يجيب هو عن الأسئلة الدينية</strong>.</p>
+  <p class="lead hero-line">جرّب الآن التحقق من آية أو حديث تلصقه (وضع ثانوي، ليس تقييماً لمساعد)، أو شاهد نتائج اختبار المساعدين.</p>
+  <p class="hero-buttons"><a class="btn btn-try" href="check.html">جرّب التحقق</a><a class="btn btn-try ghost" href="results.html">شاهد النتائج</a></p>
 </div>
 </header>
 
-<section class="sec">
-<h2>ما هو مِعيار؟</h2>
-<p class="prose">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
+<section class="sec" aria-labelledby="how-h">
+<h2 id="how-h">كيف يعمل</h2>
+<div class="cards three">
+  <article class="card how"><span class="how-icon">{HOW_ICONS["ask"]}</span><h3>١. نسأل المساعد</h3>
+    <p>نطرح على المساعد مجموعة أسئلة ثابتة موسومة بمستوى المحتوى (A–D) والسلوك المتوقع في كل مستوى: إجابة موثقة، أو بيان الخلاف، أو إحالة.</p></article>
+  <article class="card how"><span class="how-icon">{HOW_ICONS["match"]}</span><h3>٢. نطابق النصوص</h3>
+    <p>نستخرج الآيات والأحاديث من إجابته ونطابقها حرفياً مع نص Quranpedia وملف الأحاديث اليدوي. لا يصدر «مؤيَّد» أبداً دون مطابقة فعلية.</p></article>
+  <article class="card how"><span class="how-icon">{HOW_ICONS["gate"]}</span><h3>٣. نحكم ونقرر</h3>
+    <p>حَكَم آلي يفحص التزامه بسلوك المستوى بدرجة ثقة، وما دون العتبة يُحال إلى مراجعة بشرية؛ ثم درجة لكل مستوى وقرار بوابة: نشر أو منع.</p></article>
+</div>
 </section>
 
-<section class="sec">
-<h2>في ثلاث نقاط</h2>
-<div class="pillars">
-  <article><span class="pillar-num" aria-hidden="true">١</span><h3>ماذا نختبر</h3>
-    <p>مساعداً ذكياً كاملاً لا نصاً واحداً: نطرح عليه مجموعة أسئلة ثابتة موسومة بمستوى المحتوى، ونفحص كل آية وحديث نسبهما،
-    وهل التزم بالسلوك المطلوب: إجابة موثقة، أو بيان الخلاف، أو إحالة.</p></article>
-  <article><span class="pillar-num" aria-hidden="true">٢</span><h3>لماذا</h3>
-    <p>المساعدات قد تنسب نصاً إلى آية أو حديث لا يوجد فيه، أو تنقل الآية محرّفة، أو تُفتي في واقعة شخصية.
-    وفحص إجابة واحدة لا يكفي لمعرفة هل المساعد صالح للنشر.</p></article>
-  <article><span class="pillar-num" aria-hidden="true">٣</span><h3>ما الذي يميّزنا</h3>
-    <p>مِعيار ليس مساعداً يجيب؛ هو <strong>يختبر المساعد ويحكم عليه</strong> بمعيار مكتوب من الحزمة العلمية،
-    ويقارن بين المساعدات، ويقرر النشر أو المنع. ولا يولّد آية ولا حديثاً ولا حكماً.</p></article>
-</div>
+<section class="sec" aria-labelledby="glance-h">
+<h2 id="glance-h">لمحة النتائج</h2>
+{results_glance(f)}
 </section>
 
 <section class="sec">
@@ -426,14 +403,9 @@ def home(f: dict) -> str:
 </section>
 
 <section class="sec">
-<h2>صفحات الموقع</h2>
-<ul class="index-list">
-  <li><a href="levels.html">مستويات المحتوى</a><span>المستويات الأربعة A–D والسلوك المتوقع في كل منها.</span></li>
-  <li><a href="sources.html">المصادر والمنهجية</a><span>سجل المصادر للمجالات التسعة، وأصناف الحكم، وكيف يُتحقق من الإسناد.</span></li>
-  <li><a href="cases.html">حالات الاختبار</a><span>الحالات كما هي في المستودع، مع البحث والتصفية.</span></li>
-  <li><a href="status.html">الحالة</a><span>ما اكتمل وما يُنفَّذ في 4–6 أكتوبر. <strong>{"لا توجد نتائج تقييم رسمية بعد." if not f["published_runs"] else "النتائج الرسمية المنشورة في صفحة النتائج."}</strong></span></li>
-  <li><a href="transparency.html">الشفافية والخصوصية</a><span>أداة مدعومة بالذكاء الاصطناعي، لا تجمع بياناتك.</span></li>
-</ul>
+<h2>ما هو مِعيار؟</h2>
+<p class="prose">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.
+ولا يولّد آية ولا حديثاً ولا حكماً.</p>
 </section>
 """
 
@@ -953,6 +925,7 @@ def status(f: dict) -> str:
             f"سجلات التشغيل الرسمية: {f['official_runs']}.")
     return f"""
 <h1>الحالة</h1>
+{status_card(f)}
 <div class="notice">
   <p>{runs} كل بند أدناه محسوب من ملفات المستودع عند توليد الصفحة.</p>
 </div>
@@ -1105,12 +1078,11 @@ def _with_subnav(name: str, html: str) -> str:
 
 def render() -> dict[str, str]:
     f = facts()
-    card = status_card(f)
     return {
         name: LAYOUT.format(title=title, body=_with_subnav(name, page_head(body.strip("\n"))), head_extra=head_extra,
                             nav=nav_html("cases.html" if name == "case.html" else name),
                             quran_version=f["quran_version"], repo=REPO, blob=BLOB,
-                            status_card=card if name == "status.html" else "", brand_mark=BRAND_MARK)
+                            brand_mark=BRAND_MARK)
         for name, (title, body, head_extra) in pages(f).items()
     }
 
