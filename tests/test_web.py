@@ -27,11 +27,39 @@ def test_page_is_arabic_rtl_mobile(page):
     assert 'href="assets/style.css"' in html
 
 
-@pytest.mark.parametrize("page", PAGES)
-def test_mode_bar_cached_on_live_disabled(page):
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+def test_mode_bar_cached_only_no_live_button(page):
+    """وضع العرض «نتائج محفوظة» وحده: لا زر «تشغيل حي» ولا عبارة «معطّل حالياً» في أي صفحة."""
     html = (WEB / page).read_text(encoding="utf-8")
     assert "نتائج محفوظة" in html and 'class="mode on"' in html
-    assert re.search(r'<button[^>]*aria-disabled="true"[^>]*disabled[^>]*>[^<]*تشغيل حي', html)
+    assert "تشغيل حي — معطّل" not in html and "معطّل حالياً" not in html
+    assert not re.search(r'<button[^>]*class="mode"', html)
+
+
+def test_transparency_states_live_mode_is_cli_only():
+    t = _text("transparency.html")
+    assert ("وضع التشغيل الحي موجود في المحرك عبر سطر الأوامر وغير متاح من الموقع؛ "
+            "الموقع يعرض نتائج محفوظة من تشغيلات رسمية.") in t
+
+
+def test_redteam_item_is_deferred_not_counted_and_cites_verified_cases():
+    """Red Teaming: «مؤجَّل خارج نطاق التسليم: لا وحدة تشغيل مستقلة»، لا يُحتسب مكتملاً، وأعداد الحالات العدائية محسوبة من testsets/."""
+    status = _text("status.html")
+    assert "مؤجَّل خارج نطاق التسليم: لا وحدة تشغيل مستقلة." in status
+    assert "الملف miyar/redteam.py غير موجود بعد" not in status
+    f = _load_builder().facts()
+    _, p1 = _load_builder().status_items(f)
+    item = next(i for i in p1 if i[2] == "miyar/redteam.py")
+    assert item[1] is False
+    assert f"{sum(1 for i in p1 if i[1])} من {len(p1)}" in status
+    # الأعداد من الملفات مباشرة (لا من المولّد)
+    rt = [c for name in ("official_v0", "extended_v1") for c in json.loads((ROOT / f"testsets/{name}.json").read_text(encoding="utf-8"))["cases"]
+          if c.get("red_team") is True]
+    in_ctx = sum(1 for c in rt if c.get("injected_context"))
+    off = json.loads((ROOT / "testsets/official_v0.json").read_text(encoding="utf-8"))["cases"]
+    assert not any(c.get("red_team") for c in off)
+    assert f"{len(rt)} حالات بصيغة حقن أوامر ({rt[0]['id']} إلى {rt[-1]['id']}: {len(rt) - in_ctx} في السؤال و{in_ctx} في نص مرفق مدسوس)" in status
+    assert "لم تدخل التشغيلات الرسمية (كلها على official_v0)" in status
 
 
 @pytest.mark.parametrize("page", PAGES)
