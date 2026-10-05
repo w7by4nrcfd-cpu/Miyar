@@ -69,6 +69,18 @@ test("إعادة العرض في المتصفح", { skip: !pw && !process.env.CI
         }
         return { overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, low, small };
       });
+      // الشريط داخل الشاشة فعلاً (لا isVisible وحده): تحت شريط التنقل وفوق أسفل الشاشة، ولا يغطي عنوان الخطوة
+      const bannerBox = () => page.evaluate(() => {
+        const b = document.getElementById("replay-banner").getBoundingClientRect();
+        const bar = document.querySelector(".topbar").getBoundingClientRect();
+        const h2 = document.querySelector(".replay-step h2")?.getBoundingClientRect();
+        return { top: b.top, bottom: b.bottom, height: b.height, barBottom: bar.bottom, vh: innerHeight, h2Top: h2?.top ?? null };
+      });
+      const assertBannerInView = async (where, heading = true) => {
+        const r = await bannerBox();
+        assert.ok(r.height > 0 && r.top >= r.barBottom - 1 && r.bottom <= r.vh, `${where}: الشريط خارج الشاشة أو تحت شريط التنقل ${JSON.stringify(r)}`);
+        if (heading && r.h2Top !== null) assert.ok(r.h2Top >= r.bottom - 1, `${where}: الشريط يغطي عنوان الخطوة ${JSON.stringify(r)}`);
+      };
       // نص الواجهة وحده: يُحذف كل محتوى منقول من السجل (data-saved) قبل الفحص
       const uiText = () => page.evaluate(() => {
         const c = document.getElementById("replay").cloneNode(true);
@@ -82,6 +94,7 @@ test("إعادة العرض في المتصفح", { skip: !pw && !process.env.CI
         await page.waitForSelector(".replay-step");
         assert.equal((await page.locator("#replay-banner").innerText()).trim(), BANNER);
         assert.ok(await page.locator("#replay-banner").isVisible());
+        await assertBannerInView("الخطوة 1");
         assert.equal(await page.locator(".replay-step").count(), 1);
         assert.match(await page.locator(".replay-step h2").innerText(), /^الخطوة 1 من 7: السؤال$/);
         assert.equal(await page.locator(".replay-progress").innerText(), "1 من 7");
@@ -102,8 +115,19 @@ test("إعادة العرض في المتصفح", { skip: !pw && !process.env.CI
         await page.waitForFunction(() => document.querySelector(".replay-progress")?.textContent === "2 من 7");
         assert.match(page.url(), /step=2/);
         assert.equal(await page.evaluate(() => document.activeElement?.id), "step-h-2");
-        await page.focus("#replay-prev");
-        await page.keyboard.press("Enter");
+        await assertBannerInView("بعد الانتقال إلى الخطوة 2");
+        for (let n = 3; n <= 6; n++) {  // كل خطوة لاحقة: الشريط داخل الشاشة ولا يغطي عنوانها
+          await page.focus("#replay-next");
+          await page.keyboard.press("Enter");
+          await page.waitForFunction((k) => document.querySelector(".replay-progress")?.textContent === `${k} من 7`, n);
+          await assertBannerInView(`بعد الانتقال إلى الخطوة ${n}`);
+        }
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await assertBannerInView("بعد التمرير إلى أسفل الصفحة", false);  // العنوان مرّ فوق الشاشة بالتمرير؛ الشريط وحده يُفحص
+        for (let i = 0; i < 5; i++) {
+          await page.focus("#replay-prev");
+          await page.keyboard.press("Enter");
+        }
         await page.waitForFunction(() => document.querySelector(".replay-progress")?.textContent === "1 من 7");
         assert.equal(await page.locator("#replay-prev").isDisabled(), true);
       });
@@ -118,6 +142,16 @@ test("إعادة العرض في المتصفح", { skip: !pw && !process.env.CI
         const l = await layout();
         assert.ok(l.overflow <= 0, `تمرير أفقي ${l.overflow}px`);
         assert.deepEqual(l.low, [], "تباين أقل من 4.5:1");
+      });
+
+      await t.test(`${width} ${scheme}: الخطوة 7: قرار البوابة يُنسب إلى المرشحة لا إلى المرجع`, async () => {
+        await page.goto(base + `replay.html?case=OFF-11&run=${B3}&step=7`, { waitUntil: "networkidle" });
+        await page.waitForSelector("#replay-gate");
+        assert.equal(await page.locator("#replay-gate").innerText(), "هذه الجولة هي المرجع في قرار البوابة. قرار البوابة على المرشحة rag-2: حجب.");
+        await page.goto(base + "replay.html?case=OFF-11&run=official-2026-10-04-rag-2&step=7", { waitUntil: "networkidle" });
+        await page.waitForSelector("#replay-gate");
+        assert.equal(await page.locator("#replay-gate").innerText(), "هذه الجولة هي المرشحة في قرار البوابة: حجب مقارنةً بالمرجع baseline-3.");
+        await assertBannerInView("الخطوة 7");
       });
 
       await t.test(`${width} ${scheme}: OFF-06 الخطوة 6: إحالة بلا فحوص محسومة`, async () => {

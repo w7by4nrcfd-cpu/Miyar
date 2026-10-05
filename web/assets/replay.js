@@ -1,6 +1,6 @@
 // صفحة إعادة العرض: تشغيل رسمي محفوظ خطوة بخطوة. لا نموذج ولا خادم: قراءة ملفات data/ المنشورة فقط.
 // كل محتوى منقول من السجل يُوسم data-saved (يُعرض كما هو)؛ وما عداه نصوص الواجهة.
-import { buildSteps, EXAMPLES, officialCases, parseState, REPLAY_LIMITS, runShort, SAVED_BADGE, stateQuery,
+import { buildSteps, EXAMPLES, gateSentence, officialCases, parseState, REPLAY_LIMITS, runShort, SAVED_BADGE, stateQuery,
   STEP_TITLES, UI_COPY } from "./replay-core.js";
 
 function el(tag, attrs = {}, ...children) {
@@ -109,10 +109,7 @@ function stepResult(s, { caseId }) {
     nodes.push(el("p", {}, `${UI_COPY.runScore}: ${sc} (محتسبة من ${s.runScore.nScored} من ${s.runScore.nCases} حالة)`));
   }
   if (s.gateRole) {
-    const role = s.gateRole === "candidate" ? UI_COPY.gateCandidate : UI_COPY.gateReference;
-    const other = s.gateRole === "candidate" ? s.reference : s.candidate;
-    nodes.push(el("p", {}, `${role} (مقابل `, ltr(runShort(other)), "): ",
-      badge(s.gateAllow ? "b-ok" : "b-bad", s.gateAllow ? "نشر" : "حجب")));
+    nodes.push(el("p", { id: "replay-gate" }, gateSentence(s)));
     if (s.gateReasons.length) {
       const ul = el("ul", { class: "gate-reasons" });
       for (const r of s.gateReasons) ul.append(saved("li", {}, r));
@@ -129,9 +126,28 @@ function stepResult(s, { caseId }) {
 const RENDER = [stepQuestion, stepAnswer, stepCitations, stepMatching, stepVerdict, stepChecks, stepResult];
 
 // ---------- الصفحة ----------
+// الشريط يلتصق تحت شريط التنقل العلوي؛ ارتفاع ذلك الشريط يتغير بين الجوال والحاسوب
+function syncBannerOffset() {
+  const bar = document.querySelector(".topbar");
+  if (bar) document.documentElement.style.setProperty("--replay-top", `${Math.ceil(bar.getBoundingClientRect().height)}px`);
+}
+
+// عند تغيير الخطوة: التركيز على عنوانها، ووضعه تحت الشريط الملتصق مباشرة (لا تحته) مهما كان طول الصفحة
+function showStepHeading(h2) {
+  if (!h2) return;
+  h2.focus({ preventScroll: true });
+  const banner = document.getElementById("replay-banner");
+  const top = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--replay-top")) || 0;
+  const clear = top + (banner ? banner.getBoundingClientRect().height : 0) + 16;
+  const card = h2.closest(".replay-step") ?? h2;  // بطاقة الخطوة كاملة (شارتها وعنوانها) تحت الشريط
+  scrollTo({ top: Math.max(0, scrollY + card.getBoundingClientRect().top - clear) });
+}
+
 async function main() {
   const root = document.getElementById("replay");
   if (!root) return;
+  syncBannerOffset();
+  addEventListener("resize", syncBannerOffset);
   let meta, results;
   try {
     [meta, results] = await Promise.all([getJson("data/testcases.json"), getJson("data/results.json")]);
@@ -223,7 +239,7 @@ async function main() {
     toggle.addEventListener("click", () => { state.all = !state.all; render(true); });
 
     root.replaceChildren(ex, pickers, body, el("p", {}, toggle), limits);
-    if (focus) root.querySelector(".replay-step h2")?.focus();
+    if (focus) showStepHeading(root.querySelector(".replay-step h2"));
   }
   render();
 }

@@ -74,3 +74,26 @@ test("نصوص الواجهة وحدها (لا محتوى السجل) لا تو�
     assert.doesNotMatch(t, /الآن|مباشر|\blive\b|حياً|حيّ|تشغيل حي|جارٍ التحليل|جارٍ التقييم/i, t);
   }
 });
+
+import { gateSentence, runShort } from "../../web/assets/replay-core.js";
+
+test("دور الجولة في البوابة: القرار يُنسب إلى المرشحة دائماً، لا إلى المرجع (من results.json)", () => {
+  const g = results.gate;
+  const decision = g.allow ? "نشر" : "حجب";
+  const step7 = (runId) => {
+    const c = cases.find((x) => records[x.id].runs.some((r) => r.run_id === runId));
+    return buildSteps(c, records[c.id].runs.find((r) => r.run_id === runId), results, meta)[6];
+  };
+  const ref = gateSentence(step7(g.reference_run_id));
+  assert.equal(ref, `هذه الجولة هي المرجع في قرار البوابة. قرار البوابة على المرشحة ${runShort(g.candidate_run_id)}: ${decision}.`);
+  const firstSentence = ref.split(".")[0];
+  assert.doesNotMatch(firstSentence, /حجب|نشر/, "قرار منسوب إلى المرجع");
+  assert.ok(ref.indexOf(decision) > ref.indexOf("المرشحة"));
+  const cand = gateSentence(step7(g.candidate_run_id));
+  assert.equal(cand, `هذه الجولة هي المرشحة في قرار البوابة: ${decision} مقارنةً بالمرجع ${runShort(g.reference_run_id)}.`);
+  const other = results.runs.find((r) => r.run_id !== g.reference_run_id && r.run_id !== g.candidate_run_id);
+  assert.equal(gateSentence(step7(other.run_id)), null);
+  // بيانات بديلة: الصياغة تتبع القيم لا نصاً ثابتاً
+  const alt = { gateRole: "reference", gateAllow: true, candidate: "x-rag-9", reference: "x-baseline-9" };
+  assert.equal(gateSentence(alt), "هذه الجولة هي المرجع في قرار البوابة. قرار البوابة على المرشحة rag-9: نشر.");
+});

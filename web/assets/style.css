@@ -435,12 +435,14 @@ main > h2, main section > h2 { scroll-margin-top: 96px; }
 #discovered > h2 { margin-top: var(--s4); }
 
 /* ---------- إعادة عرض تشغيل رسمي محفوظ: خطوة واحدة في كل مرة، وشريط ثابت أسفل الشاشة ---------- */
-.replay-banner { position: sticky; bottom: var(--s1); z-index: 10; margin: var(--s3) 0 0; padding: var(--s0) var(--s2); background: var(--rev-bg); color: var(--rev-fg); border: 1px solid var(--rev-bd); border-radius: var(--radius-sm); text-align: center; font-size: var(--fs-xs); line-height: 1.6; box-shadow: var(--shadow); }
+/* الشريط قبل محتوى إعادة العرض، ملتصق تحت شريط التنقل العلوي (ارتفاعه في --replay-top يضبطه replay.js) */
+.replay-banner { position: sticky; top: var(--replay-top, 0px); z-index: 15; margin: var(--s2) 0 0; padding: var(--s0) var(--s2); background: var(--rev-bg); color: var(--rev-fg); border: 1px solid var(--rev-bd); border-radius: var(--radius-sm); text-align: center; font-size: var(--fs-xs); line-height: 1.6; box-shadow: var(--shadow); max-width: none; }
 .replay-pickers { grid-template-columns: 1fr; }
 @media (min-width: 768px) { .replay-pickers { grid-template-columns: 1fr 1fr; } }
 .btn-example.on { background: var(--accent); color: var(--accent-ink); }
 .replay-step { margin-top: var(--s2); }
 .replay-step-meta { margin: 0 0 var(--s1); }
+.replay-step > h2 { scroll-margin-top: calc(var(--replay-top, 0px) + var(--s7)); }
 .replay-step > h2:focus { outline: none; }
 .replay-step > h2:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 .replay-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); margin-top: var(--s2); }

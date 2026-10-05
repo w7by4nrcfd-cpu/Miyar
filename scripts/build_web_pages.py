@@ -1281,12 +1281,12 @@ REPLAY_BANNER = "إعادة عرض لتشغيل رسمي محفوظ — ليس �
 REPLAY_PAGE = """
 <h1>كيف يحكم مِعيار؟ إعادة عرض خطوة بخطوة</h1>
 <p class="lead">سؤال واحد من تشغيل رسمي: من إجابة المساعد إلى حكم مِعيار وقرار البوابة، في سبع خطوات.</p>
+<p class="replay-banner" role="note" id="replay-banner"><strong>{banner}</strong></p>
 <div id="replay" aria-live="polite">
   <div class="notice empty"><strong>تُقرأ البيانات المحفوظة…</strong></div>
 </div>
 <noscript><div class="notice empty"><strong>تحتاج إعادة العرض إلى JavaScript.</strong>
 <span>السجلات نفسها في <a href="cases.html">صفحات الحالات</a>.</span></div></noscript>
-<p class="replay-banner" role="note" id="replay-banner"><strong>{banner}</strong></p>
 """
 
 # ---------- تحقق من نص (وضع ثانوي) ----------

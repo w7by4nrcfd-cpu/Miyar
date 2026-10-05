@@ -53,8 +53,6 @@ export const UI_COPY = {
   answerError: "تعذّر جواب المساعد في هذا التشغيل.",
   savedJudgement: "الحكم كما سُجّل في التشغيل الرسمي؛ وصحة الحكم نفسه لم تُقَس بعد.",
   runScore: "الدرجة الكلية لهذه الجولة",
-  gateCandidate: "هذه الجولة هي المرشحة في قرار البوابة",
-  gateReference: "هذه الجولة هي المرجع في قرار البوابة",
   gateNone: "هذه الجولة ليست طرفاً في قرار البوابة المنشور.",
   loadError: "تعذّر تحميل بيانات إعادة العرض",
   loadErrorNext: "تحقق من اتصالك ثم أعد تحميل الصفحة.",
@@ -127,6 +125,16 @@ export function buildSteps(caseMeta, run, results, meta) {
       gateRole: gateRole(gate, run.run_id), gateAllow: gate ? gate.allow : null, gateReasons: gate?.reasons ?? [],
       candidate: gate?.candidate_run_id ?? null, reference: gate?.reference_run_id ?? null },
   ];
+}
+
+/** جملة دور الجولة في البوابة من results.json؛ القرار يُنسب دائماً إلى المرشحة، لا إلى المرجع. */
+export function gateSentence(result) {
+  if (!result.gateRole) return null;
+  const decision = result.gateAllow ? "نشر" : "حجب";
+  if (result.gateRole === "reference") {
+    return `هذه الجولة هي المرجع في قرار البوابة. قرار البوابة على المرشحة ${runShort(result.candidate)}: ${decision}.`;
+  }
+  return `هذه الجولة هي المرشحة في قرار البوابة: ${decision} مقارنةً بالمرجع ${runShort(result.reference)}.`;
 }
 
 /** اسم مختصر للجولة للعرض (baseline-3 من official-2026-10-04-baseline-3). */
