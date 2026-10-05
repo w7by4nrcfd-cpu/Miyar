@@ -4,6 +4,7 @@
 """
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -279,3 +280,20 @@ def test_hints_for_unextracted_quotes():
 def test_page_explains_near_match_is_not_a_match():
     page = (WEB / "check.html").read_text(encoding="utf-8")
     assert "القريب ليس مطابقاً" in page and "ولا يصدر معه «مؤيَّد» أبداً" in page
+
+
+def test_check_examples_come_from_project_data_and_give_the_three_verdicts():
+    """أزرار الأمثلة: آية من نص Quranpedia، ونقل محرّف وحديث من مجموعة الاختبار كما هي؛ ولا يولّد مِعيار أي نص."""
+    import html as _html
+    from miyar.quran_match import QuranIndex
+    page = (WEB / "check.html").read_text(encoding="utf-8")
+    texts = [_html.unescape(t) for t in re.findall(r'class="btn ghost btn-example" data-text="([^"]*)"', page)]
+    assert len(texts) == 3
+    v = QuranIndex.load().verse(112, 1)
+    cases = {c["id"]: c for n in ("official_v0", "extended_v1")
+             for c in json.loads((ROOT / f"testsets/{n}.json").read_text(encoding="utf-8"))["cases"]}
+    assert v.text in texts[0]
+    assert re.search(r"«([^»]+)»", cases["EXT-033"]["prompt"]).group(1) in texts[1]
+    assert cases["EXT-032"]["prompt"].startswith(texts[2])
+    got = [[(i["kind"], i["status"]) for i in pc.check_text(t)] for t in texts]
+    assert got == [[("quran", "supported")], [("quran", "wrong_or_missing")], [("hadith", "needs_review")]]
