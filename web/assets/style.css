@@ -401,3 +401,23 @@ details.tech .tech-list { padding: var(--s2); }
   table#compare td + td { border-inline-start: 1px solid var(--line); }
   .card .notice { padding: 12px var(--s2); }
 }
+
+/* ---------- تحقق من نص: أمثلة فوق مربع نص كبير، ونتائج في بطاقات ---------- */
+.examples { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1); }
+.examples-label { color: var(--muted); font-size: var(--fs-small); flex-basis: 100%; }
+.btn-example { min-height: 44px; padding: 0 var(--s2); font: inherit; font-size: var(--fs-small); font-weight: 700; cursor: pointer; }
+@media (max-width: 479px) { .btn-example { flex: 1 1 100%; justify-content: center; } }
+.check-form textarea { min-height: 14rem; font-size: var(--fs-lead); }
+.check-card { box-shadow: var(--shadow); }
+#check-limits details.tech { margin: var(--s1) 0 0; background: transparent; }
+
+/* ---------- «عن المشروع»: الصفحات الأربع بطاقات ---------- */
+.about-list { display: grid; gap: var(--s2); border-top: 0; }
+@media (min-width: 768px) { .about-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); } }
+.about-list li { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: var(--s3); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+@media (min-width: 768px) { .about-list li { grid-template-columns: none; } }
+.about-list a { display: inline-flex; align-items: center; min-height: 44px; }
+
+/* ---------- صفحات المحتوى (المستويات، المصادر، الشفافية): تباعد مريح للعناوين ---------- */
+main > h2, main section > h2 { scroll-margin-top: 96px; }
+.subnav + * { margin-top: var(--s3); }

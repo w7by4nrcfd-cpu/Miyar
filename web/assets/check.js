@@ -195,6 +195,10 @@ form.addEventListener("submit", (ev) => {
   run(textarea.value, out, button);
 });
 document.getElementById("check-clear").addEventListener("click", () => { textarea.value = ""; out.replaceChildren(); textarea.focus(); });
+// أزرار الأمثلة: تملأ مربع النص بنص من بيانات المشروع (data-text) ثم تتحقق منه
+for (const ex of document.querySelectorAll(".btn-example")) {
+  ex.addEventListener("click", () => { textarea.value = ex.dataset.text; form.requestSubmit(); });
+}
 fetch("assets/check/hadith.json").then((r) => (r.ok ? r.json() : null)).then((h) => {
   if (h) document.getElementById("hadith-count").textContent = `المدخلات المكتملة (${h.entries.length}) فقط`;
 }).catch(() => {});

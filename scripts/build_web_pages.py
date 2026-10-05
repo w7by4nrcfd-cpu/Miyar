@@ -20,7 +20,7 @@ WEB = ROOT / "web"
 sys.path.insert(0, str(ROOT))
 
 from miyar.hadith_manual import entry_status, load_manual, manual_errors, MANUAL_FILE  # noqa: E402
-from miyar.quran_match import TOTAL_SURAS, TOTAL_VERSES  # noqa: E402
+from miyar.quran_match import QuranIndex, TOTAL_SURAS, TOTAL_VERSES  # noqa: E402
 from miyar.review import review_summary  # noqa: E402
 
 TESTSETS = [ROOT / "testsets/official_v0.json", ROOT / "testsets/extended_v1.json"]
@@ -1051,7 +1051,7 @@ def pages(f: dict) -> dict:
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
         "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
         "project.html": ("عن المشروع — مِعيار", project_page(f), ""),
-        "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]),
+        "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]).replace("{examples}", check_examples(f)),
                        '<script type="module" src="assets/check.js"></script>\n'),
     }
 
@@ -1102,25 +1102,32 @@ def render() -> dict[str, str]:
 
 
 # ---------- تحقق من نص (وضع ثانوي) ----------
+def check_examples(f: dict) -> str:
+    """أزرار أمثلة تملأ مربع النص بنصوص من بيانات المشروع فقط: آية من نص Quranpedia، ونقل محرّف وحديث من حالات الاختبار.
+    لا يولّد مِعيار أي نص هنا؛ المثال يُنسخ كما هو من مصدره."""
+    v = QuranIndex.load().verse(112, 1)
+    cases = {c["id"]: c for c in f["cases"]}
+    mis = re.search(r"«([^»]+)»", cases["EXT-033"]["prompt"]).group(1)           # نقل محرّف للآية من مجموعة الاختبار
+    had = re.match(r"(.*?»)", cases["EXT-032"]["prompt"]).group(1)               # حديث من مجموعة الاختبار كما هو
+    items = [
+        ("آية صحيحة (الإخلاص: 1)", f"قال تعالى: ﴿{v.text}﴾ ({v.sura_name}: {v.aya})", "مصدرها: نص Quranpedia"),
+        ("آية منقولة محرّفة (EXT-033)", f"قال تعالى: ﴿{mis}﴾ ({v.sura_name}: {v.aya})", "النقل من حالة الاختبار EXT-033"),
+        ("حديث يحتاج تحقق (EXT-032)", had, "النص من حالة الاختبار EXT-032"),
+    ]
+    return "\n".join(f'    <button type="button" class="btn ghost btn-example" data-text="{_attr(text)}" title="{_attr(note)}">{_esc(label)}</button>'
+                     for label, text, note in items)
 CHECK_DIR = WEB / "assets/check"
 CHECK_PAGE = """
 <h1>تحقق من نص <span class="tag-secondary">وضع ثانوي</span></h1>
 <p class="lead">الصق نصاً فيه آيات أو أحاديث، فيستخرجها مِعيار بقواعد ثابتة ويطابقها حرفياً مع البيانات المعتمدة، داخل متصفحك.
 لا يُرسل النص إلى أي خادم، ولا يُستدعى أي نموذج لغوي.</p>
-<div class="notice demo limits" role="note" id="check-limits">
-  <strong>حدود هذه الصفحة</strong>
-  <ul>
-    <li><strong>ليست تقييماً لمساعد:</strong> الوظيفة الأساسية لمِعيار اختبار المساعد كاملاً على مجموعة حالات (انظر <a href="results.html">النتائج</a>)؛ هذه الصفحة تفحص نصاً واحداً فقط.</li>
-    <li><strong>لا فتوى ولا حكم شرعي:</strong> تفحص نسبة النص إلى مصدره فقط، ولا تحكم على معنى ولا على مسألة.</li>
-    <li><strong>الآيات:</strong> مطابقة حرفية بعد توحيد التشكيل والهمزات مع نص Quranpedia (6236 آية). «مؤيَّد» فقط عند تطابق فعلي.</li>
-    <li><strong>الأحاديث محدودة جداً:</strong> تُطابَق مع <span id="hadith-count">المدخلات المكتملة</span> في الملف اليدوي وحدها؛ وكل حديث سواها «يحتاج تحقق»، وهذا لا يعني أنه ضعيف ولا صحيح.</li>
-    <li><strong>القريب ليس مطابقاً:</strong> إن اختلف حديث عن أحد المدخلات بحرف واحد في كلمة واحدة فقط، يعرض مِعيار أقرب مدخل للمقارنة وحدها («لم يُطابَق حرفياً»)، ولا يصدر معه «مؤيَّد» أبداً. وإن اختلف نص آية عن نص الموضع أُبرزت الكلمة المختلفة. والنص بين علامتي تنصيص بلا علامة نسبة يُلمَّح إليه إن قارب مدخلاً، ولا يُحكم عليه.</li>
-    <li><strong>الاستخراج بقواعد ثابتة:</strong> الآية بين ﴿ ﴾ أو { } أو بين علامتي تنصيص يليها موضع بين قوسين مثل (البقرة: 255) أو (2:255)؛ والحديث بين علامتي تنصيص قبله «قال رسول الله» أو ﷺ، أو بعده «رواه» أو «أخرجه». ما لم يُكتب بهذه الصورة لا يُفحص.</li>
-  </ul>
-</div>
 <form id="check-form" class="check-form" autocomplete="off">
+  <div class="examples" role="group" aria-label="أمثلة من بيانات المشروع">
+    <span class="examples-label">جرّب مثالاً من البيانات:</span>
+{examples}
+  </div>
   <label for="check-text">النص</label>
-  <textarea id="check-text" rows="8" dir="auto" maxlength="20000" placeholder="مثال: قال تعالى: ﴿قل هو الله أحد﴾ (الإخلاص: 1)"></textarea>
+  <textarea id="check-text" rows="10" dir="auto" maxlength="20000" placeholder="مثال: قال تعالى: ﴿قل هو الله أحد﴾ (الإخلاص: 1)"></textarea>
   <div class="check-actions">
     <button type="submit" class="btn" id="check-run">تحقق</button>
     <button type="button" class="btn ghost" id="check-clear">امسح</button>
@@ -1128,6 +1135,21 @@ CHECK_PAGE = """
   <p class="muted" id="check-size">عند أول تحقق يُحمَّل نص المصحف مرة واحدة (نحو نصف ميغابايت مضغوطاً)، ثم يحفظه المتصفح.</p>
 </form>
 <div id="check-results" aria-live="polite"></div>
+<div class="notice demo limits" role="note" id="check-limits">
+  <strong>حدود هذه الصفحة</strong>
+  <ul>
+    <li><strong>ليست تقييماً لمساعد:</strong> الوظيفة الأساسية لمِعيار اختبار المساعد كاملاً على مجموعة حالات (انظر <a href="results.html">النتائج</a>)؛ هذه الصفحة تفحص نصاً واحداً فقط.</li>
+    <li><strong>لا فتوى ولا حكم شرعي:</strong> تفحص نسبة النص إلى مصدره فقط، ولا تحكم على معنى ولا على مسألة.</li>
+    <li><strong>الآيات:</strong> مطابقة حرفية بعد توحيد التشكيل والهمزات مع نص Quranpedia (6236 آية). «مؤيَّد» فقط عند تطابق فعلي.</li>
+    <li><strong>الأحاديث محدودة جداً:</strong> تُطابَق مع <span id="hadith-count">المدخلات المكتملة</span> في الملف اليدوي وحدها؛ وكل حديث سواها «يحتاج تحقق»، وهذا لا يعني أنه ضعيف ولا صحيح.</li>
+  </ul>
+  <details class="tech"><summary>تفاصيل الاستخراج والمطابقة</summary>
+  <ul>
+    <li><strong>القريب ليس مطابقاً:</strong> إن اختلف حديث عن أحد المدخلات بحرف واحد في كلمة واحدة فقط، يعرض مِعيار أقرب مدخل للمقارنة وحدها («لم يُطابَق حرفياً»)، ولا يصدر معه «مؤيَّد» أبداً. وإن اختلف نص آية عن نص الموضع أُبرزت الكلمة المختلفة. والنص بين علامتي تنصيص بلا علامة نسبة يُلمَّح إليه إن قارب مدخلاً، ولا يُحكم عليه.</li>
+    <li><strong>الاستخراج بقواعد ثابتة:</strong> الآية بين ﴿ ﴾ أو { } أو بين علامتي تنصيص يليها موضع بين قوسين مثل (البقرة: 255) أو (2:255)؛ والحديث بين علامتي تنصيص قبله «قال رسول الله» أو ﷺ، أو بعده «رواه» أو «أخرجه». ما لم يُكتب بهذه الصورة لا يُفحص.</li>
+  </ul>
+  </details>
+</div>
 <noscript><div class="notice empty"><strong>تحتاج هذه الصفحة إلى JavaScript.</strong></div></noscript>
 <p class="muted">المصادر: نص القرآن من <a href="https://quranpedia.net" rel="noopener">Quranpedia.net</a> (النسخة {quran_version})، والأحاديث من الملف اليدوي
 <span class="ltr" lang="en">data/hadith/manual_hadith.json</span> (روابطه إلى الدرر السنية أو المكتبة الشاملة). المنطق نفسه في
