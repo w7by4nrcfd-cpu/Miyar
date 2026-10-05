@@ -657,13 +657,9 @@ HANDLING_LABELS = {
 }
 
 
-def specialist_sentence(f: dict) -> str:
-    """صياغة صادقة لحالة المراجعة الشرعية المتخصصة، محسوبة من testsets/."""
-    k = f["review"]["approved"]["specialist"]
-    if k == 0:
-        return "<strong>لم تُجرَ مراجعة شرعية متخصصة</strong>، ولا يوجد للمشروع مراجع شرعي متخصص حالياً."
-    return f"مراجعة شرعية متخصصة مسجّلة: {k} من {f['n']} حالة."
-
+# نص ثابت لحال المراجعة الشرعية (evaluation/review/SPECIALIST_REVIEW_2026-10-05.md)؛ لا يغيّر عدّادات الحالات المجمّدة
+SPECIALIST_REVIEW_NOTE = ("المراجعة الشرعية: مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو أخو صاحب المشروع؛ "
+                          "لا مراجعة من لجنة مستقلة.")
 
 def source_check_sentence(f: dict) -> str:
     return f"تحقق المصادر (ليس مراجعة شرعية): مقبول {f['review']['approved']['source_check']} من {f['n']}."
@@ -952,7 +948,7 @@ def status(f: dict) -> str:
 <div class="card">
 {progress("مدخلات الملف اليدوي للأحاديث المكتملة", f["manual_done"], f["manual_total"], "pg2")}
 {progress("حالات تحقق المصادر المقبولة (النوع المعتمد الآن)", s["approved"]["source_check"], n, "pg3")}
-<p>{specialist_sentence(f)} التحقق الحالي <strong>تحقق مصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
+<p>{SPECIALIST_REVIEW_NOTE} التحقق الحالي <strong>تحقق مصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
 وهو غير متخصص شرعياً، مقابل نص القرآن من Quranpedia.net والأحاديث من الدرر السنية أو المكتبة الشاملة (الملف اليدوي).
 <strong>وتحقق المصادر ليس مراجعة شرعية متخصصة.</strong> والمراجعة الشرعية المتخصصة اختيارية ومعلّقة حتى يتوفر مراجع.</p>
 </div>
@@ -1047,7 +1043,7 @@ def pages(f: dict) -> dict:
         "sources.html": ("المصادر والمنهجية — مِعيار", sources(f), ""),
         "cases.html": ("حالات الاختبار — مِعيار", cases_page(f), '<script type="module" src="assets/cases.js"></script>\n'),
         "status.html": ("الحالة — مِعيار", status(f), ""),
-        "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f).replace("{SPECIALIST}", specialist_sentence(f)), ""),
+        "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f).replace("{SPECIALIST}", SPECIALIST_REVIEW_NOTE), ""),
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
         "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
         "project.html": ("عن المشروع — مِعيار", project_page(f), ""),

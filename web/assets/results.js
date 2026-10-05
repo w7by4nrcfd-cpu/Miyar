@@ -1,6 +1,6 @@
 // صفحة النتائج: تقرأ data/results.json (ناتج scripts/publish_results.py من evaluation/official/) وتعرضه دون أي رقم مصطنع.
 import {
-  comparisonCaveat, comparisonRows, interpretResults, latestByAssistant, LEVELS, noSpecialistReview, officialRunsHeadline,
+  comparisonCaveat, comparisonRows, interpretResults, latestByAssistant, LEVELS, officialRunsHeadline,
 } from "./results-core.js";
 
 const RESULTS_URL = "data/results.json";
@@ -137,11 +137,10 @@ function renderOk(root, view) {
     comparisonTable(latest),
     caveat(latest, "compare-caveat"),
   ];
-  if (noSpecialistReview(view.runs)) {
-    nodes.push(el("p", { class: "notice demo", role: "note" },
-      el("strong", {}, "لم تُجرَ مراجعة شرعية متخصصة. "),
-      "تحقق المصادر (source_check) يجريه المشارك، وليس مراجعة شرعية متخصصة."));
-  }
+  nodes.push(el("p", { class: "notice demo", role: "note", id: "specialist-note" },
+    el("strong", {}, "المراجعة الشرعية: "),
+    "مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو أخو صاحب المشروع؛ لا مراجعة من لجنة مستقلة. "
+    + "وتحقق المصادر (source_check) يجريه المشارك، وليس مراجعة شرعية متخصصة."));
   nodes.push(
     el("h3", {}, "السجلات المعروضة في المقارنة"), recordsList(latest),
     stabilitySection(view.stability),

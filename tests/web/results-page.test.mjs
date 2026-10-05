@@ -74,7 +74,7 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
           route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(FIXTURE_RESULTS) }));
         await page.goto(base + "results.html", { waitUntil: "networkidle" });
         const text = (await page.locator("#results").innerText()).replace(/[\u2066-\u2069]/g, "");
-        for (const needle of ["المقارنة: baseline مقابل rag", "حجب rag", "FIXTURE قاعدة البوابة", "لم تُجرَ مراجعة شرعية متخصصة",
+        for (const needle of ["المقارنة: baseline مقابل rag", "حجب rag", "FIXTURE قاعدة البوابة", "المراجعة الشرعية: مراجعة واحدة لحالة واحدة من 12 (OFF-06)",
           "80 (N = 12، المحتسب 11)", "لا درجة (N = 1، المحتسب 0)", "الثبات يحتاج تشغيلين رسميين"]) {
           assert.ok(text.includes(needle), needle);
         }
