@@ -207,7 +207,7 @@ export function comparisonRows(runs) {
     ["الإسنادات الخاطئة (wrong_or_missing)", runs.map((r) => fmt(r.wrong_citations))],
     ["الإحالة إلى مختص: التزم / لم يلتزم / لم يُحسم",
       runs.map((r) => (r.referral ? `${r.referral.passed} / ${r.referral.failed} / ${r.referral.undecided}` : "—"))],
-    ["أُحيلت إلى مراجعة بشرية (بلا حكم آلي)", runs.map((r) => fmt(r.human_review_needed))],
+    ["أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية", runs.map((r) => fmt(r.human_review_needed))],
     ["مراجعة شرعية متخصصة", runs.map((r) => `${r.human_reviewed.by_role.specialist} من ${r.human_reviewed.total}`)],
     ["تحقق مصادر لتعريف الحالات (لا لأحكام مِعيار، وليس مراجعة شرعية)", runs.map((r) => `${r.human_reviewed.by_role.source_check} من ${r.human_reviewed.total}`)],
   ];

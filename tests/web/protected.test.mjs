@@ -90,6 +90,9 @@ test("الأدلة المحمية والميزانيات في المتصفح", {
           ...latest.map((r) => `${r.overall_score} (N = ${r.n_cases}، المحتسب ${r.n_scored})`),
         ];
         for (const s of must) assert.ok(visible.includes(clean(s)), `غير ظاهر: ${s}`);
+        // تسمية الإحالة في جدول المقارنة متسقة: «لم تدخل في الدرجة الآلية»، ولا «بلا حكم آلي» في واجهة النتائج
+        assert.ok((await page.locator("#compare").innerText()).includes("أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية"));
+        assert.ok(!all.includes("بلا حكم آلي"), "عبارة «بلا حكم آلي» في واجهة النتائج");
         // مطوية لكنها في DOM: القاعدة وشرطها غير المُقاس
         for (const s of [results.gate.rule, gateRuleNote(results.gate.rule)]) assert.ok(all.includes(clean(s)), `مفقود: ${s}`);
         assert.ok(!visible.includes(clean(results.gate.rule)), "القاعدة يجب أن تكون مطوية");
