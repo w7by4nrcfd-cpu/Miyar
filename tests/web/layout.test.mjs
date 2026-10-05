@@ -9,7 +9,8 @@ import { join, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const WEB = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "web");
-const PAGES = ["index.html", "levels.html", "sources.html", "cases.html", "status.html", "transparency.html", "results.html"];
+const PAGES = ["index.html", "levels.html", "sources.html", "cases.html", "status.html", "transparency.html", "results.html", "project.html"];
+const NAV_PAGES = ["check.html", "results.html", "cases.html", "project.html"]; // عناصر القائمة الأربعة
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".svg": "image/svg+xml" };
 
 async function loadPlaywright() {
@@ -95,7 +96,7 @@ test("تخطيط الصفحات في المتصفح", { skip: !pw && !required ?
             const h = await page.evaluate(() => document.activeElement.getAttribute("href"));
             if (h) reached.add(h);
           }
-          for (const q of PAGES) assert.ok(reached.has(q), `رابط ${q} لا يُبلغ بلوحة المفاتيح`);
+          for (const q of NAV_PAGES) assert.ok(reached.has(q), `رابط ${q} لا يُبلغ بلوحة المفاتيح`);
         });
       }
       assert.deepEqual(errors, [], "أخطاء JavaScript");

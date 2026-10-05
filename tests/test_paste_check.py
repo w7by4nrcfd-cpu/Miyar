@@ -111,7 +111,7 @@ def test_page_states_its_limits_and_is_secondary():
                    "«يحتاج تحقق»", "لا يُرسل النص إلى أي خادم", "Quranpedia.net"):
         assert needle in page, needle
     assert 'src="assets/check.js"' in page
-    assert ("check.html", "تحقق من نص") == b.NAV[0]  # أول القائمة (بقرار صاحب المشروع)، والصفحة نفسها تبقى معنونة «وضع ثانوي»
+    assert ("check.html", "جرّب") == b.NAV[0]  # أول القائمة (بقرار صاحب المشروع)، والصفحة نفسها تبقى معنونة «وضع ثانوي»
 
 
 def test_browser_code_has_no_inner_html_or_external_fetch():
@@ -121,19 +121,25 @@ def test_browser_code_has_no_inner_html_or_external_fetch():
         assert "http://" not in src and "https://" not in src
 
 
-def test_check_link_is_first_in_nav_on_every_page_and_home_has_try_button():
+def test_check_link_is_first_in_nav_on_every_page_and_home_has_two_buttons():
     pages = sorted(WEB.glob("*.html"))
-    assert len(pages) >= 9
+    assert len(pages) >= 10
+    expected = [h for h, _ in b.NAV]
+    assert expected[0] == "check.html" and len(expected) == 4
     for page in pages:
         html = page.read_text(encoding="utf-8")
         nav = html[html.index('<nav class="main"'):html.index("</nav>")]
-        assert nav.index('href="check.html"') < nav.index('href="index.html"'), page.name
         assert nav.count("<li>") == len(b.NAV), page.name
+        positions = [nav.index(f'href="{h}"') for h in expected]
+        assert positions == sorted(positions), page.name
     home = (WEB / "index.html").read_text(encoding="utf-8")
-    assert '<a class="btn btn-try" href="check.html">جرّب مِعيار بنفسك</a>' in home
     hero = home[home.index('<header class="hero">'):home.index("</header>")]
-    assert hero.index("btn-try") < hero.index("<h1>"), "الزر قبل عنوان الصفحة في أعلاها"
-    assert "وضع ثانوي" in home and "ليس تقييماً لمساعد" in home  # الصدق عند باب الدخول نفسه
+    # زران فقط في أول شاشة: «جرّب التحقق» و«شاهد النتائج»، بلا ميزة جديدة
+    assert hero.count('class="btn') == 2
+    assert '<a class="btn btn-try" href="check.html">جرّب التحقق</a>' in hero
+    assert '<a class="btn btn-try ghost" href="results.html">شاهد النتائج</a>' in hero
+    assert hero.count('class="lead hero-line"') == 2, "سطران يقولان ما هو مِعيار وما يمكن فعله الآن"
+    assert "وضع ثانوي" in hero and "ليس تقييماً لمساعد" in hero  # الصدق عند باب الدخول نفسه
     check = (WEB / "check.html").read_text(encoding="utf-8")
     assert "وضع ثانوي" in check and "ليست تقييماً لمساعد" in check  # وسم الصفحة وحدودها باقيان
 
