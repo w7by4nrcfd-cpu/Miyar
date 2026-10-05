@@ -27,7 +27,7 @@ def test_page_is_arabic_rtl_mobile(page):
     assert 'href="assets/style.css"' in html
 
 
-@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html", "replay.html"])
 def test_status_card_only_on_status_page_and_no_live_button(page):
     """البطاقة الجانبية (وضع العرض «نتائج محفوظة» والأساس ونواة التقييم مع الشريطين) في صفحة الحالة وحدها؛
     ولا زر «تشغيل حي» ولا عبارة «معطّل حالياً» في أي صفحة."""
@@ -116,7 +116,7 @@ def test_old_about_page_removed_and_nav_has_four_items():
     assert not (WEB / "about.html").exists() and (WEB / "project.html").is_file()
     nav_hrefs = ["check.html", "results.html", "cases.html", "project.html"]
     about = {"levels.html", "sources.html", "transparency.html", "status.html", "project.html"}
-    for page in [*PAGES, "case.html", "check.html"]:
+    for page in [*PAGES, "case.html", "check.html", "replay.html"]:
         html = _page(page)
         assert "about.html" not in html
         nav = html[html.index('<nav class="main"'):html.index("</nav>")]
@@ -405,7 +405,7 @@ def test_cases_list_review_line_and_badges_from_data():
     assert html.count("راجعها صاحب المشروع (تحقق مصادر)") == src
 
 
-@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html", "replay.html"])
 def test_footer_states_saved_results_on_every_page(page):
     foot = _page(page)
     foot = foot[foot.index('<footer class="site">'):]
@@ -438,7 +438,7 @@ def test_review_wording_relative_not_brother_on_site_and_snapshot_explained():
     assert "لم تُجرَ مراجعة شرعية متخصصة." in case_js  # لبقية الحالات
 
 
-@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html", "replay.html"])
 def test_page_identity_metadata_inline_and_static(page):
     """وصف وعنوان لكل صفحة، وtheme-color، وأيقونتان مضمّنتان (data:)، وOpen Graph ثابت بلا صور خارجية."""
     h = _page(page)
@@ -452,11 +452,11 @@ def test_page_identity_metadata_inline_and_static(page):
 
 
 def test_page_descriptions_are_distinct():
-    descs = {p: re.search(r'<meta name="description" content="([^"]+)">', _page(p)).group(1) for p in [*PAGES, "case.html", "check.html"]}
+    descs = {p: re.search(r'<meta name="description" content="([^"]+)">', _page(p)).group(1) for p in [*PAGES, "case.html", "check.html", "replay.html"]}
     assert len(set(descs.values())) == len(descs)
 
 
-@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html", "replay.html"])
 def test_footer_one_line_with_repo_and_license(page):
     foot = _page(page)
     foot = foot[foot.index('<footer class="site">'):foot.index("</footer>")]
@@ -514,3 +514,12 @@ def test_discovered_neutral_wording_for_single_letter_rulings():
     if "في سجلي OFF-03" in t:
         assert ("في سجلي OFF-03 صُنّف الفرق wrong_or_missing / altered_text؛ والفرق المرصود حرف واحد (س/ص). "
                 "لم يُراجع هذا الحكم بشريًا، لذلك لا يُستدل منه وحده على صحة الحكم أو خطئه.") in t
+
+
+def test_replay_banner_same_in_page_and_js():
+    """شريط إعادة العرض نصه واحد في الصفحة المولّدة وفي replay-core.js، ولا يوحي بتشغيل حي."""
+    b = _load_builder()
+    js = (WEB / "assets/replay-core.js").read_text(encoding="utf-8")
+    m = re.search(r'export const BANNER = "([^"]+)"', js)
+    assert m and m.group(1) == b.REPLAY_BANNER == "إعادة عرض لتشغيل رسمي محفوظ — ليس تشغيلاً حياً"
+    assert b.REPLAY_BANNER in _page("replay.html")

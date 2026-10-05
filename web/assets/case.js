@@ -137,6 +137,8 @@ function runCard(run, c, meta) {
       el("dt", {}, "سبب الحكم"), el("dd", { dir: "auto" }, j.rationale || "—"),
       el("dt", {}, "نموذج الحَكَم"), el("dd", {}, ltr(j.judge_model || "—"))));
   }
+  card.append(el("p", { class: "more" }, el("a",
+    { href: `replay.html?case=${encodeURIComponent(c.id)}&run=${encodeURIComponent(run.run_id)}&step=1` }, "أعد عرض هذه الإجابة خطوة بخطوة")));
   return card;
 }
 
