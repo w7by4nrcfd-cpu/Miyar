@@ -142,7 +142,6 @@ def status_card(f: dict) -> str:
   <div class="modebar" role="group" aria-label="وضع العرض">
     <span class="label">وضع العرض:</span>
     <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
-    <button class="mode" type="button" aria-disabled="true" disabled title="التشغيل الحي غير متاح حالياً">○ تشغيل حي — معطّل حالياً</button>
   </div>
   <p class="modenote">{demo_note(f)}</p>
   <div class="sc-progress">
@@ -260,6 +259,13 @@ def judgement_categories() -> list[tuple[str, str]]:
     return rows
 
 
+def red_team_facts(sets: list) -> dict:
+    """حالات الصيغة العدائية/حقن الأوامر الموسومة `red_team: true` في testsets/، وهل هي ضمن الحالات الرسمية الاثنتي عشرة."""
+    rt = [c for s in sets for c in s["cases"] if c.get("red_team") is True]
+    return {"ids": [c["id"] for c in rt], "n": len(rt), "in_context": sum(1 for c in rt if c.get("injected_context")),
+            "in_official": sum(1 for c in sets[0]["cases"] if c.get("red_team") is True)}
+
+
 def facts() -> dict:
     """كل رقم وكل حالة تظهر في الموقع، محسوبة من ملفات المستودع."""
     sets = [json.loads(p.read_text(encoding="utf-8")) for p in TESTSETS]
@@ -280,6 +286,7 @@ def facts() -> dict:
         "manual_total": len(manual),
         "manual_done": sum(entry_status(e) == "complete" for e in manual),
         "manual_valid": MANUAL_FILE.exists() and not manual_errors(manual_doc),
+        "red_team": red_team_facts(sets),
         "official_runs": len(runs),
         "published_runs": len(results.get("runs", [])),
         # لقطة المراجعة البشرية في آخر تشغيل رسمي منشور (من results.json، لا من الحالات كلها)
@@ -851,6 +858,22 @@ def _rounds(n: int) -> str:
     return {1: "جولة واحدة", 2: "جولتان"}.get(n, f"{n} جولات" if n <= 10 else f"{n} جولة")
 
 
+def redteam_item(f: dict) -> tuple:
+    """Red Teaming: لا وحدة تشغيل مستقلة (miyar/redteam.py)، فلا يُحتسب مكتملاً. «مؤجَّل خارج نطاق التسليم»؛ والحالات العدائية
+    الموجودة فعلاً في testsets/ تُذكر بأعدادها المحسوبة منها، وتُقاس بالمشغّل والحَكَم كباقي الحالات عند اختيارها."""
+    if f["state"]["redteam"] == "built":
+        return ("وحدة Red Teaming", True, "miyar/redteam.py")
+    rt = f["red_team"]
+    text = "مؤجَّل خارج نطاق التسليم: لا وحدة تشغيل مستقلة."
+    if rt["n"]:
+        in_prompt = rt["n"] - rt["in_context"]
+        official = ("لم تدخل التشغيلات الرسمية (كلها على official_v0)" if rt["in_official"] == 0
+                    else f"منها {rt['in_official']} في official_v0")
+        text += (f" في مجموعة الاختبار الموسّعة {rt['n']} حالات بصيغة حقن أوامر ({rt['ids'][0]} إلى {rt['ids'][-1]}: "
+                 f"{in_prompt} في السؤال و{rt['in_context']} في نص مرفق مدسوس) تُقاس بالمشغّل والحَكَم كباقي الحالات؛ {official}.")
+    return ("وحدة Red Teaming", False, "miyar/redteam.py", False, {"badge": "مؤجَّل", "evidence": text})
+
+
 def accuracy_item(f: dict) -> tuple:
     """«تشغيل رسمي مسجّل وقياس الدقة»: الدليل المكتوب (evaluation/official/) لا يشمل قياس اتفاق الحَكَم مع الوسوم البشرية،
     فلا يُحتسب مكتملاً: «جاهز جزئياً» بصياغة تذكر ما سُجّل وما لم يُنفَّذ. وقبل أي تشغيل رسمي: «لم يُنفَّذ بعد»."""
@@ -892,7 +915,7 @@ def status_items(f: dict) -> tuple[list, list]:
         ("وحدة حساب الدرجة والمقارنة وقرار البوابة (scoring)", st["scoring"] == "built", "miyar/scoring.py"),
         ("لوحة النتائج والمقارنة (تشغيلات منشورة)", f["published_runs"] > 0, "web/data/results.json"),
         accuracy_item(f),
-        ("وحدة Red Teaming", st["redteam"] == "built", "miyar/redteam.py"),
+        redteam_item(f),
     ]
     return phase0, phase1
 
@@ -901,8 +924,11 @@ def checklist(items) -> str:
     out = []
     for text, done, evidence, *rest in items:
         partial = bool(rest and rest[0]) and not done
-        b = badge("ok", "اكتمل") if done else badge("rev", "جاهز جزئياً") if partial else badge("todo", "لم يُنفَّذ بعد")
-        ev = (f"الدليل: {link(evidence)}" if (ROOT / evidence).exists()
+        custom = rest[1] if len(rest) > 1 else None  # صياغة مخصّصة للشارة والدليل (مثل «مؤجَّل»)
+        b = (badge("ok", "اكتمل") if done else badge("todo", custom["badge"]) if custom else
+             badge("rev", "جاهز جزئياً") if partial else badge("todo", "لم يُنفَّذ بعد"))
+        ev = (_esc(custom["evidence"]) if custom else
+              f"الدليل: {link(evidence)}" if (ROOT / evidence).exists()
               else f'الملف <span class="mono">{_esc(evidence)}</span> غير موجود بعد')
         out.append(f'  <li>{b}<span class="what">{text}</span><span class="evidence">{ev}</span></li>')
     return '<ul class="checklist">\n' + "\n".join(out) + "\n</ul>"
@@ -985,6 +1011,7 @@ def transparency(f: dict) -> str:
   </tbody>
 </table></div>
 <p>هذا الموقع ثابت ولا يستدعي أي نموذج لغوي. ومطابقة الآيات برمجية حرفية دون أي نموذج لغوي.</p>
+<p>وضع التشغيل الحي موجود في المحرك عبر سطر الأوامر وغير متاح من الموقع؛ الموقع يعرض نتائج محفوظة من تشغيلات رسمية.</p>
 
 <h2>الخصوصية</h2>
 <ul class="plain">
