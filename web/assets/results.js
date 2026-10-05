@@ -1,6 +1,6 @@
 // صفحة النتائج: تقرأ data/results.json (ناتج scripts/publish_results.py من evaluation/official/) وتعرضه دون أي رقم مصطنع.
 import {
-  comparisonCaveat, comparisonRows, interpretResults, latestByAssistant, LEVELS, noSpecialistReview,
+  comparisonCaveat, comparisonRows, interpretResults, latestByAssistant, LEVELS, noSpecialistReview, officialRunsHeadline,
 } from "./results-core.js";
 
 const RESULTS_URL = "data/results.json";
@@ -125,9 +125,9 @@ function singleRunNotes(runs, stability) {
 function renderOk(root, view) {
   const latest = latestByAssistant(view.runs);
   const nodes = [
-    el("div", { class: "notice", role: "status" },
-      el("strong", {}, `نتائج ${view.runs.length} تشغيل رسمي مسجّل في evaluation/official/`),
-      el("span", {}, " كل رقم من سجله المذكور، ومعه عدد الحالات N. الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
+    el("div", { class: "notice", role: "status", id: "results-notice" },
+      el("strong", {}, officialRunsHeadline(view.runs.length), " ", ltr("evaluation/official/"), "."),
+      el("span", {}, " كل رقم من سجله المذكور ومعه عدد الحالات N، ويحسبه سكربت النشر من أحكام السجلات. الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
     el("h2", { id: "compare-h" }, "المقارنة: baseline مقابل rag"),
     el("p", {}, "rag هو نموذج baseline نفسه مع بحث في المصادر المعتمدة فقط (آيات Quranpedia ومدخلات الملف اليدوي المكتملة)، "
       + "ومِعيار لا يستعمل محرك حكمه داخل أي مساعد. الحالة المحالة إلى مراجعة بشرية أو المتعذّرة لا تُحتسب في الدرجة."),

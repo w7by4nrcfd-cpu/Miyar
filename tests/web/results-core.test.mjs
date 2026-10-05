@@ -6,7 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { interpretResults, validateResults, reviewedRatio, reviewSummaryText } from "../../web/assets/results-core.js";
+import { interpretResults, validateResults, reviewedRatio, reviewSummaryText, officialRunsHeadline } from "../../web/assets/results-core.js";
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), "utf8");
 const ok = (text) => ({ status: 200, ok: true, text });
@@ -201,4 +201,13 @@ test("تنبيه المقارنة يذكر ميلها لصالح rag وN من ا
   assert.match(text, /\(N = 12\)/);
   const mixed = stripIsolates(comparisonCaveat([FX_BASE, { ...FX_RAG, n_cases: 51 }]));
   assert.match(mixed, /N = 12 وN = 51/);
+});
+
+test("عنوان بطاقة النتائج بحسب عدد الجولات (جولة / جولتان / جولات / جولة)", () => {
+  assert.equal(officialRunsHeadline(1), "نتائج جولة رسمية واحدة مسجّلة في");
+  assert.equal(officialRunsHeadline(2), "نتائج جولتين رسميتين مسجّلتين في");
+  assert.equal(officialRunsHeadline(3), "نتائج 3 جولات رسمية مسجّلة في");
+  assert.equal(officialRunsHeadline(4), "نتائج 4 جولات رسمية مسجّلة في");
+  assert.equal(officialRunsHeadline(10), "نتائج 10 جولات رسمية مسجّلة في");
+  assert.equal(officialRunsHeadline(11), "نتائج 11 جولة رسمية مسجّلة في");
 });

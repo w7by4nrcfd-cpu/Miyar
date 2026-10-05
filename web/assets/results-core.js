@@ -165,6 +165,14 @@ export function interpretResults(response) {
 }
 
 // ---------- المقارنة (baseline مقابل rag) ----------
+// عنوان بطاقة النتائج الموحّدة: «جولة واحدة» و«جولتين» و«3–10 جولات» و«11 جولة» بالمطابقة العربية في العدد والصفة
+export function officialRunsHeadline(n) {
+  if (n === 1) return "نتائج جولة رسمية واحدة مسجّلة في";
+  if (n === 2) return "نتائج جولتين رسميتين مسجّلتين في";
+  if (n >= 3 && n <= 10) return `نتائج ${n} جولات رسمية مسجّلة في`;
+  return `نتائج ${n} جولة رسمية مسجّلة في`;
+}
+
 export const ASSISTANT_ORDER = ["baseline", "rag"];
 
 /** آخر تشغيل لكل مساعد (بوقت التشغيل)، baseline ثم rag ثم غيرهما. لا يُختار «أفضل» تشغيل. */

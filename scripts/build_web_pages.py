@@ -1006,17 +1006,14 @@ RESULTS_EMPTY_NOTE = """<div class="notice demo" role="note">
   مسجّل في <span class="ltr" lang="en">evaluation/official/</span> مع عدد الحالات (N)، يحسبه سكربت النشر من سجلاته.</p>
 </div>"""
 
-RESULTS_PUBLISHED_NOTE = """<div class="notice" role="note">
-  <p><strong>نتائج من تشغيلات رسمية مسجّلة في <span class="ltr" lang="en">evaluation/official/</span>.</strong>
-  الأرقام يحسبها سكربت النشر من أحكام السجلات، ولا يُعرض رقم بلا عدد حالاته (N). الحكم الآلي مساعد للمراجعة لا بديل عنها.</p>
-</div>"""
+# عند وجود نتائج منشورة تُعرض بطاقة واحدة يصنعها results.js بعدد الجولات (جولة/جولتان/جولات)؛ فلا بطاقة ثابتة هنا
+RESULTS_PUBLISHED_NOTE = ""
 
 
 def results_page(f: dict) -> str:
     note = RESULTS_PUBLISHED_NOTE if f["published_runs"] else RESULTS_EMPTY_NOTE
     return f"""
-<h1>النتائج</h1>
-{note}
+<h1>النتائج</h1>{note}
 <div id="results" aria-live="polite">
   <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
 </div>
