@@ -312,7 +312,7 @@ def test_status_page_is_honest():
         assert "لا توجد نتائج تقييم رسمية بعد" not in t
     else:
         assert "لا توجد نتائج تقييم رسمية بعد" in t
-    assert "لم تُجرَ مراجعة شرعية متخصصة" in t and "تحقق مصادر" in t and "Quranpedia" in t
+    assert SPECIALIST_NOTE in t and "تحقق مصادر" in t and "Quranpedia" in t
     assert "قبل أيام التحدي" in t and "أيام التحدي: 4–6 أكتوبر 2026" in t
     assert "<progress" in _page("status.html")
 
@@ -342,13 +342,18 @@ def test_results_core_js():
     assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-2000:]
 
 
+SPECIALIST_NOTE = ("المراجعة الشرعية: مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو أخو صاحب المشروع؛ "
+                   "لا مراجعة من لجنة مستقلة.")
+
+
 @pytest.mark.parametrize("page", ["status.html", "transparency.html"])
-def test_no_specialist_review_is_stated_honestly(page):
-    """ما دامت لا توجد مراجعة specialist مسجّلة: تقول الصفحة صراحة إنها لم تُجرَ، ولا تعرض «معتمدة شرعياً» شارةً لأي حالة."""
-    f = _load_builder().facts()
-    if f["review"]["approved"]["specialist"] == 0:
-        assert "لم تُجرَ مراجعة شرعية متخصصة" in _text(page)
-        assert "معتمدة شرعياً</span>" not in _page(page)
+def test_specialist_review_stated_honestly(page):
+    """النص الثابت لحال المراجعة الشرعية (evaluation/review/SPECIALIST_REVIEW_2026-10-05.md)، ولا شارة «معتمدة شرعياً» لأي حالة
+    (ملفات الحالات المجمّدة لم تتغير)."""
+    assert SPECIALIST_NOTE in _text(page)
+    assert "لم تُجرَ مراجعة شرعية متخصصة" not in _page(page)
+    assert "معتمدة شرعياً</span>" not in _page(page)
+    assert (ROOT / "evaluation/review/SPECIALIST_REVIEW_2026-10-05.md").is_file()
 
 
 def test_comparison_caveat_on_methodology_and_results():
@@ -366,15 +371,17 @@ def test_comparison_caveat_on_methodology_and_results():
 
 def test_noise_removed_and_specialist_phrase_only_where_kept():
     """قرارات التنظيف: لا فقرة «ست مراحل» ولا مفتاح الرسم في الرئيسية، ولا سطر «مجالات الحزمة التسعة» في الحالة،
-    وعبارة «لم تُجرَ مراجعة شرعية متخصصة» في الشفافية والحالة (والنتائج من results.js) فقط."""
+    ونص المراجعة الشرعية الثابت في الشفافية والحالة (والنتائج من results.js) فقط."""
     home = _page("index.html")
     assert "ست مراحل" not in home and 'class="legend"' not in home and "لم يُبنَ بعد" not in home
     status = _text("status.html")
     assert "مجالات الحزمة التسعة" not in status and "وحدة Red Teaming" in status
     assert "كل بند أدناه محسوب من ملفات المستودع عند توليد الصفحة." in status
     for page in ("levels.html", "sources.html", "cases.html", "index.html", "project.html", "check.html"):
-        assert "لم تُجرَ مراجعة شرعية متخصصة" not in _page(page), page
-    assert "لم تُجرَ مراجعة شرعية متخصصة" in (WEB / "assets/results.js").read_text(encoding="utf-8")
+        assert "لم تُجرَ مراجعة شرعية متخصصة" not in _page(page) and "أخو صاحب المشروع" not in _page(page), page
+    js = (WEB / "assets/results.js").read_text(encoding="utf-8")
+    assert "لم تُجرَ مراجعة شرعية متخصصة" not in js
+    assert "مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو أخو صاحب المشروع؛ لا مراجعة من لجنة مستقلة." in js
 
 
 def test_cases_list_review_line_and_badges_from_data():
@@ -399,3 +406,10 @@ def test_case_page_review_badge_only_for_reviewed():
     js = (WEB / "assets/case.js").read_text(encoding="utf-8")
     assert "لم يُتحقق منها بعد" not in js and "لم تُراجَع بعد" not in js
     assert "راجعها صاحب المشروع (تحقق مصادر)" in js
+
+
+def test_specialist_review_file_quotes_reviewer_with_header():
+    doc = (ROOT / "evaluation/review/SPECIALIST_REVIEW_2026-10-05.md").read_text(encoding="utf-8")
+    for needle in ("خريج شريعة (بحسب قوله)", "أخو صاحب المشروع", "الاسم:** غير مذكور", "5 أكتوبر 2026", "OFF-06 وحدها",
+                   "رواه مسلم (2699)", "«لا يصح، وليس في الصحيحين»", "فانا خريج شريعة"):
+        assert needle in doc, needle
