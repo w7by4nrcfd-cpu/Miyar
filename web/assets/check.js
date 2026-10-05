@@ -157,12 +157,14 @@ function summary(results) {
 
 async function run(text, out, button) {
   button.disabled = true;
-  out.replaceChildren(notice("empty", "جارٍ التحميل والمطابقة…"));
+  // أول تحقق يحمّل نص القرآن (مرة واحدة)؛ وما بعده مطابقة فقط
+  out.replaceChildren(notice("empty", loaded ? "جارٍ المطابقة…" : "جارٍ تحميل بيانات القرآن…"));
   let data;
   try {
     data = await loadData();
   } catch {
-    out.replaceChildren(notice("error", "تعذّر تحميل البيانات", "لا يصدر أي حكم دون البيانات. أعد المحاولة."));
+    out.replaceChildren(notice("error", "تعذّر تحميل بيانات القرآن والأحاديث",
+      "لا يصدر أي حكم دون البيانات. تحقق من اتصالك ثم اضغط «تحقق» مرة أخرى، أو أعد تحميل الصفحة."));
     button.disabled = false;
     return;
   }
@@ -199,6 +201,3 @@ document.getElementById("check-clear").addEventListener("click", () => { textare
 for (const ex of document.querySelectorAll(".btn-example")) {
   ex.addEventListener("click", () => { textarea.value = ex.dataset.text; form.requestSubmit(); });
 }
-fetch("assets/check/hadith.json").then((r) => (r.ok ? r.json() : null)).then((h) => {
-  if (h) document.getElementById("hadith-count").textContent = `المدخلات المكتملة (${h.entries.length}) فقط`;
-}).catch(() => {});

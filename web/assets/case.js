@@ -147,6 +147,10 @@ function recordSection(view, c, meta) {
       "فلا إجابة ولا حكم يُعرض لها، ولا بيانات تجريبية."));
     return sec;
   }
+  if (view.state === "unreachable") {
+    sec.append(notice("error", "تعذّر تحميل السجل الرسمي لهذه الحالة", "تحقق من اتصالك ثم أعد تحميل الصفحة."));
+    return sec;
+  }
   if (view.state === "invalid") {
     const list = el("ul");
     for (const e of view.errors.slice(0, 8)) list.append(el("li", {}, e));
@@ -172,7 +176,8 @@ async function main() {
   let meta = null;
   try { meta = dataRes?.ok ? JSON.parse(dataRes.text) : null; } catch { meta = null; }
   if (!meta) {
-    root.replaceChildren(notice("error", "تعذّر تحميل بيانات الحالات", ""));
+    root.replaceChildren(notice("error", "تعذّر تحميل بيانات الحالات",
+      "تحقق من اتصالك ثم أعد تحميل الصفحة، أو ارجع إلى «حالات الاختبار»."));
     return;
   }
   const c = id ? findCase(meta, id) : null;
@@ -182,7 +187,11 @@ async function main() {
     return;
   }
   document.title = `${c.id} — تفصيل الحالة — مِعيار`;
-  const view = interpretRecord(await fetchText(`data/cases/${encodeURIComponent(c.id)}.json`), c.id);
+  const recRes = await fetchText(`data/cases/${encodeURIComponent(c.id)}.json`);
+  // تعذّر الاتصال ليس «لا سجل»: يُعرض خطأ بخطوة تالية
+  const view = recRes === null
+    ? { state: "unreachable" }
+    : interpretRecord(recRes, c.id);
   root.replaceChildren(caseHeader(c, meta), questionSection(c, meta), expectedSection(c), recordSection(view, c, meta));
 }
 

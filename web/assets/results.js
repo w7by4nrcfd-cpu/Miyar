@@ -55,6 +55,16 @@ function recordsList(runs) {
   return list;
 }
 
+// أسماء الملفات والسجلات في طبقة مطوية، لا في النص الظاهر
+function techDetails(latest, runs) {
+  return el("details", { class: "tech", id: "results-tech" }, el("summary", {}, "التفاصيل التقنية (السجلات والملفات)"),
+    el("div", { class: "tech-body" },
+      el("p", {}, "السجلات الرسمية في ", ltr("evaluation/official/"), "، والجولات الناقصة في ", ltr("evaluation/official_incomplete/"),
+        "؛ وقرار البوابة محسوب بـ ", ltr("scoring.gate_decision"), "."),
+      el("h3", {}, "السجلات المعروضة في المقارنة"), recordsList(latest),
+      el("h3", {}, "كل التشغيلات الرسمية المنشورة"), recordsList(runs)));
+}
+
 const caveat = (runs, id) => el("p", { class: "notice demo caveat", role: "note", id }, comparisonCaveat(runs));
 
 function gateSection(gate, latest) {
@@ -77,7 +87,7 @@ function gateSection(gate, latest) {
       "يُحسب القرار مقابل آخر جولة baseline منشورة، وجولات baseline تتفاوت درجاتها فيما بينها؛ فقد تتغير الأسباب وهوامشها بتغيير الجولة المرجعية. "
       + "لا تُختار جولة مرجعية بحسب النتيجة."),
     el("p", { class: "small" }, el("strong", {}, "القاعدة: "), gate.rule),
-    el("p", { class: "muted small" }, "القرار محسوب بـ scoring.gate_decision من السجلين الرسميين، لا من هذه الصفحة."),
+    el("p", { class: "muted small" }, "القرار محسوب من السجلين الرسميين، لا من هذه الصفحة."),
     caveat(latest, "gate-caveat"));
   return sec;
 }
@@ -115,7 +125,7 @@ function singleRunNotes(runs, stability) {
   for (const [assistant, n] of Object.entries(counts)) {
     if (n !== 1 || stability[assistant]) continue;
     const why = assistant === "rag"
-      ? " السبب في هذا التشغيل حد Groq اليومي المجاني: الجولات الناقصة لم تُحتسب وحُفظت في evaluation/official_incomplete/."
+      ? " السبب في هذا التشغيل حد Groq اليومي المجاني: الجولات الناقصة لم تُحتسب وحُفظت منفصلة (انظر التفاصيل التقنية أدناه)."
       : "";
     notes.push(el("p", { class: "notice demo single-run", role: "note" },
       el("strong", {}, `لـ ${assistant} جولة مكتملة واحدة فقط، فالثبات غير قابل للقياس له. `),
@@ -128,7 +138,7 @@ function renderOk(root, view) {
   const latest = latestByAssistant(view.runs);
   const nodes = [
     el("div", { class: "notice", role: "status", id: "results-notice" },
-      el("strong", {}, officialRunsHeadline(view.runs.length), " ", ltr("evaluation/official/"), "."),
+      el("strong", {}, officialRunsHeadline(view.runs.length), " المستودع."),
       el("span", {}, " كل رقم من سجله المذكور ومعه عدد الحالات N، ويحسبه سكربت النشر من أحكام السجلات. الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
     gateSection(view.gate, latest),
     el("h2", { id: "compare-h" }, "المقارنة: baseline مقابل rag"),
@@ -142,10 +152,9 @@ function renderOk(root, view) {
     "مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو قريب لصاحب المشروع، لا لجنة مستقلة؛ "
     + "وما عداها تحقق مصادر (source_check) يجريه المشارك وليس مراجعة شرعية."));
   nodes.push(
-    el("h3", {}, "السجلات المعروضة في المقارنة"), recordsList(latest),
     stabilitySection(view.stability),
     ...singleRunNotes(view.runs, view.stability),
-    el("h2", {}, "كل التشغيلات الرسمية المنشورة"), recordsList(view.runs),
+    techDetails(latest, view.runs),
   );
   root.replaceChildren(...nodes);
 }
@@ -157,7 +166,11 @@ async function main() {
     const res = await fetch(RESULTS_URL, { cache: "no-store" });
     response = { status: res.status, ok: res.ok, text: res.ok ? await res.text() : "" };
   } catch {
-    response = null; // تعذّر الوصول = لا نتائج
+    // تعذّر الاتصال: رسالة خطأ بخطوة تالية، لا «لا نتائج»
+    root.replaceChildren(el("div", { class: "notice error", role: "alert" },
+      el("strong", {}, "تعذّر تحميل ملف النتائج"),
+      el("span", {}, "تحقق من اتصالك ثم أعد تحميل الصفحة. لا تُعرض أي أرقام دون الملف.")));
+    return;
   }
   const view = interpretResults(response);
   if (view.state === "ok") renderOk(root, view);
