@@ -313,8 +313,9 @@ table.cits td { vertical-align: top; overflow-wrap: anywhere; }
 
 /* ---------- تحقق من نص (وضع ثانوي) ---------- */
 .tag-secondary { display: inline-block; vertical-align: middle; margin-inline-start: var(--s1); padding: 0 var(--s1); border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); color: var(--muted); font-size: var(--fs-xs); font-weight: 700; }
-.notice.limits ul { margin: var(--s1) 0 0; padding-inline-start: 1.25em; }
-.notice.limits li { margin-bottom: var(--s1); }
+.limits-list { margin: 0; padding: var(--s2) var(--s2) var(--s0); padding-inline-start: calc(var(--s2) + 1.25em); }
+.limits-list li { margin-bottom: var(--s1); }
+.limits-line { margin: var(--s3) 0 var(--s1); }
 .check-form { display: grid; gap: var(--s1); margin: var(--s3) 0; }
 .check-form label { font-weight: 700; }
 .check-form textarea { width: 100%; box-sizing: border-box; min-height: 10rem; padding: var(--s2); font: inherit; font-size: var(--fs-body); line-height: 1.9; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); resize: vertical; }
@@ -414,7 +415,8 @@ details.tech .tech-body h3:first-of-type { margin-top: var(--s2); }
 @media (max-width: 479px) { .btn-example { flex: 1 1 100%; justify-content: center; } }
 .check-form textarea { min-height: 14rem; font-size: var(--fs-lead); }
 .check-card { box-shadow: var(--shadow); }
-#check-limits details.tech { margin: var(--s1) 0 0; background: transparent; }
+#check-limits details.tech { margin: 0 0 var(--s3); }
+#check-limits details.tech details.tech { margin: var(--s1) var(--s2) var(--s2); background: transparent; }
 
 /* ---------- «عن المشروع»: الصفحات الأربع بطاقات ---------- */
 .about-list { display: grid; gap: var(--s2); border-top: 0; }

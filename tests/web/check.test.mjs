@@ -164,6 +164,13 @@ test("صفحة التحقق في المتصفح", { skip: !pw && !process.env.CI
       await t.test(`${width} ${scheme}: الحدود ظاهرة، ولا تُحمَّل بيانات المصحف قبل الضغط`, async () => {
         requests.length = 0;
         await page.goto(base + "check.html", { waitUntil: "networkidle" });
+        const line = await page.locator("#check-limits .limits-line").innerText();
+        assert.match(line, /^تفحص نصاً واحداً حرفياً؛ ليست تقييماً لمساعد ولا فتوى، والأحاديث المتاحة \d+ فقط \(وما عداها يحتاج تحقق\)\.$/);
+        const box = page.locator("#check-limits > details.tech");
+        assert.equal(await box.evaluate((d) => d.open), false, "كل الحدود مطوية");
+        assert.equal(await box.locator(":scope > summary").innerText(), "كل حدود هذه الصفحة");
+        assert.equal(await page.locator("#check-limits .notice").count(), 0, "لا صندوق تحذير");
+        await box.locator(":scope > summary").click();
         const limits = await page.locator("#check-limits").innerText();
         for (const needle of ["ليست تقييماً لمساعد", "لا فتوى", "الأحاديث محدودة جداً", "يحتاج تحقق"]) assert.ok(limits.includes(needle), needle);
         assert.ok(!requests.includes("/assets/check/quran.json"), "حُمّل المصحف قبل الضغط");

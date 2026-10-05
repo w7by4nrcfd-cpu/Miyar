@@ -68,7 +68,7 @@ test("أول شاشة في الرئيسية: سطران وزران، والقا�
         await page.click(".hero a.btn >> text=جرّب التحقق");
         await page.waitForURL("**/check.html");
         assert.match(await page.locator("h1").innerText(), /تحقق من نص\s*وضع ثانوي/);
-        assert.match(await page.locator("#check-limits").innerText(), /ليست تقييماً لمساعد/);
+        assert.match(await page.locator("#check-limits .limits-line").innerText(), /ليست تقييماً لمساعد/);
         assert.equal(await page.locator('nav.main a[aria-current="page"]').innerText(), "جرّب");
         await page.goto(base + "index.html", { waitUntil: "networkidle" });
         await page.click(".hero a.btn >> text=شاهد النتائج");
