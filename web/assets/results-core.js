@@ -209,7 +209,7 @@ export function comparisonRows(runs) {
       runs.map((r) => (r.referral ? `${r.referral.passed} / ${r.referral.failed} / ${r.referral.undecided}` : "—"))],
     ["أُحيلت إلى مراجعة بشرية (بلا حكم آلي)", runs.map((r) => fmt(r.human_review_needed))],
     ["مراجعة شرعية متخصصة", runs.map((r) => `${r.human_reviewed.by_role.specialist} من ${r.human_reviewed.total}`)],
-    ["تحقق من المصادر (ليس مراجعة شرعية)", runs.map((r) => `${r.human_reviewed.by_role.source_check} من ${r.human_reviewed.total}`)],
+    ["تحقق مصادر لتعريف الحالات (لا لأحكام مِعيار، وليس مراجعة شرعية)", runs.map((r) => `${r.human_reviewed.by_role.source_check} من ${r.human_reviewed.total}`)],
   ];
   return rows;
 }
@@ -224,7 +224,7 @@ export function reviewSummaryText(run) {
   const { total, by_role: r } = run.human_reviewed;
   return [
     `مراجعة شرعية متخصصة: ${r.specialist} من ${total}`,
-    `تحقق من المصادر بواسطة المشارك: ${r.source_check} من ${total} (ليس مراجعة شرعية متخصصة)`,
+    `تحقق من المصادر بواسطة المشارك: ${r.source_check} من ${total} (لتعريف الحالات لا لأحكام مِعيار، وليس مراجعة شرعية متخصصة)`,
   ];
 }
 
@@ -240,3 +240,36 @@ export function comparisonCaveat(runs) {
   const ns = [...new Set(runs.map((r) => r.n_cases))].sort((a, b) => a - b);
   return `تنبيه على المقارنة: ${COMPARISON_CAVEAT} والأرقام من عدد محدود من الحالات (${ns.map(nEq).join(" و")})، فلا تُعمَّم.`;
 }
+
+// ---------- توضيحات الدقة العلمية (سطر هادئ بجوار المعلومة) ----------
+/** الدرجة الكلية للمرشحة والمرجع مع المقام؛ والفرق بين جولتين اختلف عدد حالاتهما المحتسبة ليس مقارنة متكافئة.
+ *  لا يُستنتج منه أن أحدهما أفضل؛ والثابت فقط قرار البوابة. يعيد null إن غاب أحد السجلين. */
+export function overallScoresNote(gate, runs) {
+  if (!gate) return null;
+  const byId = Object.fromEntries(runs.map((r) => [r.run_id, r]));
+  const cand = byId[gate.candidate_run_id], ref = byId[gate.reference_run_id];
+  if (!cand || !ref) return null;
+  const short = (id) => id.split("-").slice(-2).join("-");
+  const part = (r) => {
+    if (r.overall_score === null || r.overall_score === undefined) return `${short(r.run_id)} بلا درجة كلية`;
+    const left = r.n_cases - r.n_scored;
+    const why = left === 0 ? "" : left === r.human_review_needed
+      ? `؛ ${left} ${left === 1 ? "حالة أُحيلت" : left === 2 ? "حالتان أُحيلتا" : "حالات أُحيلت"} إلى مراجعة بشرية فلم ${left === 2 ? "تدخلا" : "تدخل"} الحساب`
+      : `؛ ${left} لم تُحتسب`;
+    return `${short(r.run_id)} ${r.overall_score} (محتسبة من ${r.n_scored} ${r.n_scored <= 10 && r.n_scored >= 3 ? "حالات" : "حالة"}${why})`;
+  };
+  const same = cand.n_scored === ref.n_scored;
+  return `الدرجة الكلية: ${part(cand)}، و${part(ref)}. `
+    + (same ? "" : "عدد الحالات المحتسبة مختلف بين الجولتين، فالفرق بين الدرجتين ليس مقارنة متكافئة ولا يدل على أن أحدهما أفضل؛ ")
+    + (gate.allow ? "والثابت أن المرشحة حققت شروط البوابة." : "والثابت فقط أن المرشحة لم تحقق شروط المرور في البوابة.");
+}
+
+/** شرط «مؤيَّد خاطئ في حالة حرجة» جزء من تصميم البوابة، ولم يُقَس: يحتاج وسوماً بشرية معتمدة. */
+export const CRITICAL_UNMEASURED_NOTE =
+  "شرط «مؤيَّد خاطئ في حالة حرجة» جزء من تصميم البوابة، ولم يُقَس في هذه التشغيلات لأنه يحتاج تقييمات بشرية معتمدة غير متوفرة بعد.";
+export function gateRuleNote(rule) {
+  return typeof rule === "string" && rule.includes("حالة حرجة") ? CRITICAL_UNMEASURED_NOTE : null;
+}
+
+/** حالة قياس الاتفاق: نص فقط؛ عدم القياس لا يعني 0% ولا 100%. */
+export const AGREEMENT_NOTE = "اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد.";
