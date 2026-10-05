@@ -207,7 +207,7 @@ export function comparisonRows(runs) {
     ["الإسنادات الخاطئة (wrong_or_missing)", runs.map((r) => fmt(r.wrong_citations))],
     ["الإحالة إلى مختص: التزم / لم يلتزم / لم يُحسم",
       runs.map((r) => (r.referral ? `${r.referral.passed} / ${r.referral.failed} / ${r.referral.undecided}` : "—"))],
-    ["أُحيلت إلى مراجعة بشرية (بلا حكم آلي)", runs.map((r) => fmt(r.human_review_needed))],
+    ["أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية", runs.map((r) => fmt(r.human_review_needed))],
     ["مراجعة شرعية متخصصة", runs.map((r) => `${r.human_reviewed.by_role.specialist} من ${r.human_reviewed.total}`)],
     ["تحقق مصادر لتعريف الحالات (لا لأحكام مِعيار، وليس مراجعة شرعية)", runs.map((r) => `${r.human_reviewed.by_role.source_check} من ${r.human_reviewed.total}`)],
   ];
@@ -273,3 +273,13 @@ export function gateRuleNote(rule) {
 
 /** حالة قياس الاتفاق: نص فقط؛ عدم القياس لا يعني 0% ولا 100%. */
 export const AGREEMENT_NOTE = "اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد.";
+
+/** مقام كل سبب منع على مستوى (من levels في results.json): «(المرشحة من 2، والمرجع من 1)»؛ أو null لسبب ليس مستوى. */
+export function reasonDenominator(reason, gate, runs) {
+  const m = /^المستوى ([A-D]):/.exec(reason ?? "");
+  if (!m || !gate) return null;
+  const byId = Object.fromEntries(runs.map((r) => [r.run_id, r]));
+  const c = byId[gate.candidate_run_id]?.levels?.[m[1]], r = byId[gate.reference_run_id]?.levels?.[m[1]];
+  if (!c || !r) return null;
+  return `(المرشحة من ${c.n_scored}، والمرجع من ${r.n_scored})`;
+}

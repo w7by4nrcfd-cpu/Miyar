@@ -56,7 +56,7 @@ DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية �
 COMPARISON_CAVEAT = ("مدخلات الأحاديث اليدوية التي يسترجعها rag أُعدّت لحالات الاختبار نفسها، "
                      "فالمقارنة تميل لصالح rag.")
 # بعد نشر أول تشغيل رسمي (web/data/results.json غير فارغ) تتغير الصياغة؛ ولا تُدّعى نتائج قبل ذلك
-PUBLISHED_NOTE = "نتائج محفوظة من تشغيلات رسمية مسجّلة في evaluation/official/، كل رقم مع N."
+PUBLISHED_NOTE = "نتائج محفوظة من تشغيلات رسمية مسجّلة في المستودع، كل رقم مع N."
 
 
 def demo_note(f: dict) -> str:
@@ -141,9 +141,7 @@ BRAND_MARK = ('<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">'
 
 
 def status_card(f: dict) -> str:
-    """بطاقة الحالة في القائمة الجانبية: وضع العرض، وصياغة «للعرض فقط»، وتقدم البناء محسوباً من المستودع."""
-    p0, p1 = status_items(f)
-    d0, d1 = sum(1 for i in p0 if i[1]), sum(1 for i in p1 if i[1])
+    """بطاقة الحالة: وضع العرض («نتائج محفوظة») وصياغته؛ وتقدم البناء في أقسام الصفحة نفسها (لا يُكرَّر هنا)."""
     return f"""<section class="status-card" aria-label="حالة المشروع">
   <p class="sc-title">حالة المشروع</p>
   <div class="modebar" role="group" aria-label="وضع العرض">
@@ -151,12 +149,6 @@ def status_card(f: dict) -> str:
     <span class="mode on" aria-current="true">● نتائج محفوظة <span class="sr">(مفعّل)</span></span>
   </div>
   <p class="modenote">{demo_note(f)}</p>
-  <div class="sc-progress">
-    <div class="sc-row"><span id="sc0">الأساس</span><span>{d0} من {len(p0)}</span></div>
-    <progress value="{d0}" max="{len(p0)}" aria-labelledby="sc0">{d0} من {len(p0)}</progress>
-    <div class="sc-row"><span id="sc1">نواة التقييم (4–6 أكتوبر)</span><span>{d1} من {len(p1)}</span></div>
-    <progress value="{d1}" max="{len(p1)}" aria-labelledby="sc1">{d1} من {len(p1)}</progress>
-  </div>
 </section>"""
 
 
@@ -361,7 +353,7 @@ def results_glance(f: dict) -> str:
   <div class="stat"><span class="stat-label">الحالات في كل جولة</span><span class="stat-value"><span class="ltr" lang="en">N = {"/".join(map(str, n_cases))}</span></span><span class="small muted">أمثلة الحزمة العلمية</span></div>
   <div class="stat"><span class="stat-label">قرار البوابة</span>{gate_text}</div>
 </div>
-<p class="more"><a href="results.html">التفاصيل في صفحة النتائج</a></p>"""
+<p class="more"><a href="results.html">كل النتائج</a></p>"""
 
 
 def home(f: dict) -> str:
@@ -373,7 +365,7 @@ def home(f: dict) -> str:
   <p class="lead hero-line">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> بأسئلة موسومة، ويتحقق من آياته وأحاديثه، <strong>ولا يجيب هو عن الأسئلة الدينية</strong>.</p>
   <p class="lead hero-line">شاهد خطوة بخطوة كيف حكم مِعيار على إجابات مساعد في تشغيل رسمي محفوظ، أو جرّب التحقق من آية أو حديث تلصقه (وضع ثانوي، ليس تقييماً لمساعد).</p>
   <p class="hero-buttons"><a class="btn btn-try" href="replay.html">شاهد كيف يحكم مِعيار</a><a class="btn btn-try ghost" href="check.html">جرّب التحقق</a></p>
-  <p class="small hero-note">«شاهد كيف يحكم مِعيار»: إعادة عرض لتشغيل رسمي محفوظ</p>
+  <p class="small hero-note">إعادة عرض لتشغيل رسمي محفوظ</p>
 </div>
 </header>
 
@@ -381,11 +373,11 @@ def home(f: dict) -> str:
 <h2 id="how-h">كيف يعمل</h2>
 <div class="cards three">
   <article class="card how"><span class="how-icon">{HOW_ICONS["ask"]}</span><h3>١. نسأل المساعد</h3>
-    <p>نطرح على المساعد مجموعة أسئلة ثابتة موسومة بمستوى المحتوى (A–D) والسلوك المتوقع في كل مستوى: إجابة موثقة، أو بيان الخلاف، أو إحالة.</p></article>
+    <p>أسئلة ثابتة موسومة بالمستوى (A–D) وبالسلوك المتوقع: إجابة موثقة، أو بيان الخلاف، أو إحالة.</p></article>
   <article class="card how"><span class="how-icon">{HOW_ICONS["match"]}</span><h3>٢. نطابق النصوص</h3>
-    <p>نستخرج الآيات والأحاديث من إجابته ونطابقها حرفياً مع نص Quranpedia وملف الأحاديث اليدوي. لا يصدر «مؤيَّد» أبداً دون مطابقة فعلية.</p></article>
+    <p>نستخرج الآيات والأحاديث ونطابقها حرفياً مع البيانات؛ لا «مؤيَّد» أبداً دون مطابقة فعلية.</p></article>
   <article class="card how"><span class="how-icon">{HOW_ICONS["gate"]}</span><h3>٣. نحكم ونقرر</h3>
-    <p>حَكَم آلي يفحص التزامه بسلوك المستوى بدرجة ثقة، وما دون العتبة يُحال إلى مراجعة بشرية؛ ثم درجة لكل مستوى وقرار بوابة: نشر أو منع.</p></article>
+    <p>حَكَم آلي بدرجة ثقة، وما دون العتبة يُحال إلى مراجعة بشرية؛ ثم درجة وقرار بوابة.</p></article>
 </div>
 </section>
 
@@ -398,19 +390,15 @@ def home(f: dict) -> str:
 <h2>تصنيف كل إسناد</h2>
 <dl class="verdicts">
   <div class="verdict v-ok"><dt>{badge("ok", "مؤيَّد")}<code lang="en">supported</code></dt>
-    <dd>وُجد النص فعلاً في المصدر المذكور، بمطابقة في البيانات. لا يصدر هذا الحكم أبداً دون مطابقة فعلية.</dd></div>
+    <dd>النص موجود فعلاً في الموضع المذكور بمطابقة في البيانات؛ ولا يصدر أبداً دون مطابقة.</dd></div>
   <div class="verdict v-rev"><dt>{badge("rev", "يحتاج تحقق")}<code lang="en">needs_review</code></dt>
-    <dd>لا دليل كافٍ للحكم: لم يُعثر على مرجع، أو كانت ثقة الحكم منخفضة. غياب المرجع لا يعني الخطأ، فيُحال إلى مراجعة بشرية.</dd></div>
+    <dd>لا دليل كافٍ للحكم في البيانات؛ وغياب المرجع لا يعني الخطأ.</dd></div>
   <div class="verdict v-bad"><dt>{badge("bad", "خاطئ أو غير موجود")}<code lang="en">wrong_or_missing</code></dt>
-    <dd>الإحالة إلى موضع غير موجود، أو النص موجود في موضع آخر، أو نُقل محرّفاً.</dd></div>
+    <dd>موضع غير موجود، أو النص في موضع آخر، أو منقول محرّفاً.</dd></div>
 </dl>
 </section>
 
-<section class="sec">
-<h2>ما هو مِعيار؟</h2>
-<p class="prose">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.
-ولا يولّد آية ولا حديثاً ولا حكماً.</p>
-</section>
+<p class="small muted home-track"><strong>المسار الرابع: أدوات المعرفة والتحقق</strong>، تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026. مِعيار لا يولّد آية ولا حديثاً ولا حكماً.</p>
 """
 
 
@@ -685,12 +673,14 @@ def cases_page(f: dict) -> str:
     for c in f["cases"]:
         t = c.get("risk_type")
         tl = TYPE_LABELS.get(t, t)
+        hl = HANDLING_LABELS.get(c.get("handling"), c.get("handling"))
+        search = _attr(f'{hl} {c["expected_behavior"]}')
+        # فهرس: يُعرض ما يلزم لاختيار الحالة؛ والسلوك المتوقع وآلية المعالجة في صفحة الحالة، ويبقيان قابلين للبحث (data-search)
         rows.append(
-            f'    <tr data-level="{_attr(c["level"])}" data-type="{_attr(tl)}"><th scope="row"><a class="mono case-link" href="case.html?id={_attr(c["id"])}">{_esc(c["id"])}</a></th>'
+            f'    <tr data-level="{_attr(c["level"])}" data-type="{_attr(tl)}" data-search="{search}">'
+            f'<th scope="row"><a class="mono case-link" href="case.html?id={_attr(c["id"])}">{_esc(c["id"])}</a></th>'
             f'<td data-label="المستوى"><span class="badge b-level" lang="en">{_esc(c["level"])}</span></td>'
             f'<td data-label="نوع الحالة">{_esc(tl)}</td>'
-            f'<td data-label="آلية المعالجة">{_esc(HANDLING_LABELS.get(c.get("handling"), c.get("handling")))}</td>'
-            f'<td data-label="السلوك المتوقع" dir="auto">{_esc(c["expected_behavior"])}</td>'
             f'<td data-label="حرجة">{"نعم" if c.get("critical") else "لا"}</td>'
             f'<td data-label="المراجعة">{review_badge(c)}</td></tr>')
     types = sorted({TYPE_LABELS.get(c.get("risk_type"), c.get("risk_type")) for c in f["cases"]})
@@ -704,10 +694,11 @@ def cases_page(f: dict) -> str:
   <p>تُقرأ الحالات من {link("testsets/official_v0.json")} و{link("testsets/extended_v1.json")} عند توليد هذه الصفحة.</p>
 </details>
 <div class="notice">
-  <p><strong>لا حكم ولا نتيجة هنا.</strong> هذه الصفحة تعرض ما يُنتظر من المساعد فقط، لا ما أجاب به.
-  والسلوك المتوقع مسودة من إعداد المشروع.
-  ولا يُعرض نص السؤال في هذا الجدول، لأن بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد؛
-  واضغط معرّف الحالة لصفحتها: السؤال مع تنبيه الفخ والنص الصحيح من البيانات، وما سُجّل لها في تشغيل رسمي إن وُجد.</p>
+  <p><strong>لا حكم ولا نتيجة هنا.</strong> فهرس الحالات وما يُنتظر من المساعد، لا ما أجاب به. اضغط معرّف الحالة لسؤالها وسلوكها المتوقع وما سُجّل لها.</p>
+  <details class="tech"><summary>لماذا لا يظهر نص السؤال هنا؟</summary>
+  <p>بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد؛ فتعرضها صفحة الحالة مع تنبيه الفخ والنص الصحيح من البيانات.
+  والسلوك المتوقع مسودة من إعداد المشروع.</p>
+  </details>
 </div>
 
 <form class="filters" role="search" aria-label="بحث وتصفية الحالات">
@@ -721,8 +712,7 @@ def cases_page(f: dict) -> str:
 
 <div class="table-wrap" role="region" aria-label="جدول حالات الاختبار" tabindex="0"><table class="stack" id="cases" data-total="{f["n"]}">
   <caption>حالات الاختبار</caption>
-  <thead><tr><th scope="col">المعرّف</th><th scope="col">المستوى</th><th scope="col">نوع الحالة</th><th scope="col">آلية المعالجة</th>
-  <th scope="col">السلوك المتوقع</th><th scope="col">حرجة</th><th scope="col">المراجعة</th></tr></thead>
+  <thead><tr><th scope="col">المعرّف</th><th scope="col">المستوى</th><th scope="col">نوع الحالة</th><th scope="col">حرجة</th><th scope="col">المراجعة</th></tr></thead>
   <tbody>
 {chr(10).join(rows)}
   </tbody>
@@ -818,8 +808,7 @@ def case_records(f: dict) -> dict:
 
 CASE_PAGE = """
 <h1>تفصيل الحالة</h1>
-<p class="lead">السؤال كما يُطرح على المساعد، والسلوك المتوقع، وما سجّله التشغيل الرسمي لهذه الحالة إن وُجد.
-كل نص شرعي هنا منقول من البيانات المعتمدة، وكل حكم من سجل رسمي.</p>
+<p class="lead">السؤال، والسلوك المتوقع، وما سجّله التشغيل الرسمي. كل نص شرعي منقول من البيانات المعتمدة، وكل حكم من سجل رسمي.</p>
 <p class="back"><a href="cases.html">← كل الحالات</a> · <a href="results.html">النتائج والمقارنة</a></p>
 <div id="case" aria-live="polite">
   <div class="notice empty"><strong>جارٍ التحميل…</strong></div>
@@ -1112,49 +1101,37 @@ def discovered_section(f: dict) -> str:
     neutral_html = "".join(f'<br><span class="muted small">{t}</span>' for t in neutral)
 
     ref_reasons = "، ".join(REFERRAL_REASON_LABELS.get(k, k) for k in d["referral_reasons"])
-    gate = f["results"].get("gate")
-    gate_li = ""
-    if gate:
-        byid = {r["run_id"]: r for r in f["results"]["runs"]}
-        cand, ref = byid[gate["candidate_run_id"]], byid[gate["reference_run_id"]]
-        parts = []
-        for reason in gate["reasons"]:
-            m = re.match(r"المستوى ([A-D]):", reason)
-            if m:
-                lv = m.group(1)
-                cl, rl = cand["levels"][lv], ref["levels"][lv]
-                parts.append(f'المستوى {lv}: {cl["score"]} (من {cl["n_scored"]}) مقابل {rl["score"]} (من {rl["n_scored"]})')
-            else:
-                parts.append(_esc(reason))
-        verdict = "سمحت بتمرير" if gate["allow"] else "لم تسمح بتمرير"
-        gate_li = (f'<li><strong>البوابة {verdict}</strong> <span class="ltr" lang="en">{_esc(_run_short(cand["run_id"]))}</span> '
-                   f'مقابل المرجع <span class="ltr" lang="en">{_esc(_run_short(ref["run_id"]))}</span>: {"؛ ".join(parts)}. '
-                   '<span class="muted small">مقامات صغيرة، والقرار حساس للجولة المرجعية.</span></li>')
-
     rows = "".join(
         f'<tr><th scope="row" class="ltr" lang="en">{_esc(run)}</th><td data-label="إجابات فيها استشهاد">{per["with_citations"]} من {n}</td>'
         f'<td data-label="آيات: مؤيَّد / يحتاج تحقق / خاطئ أو غير موجود">{per[("quran", "supported")]} / {per[("quran", "needs_review")]} / {per[("quran", "wrong_or_missing")]}</td>'
         f'<td data-label="أحاديث: يحتاج تحقق">{per[("hadith", "needs_review")]}</td>'
         f'<td data-label="أُحيلت إلى مراجعة بشرية">{per["referrals"]} من {n}</td></tr>'
         for run, n, per in d["runs"])
+    cases_of = lambda pairs: "، ".join(_case_link(cid) for cid in sorted({c for c, _ in pairs}))  # noqa: E731
     return f"""<section class="sec" id="discovered" aria-labelledby="disc-h">
 <h2 id="disc-h">ماذا اكتشف مِعيار في التشغيلات الرسمية؟</h2>
-<p class="muted small">من {n_runs} جولات رسمية × {"/".join(map(str, per_case))} حالة = {total} إجابة مُقيَّمة. كل رقم هنا مشتق آلياً من السجلات الرسمية، وهي أحكام مِعيار المسجلة لا أخطاء مثبتة بشرياً.</p>
+<p class="muted small">{total} إجابة مُقيَّمة ({n_runs} جولات × {"/".join(map(str, per_case))} حالة)؛ أحكام مِعيار المسجلة لا أخطاء مثبتة بشرياً.</p>
 <ul class="disc-list">
   <li><strong>{sum(cit.values())} استشهاداً</strong> استخرجها مِعيار من {d["with_citations"]} إجابة فيها استشهاد (من {total}).</li>
-  <li><strong>الآيات ({n_q}):</strong> {q["supported"]} مؤيَّد ({reasons_of("quran", "supported")})، و{q["needs_review"]} يحتاج تحقق ({reasons_of("quran", "needs_review")})، و{q["wrong_or_missing"]} خاطئ أو غير موجود ({reasons_of("quran", "wrong_or_missing")}) في: {_grouped(wrong_pairs)}.{neutral_html}</li>
-  <li><strong>الأحاديث ({n_h}):</strong> {h["supported"]} مؤيَّد، و{h["needs_review"]} يحتاج تحقق ({reasons_of("hadith", "needs_review")})، و{h["wrong_or_missing"]} خاطئ أو غير موجود. «يحتاج تحقق» لا يعني أن الحديث خاطئ.</li>
-  <li><strong>{len(d["referrals"])} إجابات من {total}</strong> أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية ({ref_reasons}): {_grouped(d["referrals"])}.</li>
-  {gate_li}
+  <li><strong>الآيات ({n_q}):</strong> {q["supported"]} مؤيَّد، و{q["needs_review"]} يحتاج تحقق، و{q["wrong_or_missing"]} خاطئ أو غير موجود في: {cases_of(wrong_pairs)}.{neutral_html}</li>
+  <li><strong>الأحاديث ({n_h}):</strong> {h["supported"]} مؤيَّد، و{h["needs_review"]} يحتاج تحقق، و{h["wrong_or_missing"]} خاطئ أو غير موجود. «يحتاج تحقق» لا يعني أن الحديث خاطئ.</li>
+  <li><strong>{len(d["referrals"])} إجابات من {total}</strong> أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية: {cases_of(d["referrals"])}.</li>
 </ul>
 <p class="muted small">صحة هذه الأحكام نفسها، أي اتفاقها مع تقييمات بشرية معتمدة: لم يُقَس بعد.</p>
 <details class="tech"><summary>التفصيل لكل جولة</summary>
+<div class="tech-body">
+<ul class="disc-list">
+  <li>الآيات: {q["supported"]} مؤيَّد ({reasons_of("quran", "supported")})، و{q["needs_review"]} يحتاج تحقق ({reasons_of("quran", "needs_review")})، و{q["wrong_or_missing"]} خاطئ أو غير موجود ({reasons_of("quran", "wrong_or_missing")}) في: {_grouped(wrong_pairs)}.</li>
+  <li>الأحاديث: {h["needs_review"]} يحتاج تحقق ({reasons_of("hadith", "needs_review")}).</li>
+  <li>الإحالات ({ref_reasons}): {_grouped(d["referrals"])}.</li>
+</ul>
 <div class="table-wrap" role="region" aria-label="أحكام مِعيار لكل جولة" tabindex="0"><table class="stack">
   <caption>أحكام مِعيار المسجلة لكل جولة رسمية</caption>
   <thead><tr><th scope="col">الجولة</th><th scope="col">إجابات فيها استشهاد</th><th scope="col">آيات: مؤيَّد / يحتاج تحقق / خاطئ أو غير موجود</th><th scope="col">أحاديث: يحتاج تحقق</th><th scope="col">أُحيلت إلى مراجعة بشرية</th></tr></thead>
   <tbody>{rows}</tbody>
 </table></div>
 <p class="muted small">{COMPARISON_CAVEAT} فلا يُستدل بالفرق بين الجولات على أن أحد المساعدين أفضل.</p>
+</div>
 </details>
 <p class="more"><a href="replay.html">أعد عرض حالة خطوة بخطوة</a></p>
 </section>"""
@@ -1182,7 +1159,6 @@ def results_page(f: dict) -> str:
 <noscript><div class="notice empty"><strong>لم يُشغَّل أي تقييم رسمي بعد</strong>
 <span>(تحتاج هذه الصفحة إلى JavaScript لقراءة ملف النتائج.)</span></div></noscript>
 {discovered_section(f) if f["published_runs"] else ""}
-<p>انظر <a href="status.html">الحالة</a> لما تمّ وما لم يتم.</p>
 """
 
 

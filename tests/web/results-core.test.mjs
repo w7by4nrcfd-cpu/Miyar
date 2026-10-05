@@ -243,3 +243,11 @@ test("شرط «مؤيَّد خاطئ في حالة حرجة» يُوصف بأن�
   assert.equal(AGREEMENT_NOTE, "اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد.");
   assert.doesNotMatch(AGREEMENT_NOTE, /[%٪]|\d/);
 });
+
+
+test("جدول المقارنة: تسمية الإحالة متسقة مع PR2/PR3 («لم تدخل في الدرجة الآلية») ولا «بلا حكم آلي»", () => {
+  const res = JSON.parse(readFileSync(new URL("../../web/data/results.json", import.meta.url), "utf8"));
+  const labels = comparisonRows(res.runs.slice(0, 2)).map(([label]) => label);
+  assert.ok(labels.includes("أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية"), labels.join(" | "));
+  for (const l of labels) assert.doesNotMatch(l, /بلا حكم آلي/);
+});

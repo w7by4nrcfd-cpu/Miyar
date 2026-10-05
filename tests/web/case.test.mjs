@@ -132,11 +132,28 @@ test("صفحة الحالة في المتصفح", { skip: !pw && !process.env.CI
       await t.test(`${width} ${scheme}: سجل اصطناعي → الإجابة والاستشهادات والحكم والثقة والسبب`, async () => {
         await page.route("**/data/cases/OFF-11.json", (r) => r.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(RECORD) }));
         await page.goto(base + "case.html?id=OFF-11", { waitUntil: "networkidle" });
-        const text = await page.locator("#case").innerText();
-        for (const needle of ["إجابة المساعد المُختبَر — ليست من مِعيار", "FIXTURE إجابة baseline", "FIXTURE إجابة rag",
-          "خاطئ أو غير موجود", "يحتاج تحقق", "FIXTURE نص من البيانات", "أخطاء مرصودة: محرَّف", "0.90", "FIXTURE سبب الحكم", "لم يلتزم"]) {
-          assert.ok(text.includes(needle), needle);
+        // الظاهر مباشرة: الحكم والاستشهادات والفحوص ووسم الإجابة؛ والإجابة الكاملة وتفاصيل الحكم مطويتان (في DOM)
+        const visible = await page.locator("#case").innerText();
+        for (const needle of ["إجابة المساعد المُختبَر — ليست من مِعيار", "خاطئ أو غير موجود", "يحتاج تحقق", "FIXTURE نص من البيانات",
+          "أخطاء مرصودة: محرَّف", "لم يلتزم", "عرض إجابة المساعد كاملة"]) {
+          assert.ok(visible.includes(needle), needle);
         }
+        const all = await page.locator("#case").textContent();
+        for (const needle of ["FIXTURE إجابة baseline", "FIXTURE إجابة rag", "0.90", "FIXTURE سبب الحكم"]) assert.ok(all.includes(needle), needle);
+        const ans = page.locator(".answer-card details.answer-details").first();
+        assert.equal(await ans.evaluate((d) => d.open), false, "الإجابة الكاملة مطوية افتراضياً");
+        await ans.locator("summary").focus();
+        await page.keyboard.press("Enter");
+        assert.equal(await ans.evaluate((d) => d.open), true, "تُفتح بلوحة المفاتيح");
+        const shown = await ans.locator(".answer").textContent();
+        assert.ok(RECORD.runs.some((r) => r.answer === shown), "الإجابة كما هي في السجل حرفياً");
+        // الترتيب: الحكم ← الاستشهادات ← الفحوص ← الإجابة الكاملة
+        const order = await page.locator(".answer-card").first().evaluate((card) => {
+          const all = [...card.querySelectorAll("*")];
+          const h4 = (t) => all.findIndex((e) => e.tagName === "H4" && e.textContent.startsWith(t));
+          return [h4("الحكم"), h4("الاستشهادات"), all.indexOf(card.querySelector("details.answer-details"))];
+        });
+        assert.ok(order[0] < order[1] && order[1] < order[2], `ترتيب البطاقة ${order}`);
         assert.equal(await page.locator(".answer-card").count(), 2);
         const l = await layout();
         assert.ok(l.overflow <= 0, `تمرير أفقي ${l.overflow}px`);
