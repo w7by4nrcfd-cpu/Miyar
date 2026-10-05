@@ -477,3 +477,40 @@ def test_review_counts_are_described_as_case_definition_review():
     assert "لا لأحكام مِعيار على إجابات المساعد" in st and "وتحقق المصادر مراجعة لتعريف الحالة لا لأحكام مِعيار" in st
     for page in ["index.html", "results.html", "status.html", "cases.html"]:
         assert not re.search(r"(اتفاق|Agreement)[^.؛\n]{0,40}\d+(\.\d+)?\s*[%٪]", _text(page)), page
+
+
+def test_discovered_section_numbers_recomputed_from_official_records():
+    """«ماذا اكتشف مِعيار؟»: كل رقم يُعاد حسابه هنا مستقلاً من evaluation/official/ ويُطابق الصفحة؛ بلا نسب ولا «أفضل/أسوأ»."""
+    from collections import Counter
+    if not _published_runs():
+        return
+    recs = [json.loads(p.read_text(encoding="utf-8")) for p in (ROOT / "evaluation/official").glob("official-*.json")]
+    answers = sum(len(r["cases"]) for r in recs)
+    cits = [x for r in recs for c in r["cases"] for x in (c.get("judgement") or {}).get("citations") or []]
+    st = Counter((x["citation"]["kind"], x["status"]) for x in cits)
+    with_cit = sum(bool((c.get("judgement") or {}).get("citations")) for r in recs for c in r["cases"])
+    refer = sum(bool((c.get("judgement") or {}).get("needs_human_review")) for r in recs for c in r["cases"])
+    h = _page("results.html")
+    sec = h[h.index('id="discovered"'):h.index("</section>", h.index('id="discovered"'))]
+    t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", sec))
+    assert f"= {answers} إجابة مُقيَّمة" in t
+    assert f"{len(cits)} استشهاداً استخرجها مِعيار من {with_cit} إجابة فيها استشهاد (من {answers})" in t
+    nq = sum(v for (k, _), v in st.items() if k == "quran")
+    assert (f"الآيات ({nq}): {st[('quran', 'supported')]} مؤيَّد" in t and f"و{st[('quran', 'needs_review')]} يحتاج تحقق" in t
+            and f"و{st[('quran', 'wrong_or_missing')]} خاطئ أو غير موجود" in t)
+    nh = sum(v for (k, _), v in st.items() if k == "hadith")
+    assert f"الأحاديث ({nh}): {st[('hadith', 'supported')]} مؤيَّد، و{st[('hadith', 'needs_review')]} يحتاج تحقق" in t
+    assert f"{refer} إجابات من {answers} أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية" in t
+    assert "«يحتاج تحقق» لا يعني أن الحديث خاطئ" in t and "لم يُقَس بعد" in t and "أحكام مِعيار المسجلة لا أخطاء مثبتة بشرياً" in t
+    assert not re.search(r"[%٪]", t) and "أسوأ" not in t and "فرق رسم" not in t and "تحريف" not in t
+    # كل حالة في القسم رابط إلى صفحتها
+    for cid in re.findall(r'href="case.html\?id=([A-Z]+-\d+)"', sec):
+        assert any(c["id"] == cid for r in recs for c in r["cases"]), cid
+
+
+def test_discovered_neutral_wording_for_single_letter_rulings():
+    """حكم wrong_or_missing بفرق حرف واحد يُعرض بصياغة محايدة: لا تفسير غير مراجع بشرياً."""
+    t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", _page("results.html")))
+    if "في سجلي OFF-03" in t:
+        assert ("في سجلي OFF-03 صُنّف الفرق wrong_or_missing / altered_text؛ والفرق المرصود حرف واحد (س/ص). "
+                "لم يُراجع هذا الحكم بشريًا، لذلك لا يُستدل منه وحده على صحة الحكم أو خطئه.") in t
