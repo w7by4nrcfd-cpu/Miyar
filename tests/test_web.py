@@ -389,3 +389,16 @@ def test_cases_list_review_line_and_badges_from_data():
     assert "لم يُتحقق منها بعد" not in html
     src = sum(1 for c in approved if c.get("reviewer_role") == "source_check")
     assert html.count("راجعها صاحب المشروع (تحقق مصادر)") == src
+
+
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+def test_footer_states_saved_results_on_every_page(page):
+    foot = _page(page)
+    foot = foot[foot.index('<footer class="site">'):]
+    assert "يعرض الموقع نتائج محفوظة من تشغيلات رسمية؛ لا يشغّل التقييم من المتصفح" in foot
+
+
+def test_case_page_review_badge_only_for_reviewed():
+    js = (WEB / "assets/case.js").read_text(encoding="utf-8")
+    assert "لم يُتحقق منها بعد" not in js and "لم تُراجَع بعد" not in js
+    assert "راجعها صاحب المشروع (تحقق مصادر)" in js
