@@ -83,7 +83,7 @@ export function verdict(judgement, categoryLabels = {}) {
     const why = { low_confidence: "ثقة الحَكَم دون العتبة", invalid_output: "إخراج الحَكَم غير صالح",
       manual_entry_pending: "مدخل الملف اليدوي للحديث ناقص",
       hadith_unverified: "استشهاد حديثي بلا مدخل مكتمل في الملف اليدوي: لا بيانات تؤيد وجوده أو عدمه" }[judgement.review_reason] ?? "إحالة";
-    return { kind: "review", text: `أُحيلت إلى مراجعة بشرية — لا حكم آلي (${why})` };
+    return { kind: "review", text: `أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية (${why})` };
   }
   const cats = judgement.categories ?? [];
   if (!cats.length) return { kind: "ok", text: "لا خطأ مرصود" };

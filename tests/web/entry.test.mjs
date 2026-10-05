@@ -48,7 +48,8 @@ test("أول شاشة في الرئيسية: سطران وزران، والقا�
         assert.equal(await page.locator(".hero-line").count(), 2);
         const buttons = page.locator(".hero a.btn");
         assert.equal(await buttons.count(), 2, "في أول شاشة زران فقط");
-        assert.deepEqual(await buttons.allInnerTexts(), ["جرّب التحقق", "شاهد النتائج"]);
+        assert.deepEqual(await buttons.allInnerTexts(), ["شاهد كيف يحكم مِعيار", "جرّب التحقق"]);
+        assert.match(await page.locator(".hero-note").innerText(), /إعادة عرض لتشغيل رسمي محفوظ/);
         for (let i = 0; i < 2; i++) {
           const btn = buttons.nth(i);
           const box = await btn.boundingBox();
@@ -63,7 +64,7 @@ test("أول شاشة في الرئيسية: سطران وزران، والقا�
         assert.deepEqual(items, ["جرّب", "النتائج", "الحالات", "عن المشروع"]);
         for (const a of await page.locator("nav.main a").all()) assert.ok((await a.boundingBox()).height >= 40, "هدف نقر أصغر من 40px");
       });
-      await t.test(`${width} ${scheme}: الزران يفتحان التحقق والنتائج`, async () => {
+      await t.test(`${width} ${scheme}: الزران يفتحان إعادة العرض والتحقق`, async () => {
         await page.goto(base + "index.html", { waitUntil: "networkidle" });
         await page.click(".hero a.btn >> text=جرّب التحقق");
         await page.waitForURL("**/check.html");
@@ -71,9 +72,9 @@ test("أول شاشة في الرئيسية: سطران وزران، والقا�
         assert.match(await page.locator("#check-limits .limits-line").innerText(), /ليست تقييماً لمساعد/);
         assert.equal(await page.locator('nav.main a[aria-current="page"]').innerText(), "جرّب");
         await page.goto(base + "index.html", { waitUntil: "networkidle" });
-        await page.click(".hero a.btn >> text=شاهد النتائج");
-        await page.waitForURL("**/results.html");
-        assert.equal(await page.locator('nav.main a[aria-current="page"]').innerText(), "النتائج");
+        await page.click(".hero a.btn >> text=شاهد كيف يحكم مِعيار");
+        await page.waitForURL("**/replay.html*");
+        assert.match(await page.locator("#replay-banner").innerText(), /إعادة عرض لتشغيل رسمي محفوظ — ليس تشغيلاً حياً/);
       });
       await t.test(`${width} ${scheme}: «عن المشروع» تصل المستويات والمصادر والشفافية والحالة، والقائمة تبقى مفعّلة عليها`, async () => {
         await page.goto(base + "project.html", { waitUntil: "networkidle" });

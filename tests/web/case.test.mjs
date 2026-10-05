@@ -54,9 +54,9 @@ test("سجل لا يطابق العقد → غير صالح بلا حكم", () =
 test("الحكم النهائي من السجل كما هو", () => {
   assert.equal(verdict(judgement(), { altered: "محرَّف" }).text, "أخطاء مرصودة: محرَّف");
   assert.equal(verdict(judgement({ categories: [] })).kind, "ok");
-  assert.match(verdict(judgement({ needs_human_review: true, review_reason: "low_confidence" })).text, /مراجعة بشرية — لا حكم آلي/);
+  assert.match(verdict(judgement({ needs_human_review: true, review_reason: "low_confidence" })).text, /مراجعة بشرية ولم تدخل في الدرجة الآلية/);
   assert.match(verdict(judgement({ needs_human_review: true, review_reason: "hadith_unverified" })).text,
-    /مراجعة بشرية — لا حكم آلي \(استشهاد حديثي بلا مدخل مكتمل في الملف اليدوي/);
+    /مراجعة بشرية ولم تدخل في الدرجة الآلية \(استشهاد حديثي بلا مدخل مكتمل في الملف اليدوي/);
   assert.equal(verdict(null).kind, "none");
   assert.equal(checksSummary(judgement()), "2 من 3 فحوص محسومة");
   assert.deepEqual(latestRuns([run("rag", "2000-01-01T00:00:00Z"), run("baseline", "2000-01-01T00:00:00Z")]).map((r) => r.assistant), ["baseline", "rag"]);

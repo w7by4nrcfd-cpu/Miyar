@@ -136,10 +136,11 @@ def test_check_link_is_first_in_nav_on_every_page_and_home_has_two_buttons():
     home = (WEB / "index.html").read_text(encoding="utf-8")
     start = home.index('<header class="hero">')
     hero = home[start:home.index("</header>", start)]
-    # زران فقط في أول شاشة: «جرّب التحقق» و«شاهد النتائج»، بلا ميزة جديدة
+    # زران فقط في أول شاشة: الأساسي «شاهد كيف يحكم مِعيار» (إعادة عرض تشغيل رسمي محفوظ)، والثانوي «جرّب التحقق»
     assert hero.count('class="btn') == 2
-    assert '<a class="btn btn-try" href="check.html">جرّب التحقق</a>' in hero
-    assert '<a class="btn btn-try ghost" href="results.html">شاهد النتائج</a>' in hero
+    assert '<a class="btn btn-try" href="replay.html">شاهد كيف يحكم مِعيار</a>' in hero
+    assert '<a class="btn btn-try ghost" href="check.html">جرّب التحقق</a>' in hero
+    assert "إعادة عرض لتشغيل رسمي محفوظ" in hero
     assert hero.count('class="lead hero-line"') == 2, "سطران يقولان ما هو مِعيار وما يمكن فعله الآن"
     assert "وضع ثانوي" in hero and "ليس تقييماً لمساعد" in hero  # الصدق عند باب الدخول نفسه
     check = (WEB / "check.html").read_text(encoding="utf-8")

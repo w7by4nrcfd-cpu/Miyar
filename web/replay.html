@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="إعادة عرض خطوة بخطوة لتشغيل رسمي محفوظ: السؤال، وإجابة المساعد، والاستشهادات ومطابقتها، وحكم مِعيار وفحوص السلوك والقرار. ليس تشغيلاً حياً.">
+<meta name="theme-color" content="#0b1311" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f1e6" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="مِعيار">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:title" content="إعادة عرض تشغيل رسمي — مِعيار">
+<meta property="og:description" content="إعادة عرض خطوة بخطوة لتشغيل رسمي محفوظ: السؤال، وإجابة المساعد، والاستشهادات ومطابقتها، وحكم مِعيار وفحوص السلوك والقرار. ليس تشغيلاً حياً.">
+<meta property="og:url" content="https://miyar.w7by4nrcfd.workers.dev/replay">
+<title>إعادة عرض تشغيل رسمي — مِعيار</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230b1311%22/%3E%3Cg fill=%22%237dd3b0%22 fill-opacity=%22.2%22 stroke=%22%237dd3b0%22 stroke-width=%223%22 stroke-linejoin=%22round%22%3E%3Crect x=%2220%22 y=%2220%22 width=%2224%22 height=%2224%22/%3E%3Crect x=%2220%22 y=%2220%22 width=%2224%22 height=%2224%22 transform=%22rotate%2845 32 32%29%22/%3E%3C/g%3E%3C/svg%3E" type="image/svg+xml">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="stylesheet" href="assets/style.css">
+<script type="module" src="assets/replay.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+<div class="shell">
+<header class="topbar">
+  <div class="topbar-inner">
+  <a class="brand" href="index.html" aria-label="مِعيار — الرئيسية"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="10" y="10" width="20" height="20" rx="1"/><rect x="10" y="10" width="20" height="20" rx="1" transform="rotate(45 20 20)"/></svg></span><span class="brand-text"><span class="brand-name">مِعيار</span><span class="brand-sub">اختبار المساعد الذكي</span></span></a>
+  <nav class="main" aria-label="التنقل الرئيسي"><ul>
+    <li><a href="check.html">جرّب</a></li>
+    <li><a href="results.html">النتائج</a></li>
+    <li><a href="cases.html">الحالات</a></li>
+    <li><a href="project.html">عن المشروع</a></li>
+  </ul></nav>
+  </div>
+</header>
+<div class="content">
+<main id="main" tabindex="-1">
+<header class="page-head"><svg class="pattern" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="geo" width="64" height="64" patternUnits="userSpaceOnUse"><rect x="20" y="20" width="24" height="24"/><rect x="20" y="20" width="24" height="24" transform="rotate(45 32 32)"/><path d="M32 15V0M32 49V64M15 32H0M49 32H64M20 20L0 0M44 20L64 0M20 44L0 64M44 44L64 64"/><circle cx="32" cy="32" r="5"/></pattern></defs><rect class="pattern-fill" width="100%" height="100%" fill="url(#geo)"/></svg><div class="ph-inner"><h1>كيف يحكم مِعيار؟ إعادة عرض خطوة بخطوة</h1>
+<p class="lead">سؤال واحد من تشغيل رسمي: من إجابة المساعد إلى حكم مِعيار وقرار البوابة، في سبع خطوات.</p>
+</div></header>
+<div id="replay" aria-live="polite">
+  <div class="notice empty"><strong>تُقرأ البيانات المحفوظة…</strong></div>
+</div>
+<noscript><div class="notice empty"><strong>تحتاج إعادة العرض إلى JavaScript.</strong>
+<span>السجلات نفسها في <a href="cases.html">صفحات الحالات</a>.</span></div></noscript>
+<p class="replay-banner" role="note" id="replay-banner"><strong>إعادة عرض لتشغيل رسمي محفوظ — ليس تشغيلاً حياً</strong></p>
+</main>
+<footer class="site">
+  <p class="foot-line"><strong>مِعيار</strong> <span class="muted">أداة مدعومة بالذكاء الاصطناعي، لا تُصدر فتاوى</span>
+  <span class="sep" aria-hidden="true">·</span> <a href="https://github.com/w7by4nrcfd-cpu/Miyar" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a>
+  <span class="sep" aria-hidden="true">·</span> <a href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/LICENSE">رخصة MIT</a></p>
+  <p class="small foot-mode">يعرض الموقع نتائج محفوظة من تشغيلات رسمية؛ لا يشغّل التقييم من المتصفح</p>
+</footer>
+</div>
+</div>
+</body>
+</html>

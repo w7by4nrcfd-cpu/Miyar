@@ -371,8 +371,9 @@ def home(f: dict) -> str:
 <div class="hero-text">
   <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
   <p class="lead hero-line">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> بأسئلة موسومة، ويتحقق من آياته وأحاديثه، <strong>ولا يجيب هو عن الأسئلة الدينية</strong>.</p>
-  <p class="lead hero-line">جرّب الآن التحقق من آية أو حديث تلصقه (وضع ثانوي، ليس تقييماً لمساعد)، أو شاهد نتائج اختبار المساعدين.</p>
-  <p class="hero-buttons"><a class="btn btn-try" href="check.html">جرّب التحقق</a><a class="btn btn-try ghost" href="results.html">شاهد النتائج</a></p>
+  <p class="lead hero-line">شاهد خطوة بخطوة كيف حكم مِعيار على إجابات مساعد في تشغيل رسمي محفوظ، أو جرّب التحقق من آية أو حديث تلصقه (وضع ثانوي، ليس تقييماً لمساعد).</p>
+  <p class="hero-buttons"><a class="btn btn-try" href="replay.html">شاهد كيف يحكم مِعيار</a><a class="btn btn-try ghost" href="check.html">جرّب التحقق</a></p>
+  <p class="small hero-note">«شاهد كيف يحكم مِعيار»: إعادة عرض لتشغيل رسمي محفوظ</p>
 </div>
 </header>
 
@@ -1155,6 +1156,7 @@ def discovered_section(f: dict) -> str:
 </table></div>
 <p class="muted small">{COMPARISON_CAVEAT} فلا يُستدل بالفرق بين الجولات على أن أحد المساعدين أفضل.</p>
 </details>
+<p class="more"><a href="replay.html">أعد عرض حالة خطوة بخطوة</a></p>
 </section>"""
 
 
@@ -1195,6 +1197,8 @@ def pages(f: dict) -> dict:
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
         "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
         "project.html": ("عن المشروع — مِعيار", project_page(f), ""),
+        "replay.html": ("إعادة عرض تشغيل رسمي — مِعيار", REPLAY_PAGE.replace("{banner}", REPLAY_BANNER),
+                        '<script type="module" src="assets/replay.js"></script>\n'),
         "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]).replace("{examples}", check_examples(f))
                        .replace("{hadith_count}", str(f["manual_done"])),
                        '<script type="module" src="assets/check.js"></script>\n'),
@@ -1243,6 +1247,7 @@ def page_descriptions(f: dict) -> dict:
         "results.html": "نتائج التشغيلات الرسمية المحفوظة: مقارنة المساعدَين baseline وrag، ودرجة كل مستوى، وقرار البوابة، مع عدد الحالات N.",
         "cases.html": f"{f['n']} حالة اختبار موسومة بمستوى المحتوى A–D والسلوك المتوقع، اختُبرت منها {f['n_tested']} رسمياً.",
         "case.html": "تفصيل حالة اختبار: السؤال، والسلوك المتوقع، وما سُجّل لها في التشغيل الرسمي إن وُجد.",
+        "replay.html": "إعادة عرض خطوة بخطوة لتشغيل رسمي محفوظ: السؤال، وإجابة المساعد، والاستشهادات ومطابقتها، وحكم مِعيار وفحوص السلوك والقرار. ليس تشغيلاً حياً.",
         "check.html": "تحقق من آية أو حديث تلصقه: مطابقة حرفية داخل متصفحك مع نص القرآن والملف اليدوي للأحاديث، دون نموذج لغوي.",
         "project.html": "عن مِعيار: مستويات المحتوى، والمصادر والمنهجية، والشفافية والخصوصية، والحالة.",
         **about,
@@ -1269,6 +1274,20 @@ def render() -> dict[str, str]:
         for name, (title, body, head_extra) in pages(f).items()
     }
 
+
+# ---------- إعادة عرض تشغيل رسمي محفوظ (PR3) ----------
+# النص نفسه في web/assets/replay-core.js (BANNER)، ويتحقق من تطابقهما tests/test_web.py
+REPLAY_BANNER = "إعادة عرض لتشغيل رسمي محفوظ — ليس تشغيلاً حياً"
+REPLAY_PAGE = """
+<h1>كيف يحكم مِعيار؟ إعادة عرض خطوة بخطوة</h1>
+<p class="lead">سؤال واحد من تشغيل رسمي: من إجابة المساعد إلى حكم مِعيار وقرار البوابة، في سبع خطوات.</p>
+<div id="replay" aria-live="polite">
+  <div class="notice empty"><strong>تُقرأ البيانات المحفوظة…</strong></div>
+</div>
+<noscript><div class="notice empty"><strong>تحتاج إعادة العرض إلى JavaScript.</strong>
+<span>السجلات نفسها في <a href="cases.html">صفحات الحالات</a>.</span></div></noscript>
+<p class="replay-banner" role="note" id="replay-banner"><strong>{banner}</strong></p>
+"""
 
 # ---------- تحقق من نص (وضع ثانوي) ----------
 def check_examples(f: dict) -> str:
