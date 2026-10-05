@@ -376,3 +376,27 @@ mark.diff { background: var(--rev-bg); color: var(--rev-fg); border-radius: 4px;
 .diff-line { margin: 0; }
 .near-card .not-support { margin: 0; font-weight: 700; }
 .hint-card { border-style: dashed; }
+
+/* تنظيم الموقع: الشريط الفرعي لصفحات «عن المشروع»، وأزرار الرئيسية، والتفاصيل التقنية المطوية */
+.hero-line { margin: 0 0 var(--s2); max-width: 62ch; }
+.hero-buttons { display: flex; flex-wrap: wrap; gap: 12px; margin: var(--s3) 0 0; }
+.hero-buttons .btn-try { box-shadow: none; }
+.hero-buttons .btn-try.ghost { border: 2px solid var(--accent); }
+.hero-buttons .btn-try { flex: 1 1 0; justify-content: center; box-sizing: border-box; min-width: 140px; }
+@media (max-width: 479px) {
+  .hero { padding-block: var(--s3); }
+  .hero h1 { font-size: 1.625rem; margin-bottom: var(--s2); }
+  .hero-line { font-size: 1.0625rem; line-height: 1.75; margin-bottom: var(--s1); }
+  .hero-buttons { margin-top: var(--s2); }
+  .hero-buttons .btn-try { font-size: 1.0625rem; padding: 0 var(--s2); }
+}
+.subnav { margin: var(--s2) 0 var(--s3); }
+.subnav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.subnav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); text-decoration: none; }
+.subnav a:hover { background: var(--surface-2); }
+.subnav a[aria-current="location"] { background: var(--surface-2); color: var(--accent); font-weight: 700; border-color: var(--accent); }
+details.tech { margin: var(--s2) 0 var(--s3); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+details.tech > summary { display: flex; align-items: center; min-height: 44px; padding: 0 var(--s2); cursor: pointer; font-weight: 700; color: var(--accent); }
+details.tech[open] > summary { border-bottom: 1px solid var(--line); }
+details.tech .tech-list { padding: var(--s2); }
+.about-list a { font-size: 1.125rem; }

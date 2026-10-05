@@ -14,7 +14,8 @@ npx wrangler deploy --assets=./web --name miyar --compatibility-date=2026-10-01
 - الدفع إلى `main` ينشر الموقع الحي تلقائياً (مسجّل في BASELINE.md)؛ لذلك أي تعديل في `web/` يمر بفرع تطوير ثم Pull Request، ولا دمج ولا نشر إلا بموافقتي الصريحة.
 
 الصفحات: `index.html` (الرئيسية)، `levels.html` (مستويات المحتوى)، `sources.html` (المصادر والمنهجية)،
-`cases.html` (حالات الاختبار)، `status.html` (الحالة)، `transparency.html` (الشفافية والخصوصية)، `results.html` (النتائج).
+`cases.html` (حالات الاختبار)، `status.html` (الحالة)، `transparency.html` (الشفافية والخصوصية)، `results.html` (النتائج)،
+`check.html` (تحقق من نص)، `case.html` (تفصيل حالة)، و`project.html` (عن المشروع: تصل المستويات والمصادر والشفافية والحالة). القائمة أربعة عناصر: جرّب، النتائج، الحالات، عن المشروع.
 تُولَّد من `scripts/build_web_pages.py`؛ بعد أي تعديل شغّله وأضف الناتج إلى commit على فرع التطوير.
 
 ملاحظات:

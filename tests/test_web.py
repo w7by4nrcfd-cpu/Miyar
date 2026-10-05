@@ -9,7 +9,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
-PAGES = ["index.html", "levels.html", "sources.html", "cases.html", "status.html", "transparency.html", "results.html"]
+PAGES = ["index.html", "levels.html", "sources.html", "cases.html", "status.html", "transparency.html", "results.html", "project.html"]
 
 
 def _load_builder():
@@ -46,7 +46,12 @@ def test_redteam_item_is_deferred_not_counted_and_cites_verified_cases():
     """Red Teaming: «مؤجَّل خارج نطاق التسليم: لا وحدة تشغيل مستقلة»، لا يُحتسب مكتملاً، وأعداد الحالات العدائية محسوبة من testsets/."""
     status = _text("status.html")
     assert "مؤجَّل خارج نطاق التسليم: لا وحدة تشغيل مستقلة." in status
-    assert "الملف miyar/redteam.py غير موجود بعد" not in status
+    # اسم الملف ودليله في طبقة «التفاصيل التقنية» المطوية لا في نص البند الظاهر
+    tech = _page("status.html")
+    tech = tech[tech.index('<details class="tech">', tech.index("وحدة Red Teaming") - 4000):]
+    assert "miyar/redteam.py" in tech
+    visible = re.search(r'<li><span class="badge[^>]*>.*?مؤجَّل.*?وحدة Red Teaming.*?</li>', _page("status.html"), re.S).group(0)
+    assert "miyar/redteam.py" not in visible
     f = _load_builder().facts()
     _, p1 = _load_builder().status_items(f)
     item = next(i for i in p1 if i[2] == "miyar/redteam.py")
@@ -101,14 +106,26 @@ def _text(name):
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", _page(name)))
 
 
-def test_old_about_page_removed_and_nav_complete():
-    assert not (WEB / "about.html").exists()
-    for page in PAGES:
+def test_old_about_page_removed_and_nav_has_four_items():
+    """القائمة أربعة عناصر: جرّب والنتائج والحالات وعن المشروع؛ و«عن المشروع» تضم المستويات والمصادر والشفافية والحالة."""
+    assert not (WEB / "about.html").exists() and (WEB / "project.html").is_file()
+    nav_hrefs = ["check.html", "results.html", "cases.html", "project.html"]
+    about = {"levels.html", "sources.html", "transparency.html", "status.html", "project.html"}
+    for page in [*PAGES, "case.html", "check.html"]:
         html = _page(page)
         assert "about.html" not in html
-        for other in PAGES:
-            assert f'href="{other}"' in html, (page, other)
-        assert html.count('aria-current="page"') == 1
+        nav = html[html.index('<nav class="main"'):html.index("</nav>")]
+        assert [h for h in re.findall(r'href="([^"]+)"', nav)] == nav_hrefs, page
+        current = re.findall(r'href="([^"]+)" aria-current="page"', nav)
+        expected = {"project.html": "project.html", "case.html": "cases.html", "index.html": None}
+        want = expected.get(page, page if page in nav_hrefs else ("project.html" if page in about else None))
+        assert current == ([want] if want else []), (page, current)
+    for page in about - {"project.html"}:
+        assert _page(page).count('aria-current="location"') == 1, page  # الشريط الفرعي
+    for page in about:  # صفحة المشروع تصل الصفحات الأربع
+        for target in about - {"project.html"}:
+            if page == "project.html":
+                assert f'href="{target}"' in _page(page), target
 
 
 def test_home_defines_miyar_in_one_sentence_and_track_four():

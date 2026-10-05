@@ -33,15 +33,19 @@ REPO = "https://github.com/w7by4nrcfd-cpu/Miyar"
 BLOB = f"{REPO}/blob/main/"
 
 NAV = [
-    ("check.html", "تحقق من نص"),
-    ("index.html", "الرئيسية"),
-    ("levels.html", "مستويات المحتوى"),
-    ("sources.html", "المصادر والمنهجية"),
-    ("cases.html", "حالات الاختبار"),
-    ("status.html", "الحالة"),
-    ("transparency.html", "الشفافية والخصوصية"),
+    ("check.html", "جرّب"),
     ("results.html", "النتائج"),
+    ("cases.html", "الحالات"),
+    ("project.html", "عن المشروع"),
 ]
+# «عن المشروع» تضم هذه الصفحات (تبقى صفحات مستقلة، ويصلها الزائر من صفحة المشروع ومن الشريط الفرعي)
+ABOUT_PAGES = [
+    ("levels.html", "مستويات المحتوى", "المستويات A–D وما يُتوقَّع من المساعد في كل مستوى."),
+    ("sources.html", "المصادر والمنهجية", "من أين البيانات، وكيف نحكم، وما المراجع التي لم نستخدمها."),
+    ("transparency.html", "الشفافية والخصوصية", "ما نفعله وما لا نفعله، وأدوات الذكاء الاصطناعي المستخدمة، والخصوصية."),
+    ("status.html", "الحالة", "ما اكتمل وما لم يكتمل وحدوده، محسوباً من المستودع."),
+]
+ABOUT_HREFS = {h for h, _, _ in ABOUT_PAGES} | {"project.html"}
 
 DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026."
 # تنبيه المقارنة: النص نفسه في web/assets/results-core.js (COMPARISON_CAVEAT)، ويتحقق من تطابقهما tests/test_web.py
@@ -376,14 +380,10 @@ def home(f: dict) -> str:
 {pattern_svg()}
 <div class="hero-grid">
   <div class="hero-text">
-    <div class="try-box">
-      <a class="btn btn-try" href="check.html">جرّب مِعيار بنفسك</a>
-      <p class="muted small try-note">«جرّب» وضع ثانوي: يفحص آيات وأحاديث في نص تلصقه، داخل متصفحك، وليس تقييماً لمساعد.</p>
-    </div>
-    <p class="eyebrow">المسار الرابع: أدوات المعرفة والتحقق</p>
     <h1>مِعيار: اختبار المساعد الذكي في المحتوى الإسلامي</h1>
-    <p class="lead">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
-    <p class="hero-actions"><a class="btn ghost" href="sources.html">المصادر والمنهجية</a><a class="btn ghost" href="cases.html">حالات الاختبار</a></p>
+    <p class="lead hero-line">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> بأسئلة موسومة، ويتحقق من آياته وأحاديثه، <strong>ولا يجيب هو عن الأسئلة الدينية</strong>.</p>
+    <p class="lead hero-line">جرّب الآن التحقق من آية أو حديث تلصقه (وضع ثانوي، ليس تقييماً لمساعد)، أو شاهد نتائج اختبار المساعدين.</p>
+    <p class="hero-buttons"><a class="btn btn-try" href="check.html">جرّب التحقق</a><a class="btn btn-try ghost" href="results.html">شاهد النتائج</a></p>
   </div>
   <figure class="flow">
     <figcaption>مسار العمل: حالة كل مرحلة محسوبة من كود المستودع</figcaption>
@@ -394,6 +394,11 @@ def home(f: dict) -> str:
   </figure>
 </div>
 </header>
+
+<section class="sec">
+<h2>ما هو مِعيار؟</h2>
+<p class="prose">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
+</section>
 
 <section class="sec">
 <h2>مسار العمل</h2>
@@ -921,17 +926,22 @@ def status_items(f: dict) -> tuple[list, list]:
 
 
 def checklist(items) -> str:
-    out = []
+    """بنود الحالة: الشارة والنص ظاهران، وأسماء الملفات وأدلتها في طبقة مطوية «التفاصيل التقنية» (لا تُحذف).
+    الصياغة المخصّصة لبند (مثل «مؤجَّل خارج نطاق التسليم…») تبقى ظاهرة لأنها جزء من معناه."""
+    out, tech = [], []
     for text, done, evidence, *rest in items:
         partial = bool(rest and rest[0]) and not done
         custom = rest[1] if len(rest) > 1 else None  # صياغة مخصّصة للشارة والدليل (مثل «مؤجَّل»)
         b = (badge("ok", "اكتمل") if done else badge("todo", custom["badge"]) if custom else
              badge("rev", "جاهز جزئياً") if partial else badge("todo", "لم يُنفَّذ بعد"))
-        ev = (_esc(custom["evidence"]) if custom else
-              f"الدليل: {link(evidence)}" if (ROOT / evidence).exists()
+        shown = f'<span class="evidence">{_esc(custom["evidence"])}</span>' if custom else ""
+        out.append(f'  <li>{b}<span class="what">{text}</span>{shown}</li>')
+        ev = (f"الدليل: {link(evidence)}" if (ROOT / evidence).exists()
               else f'الملف <span class="mono">{_esc(evidence)}</span> غير موجود بعد')
-        out.append(f'  <li>{b}<span class="what">{text}</span><span class="evidence">{ev}</span></li>')
-    return '<ul class="checklist">\n' + "\n".join(out) + "\n</ul>"
+        tech.append(f'    <li><span class="what">{text}</span><span class="evidence">{ev}</span></li>')
+    return ('<ul class="checklist">\n' + "\n".join(out) + "\n</ul>\n"
+            '<details class="tech"><summary>التفاصيل التقنية (الملفات والأدلة)</summary>\n'
+            '  <ul class="checklist tech-list">\n' + "\n".join(tech) + "\n  </ul>\n</details>")
 
 
 def progress(label: str, done: int, total: int, pid: str) -> str:
@@ -1060,12 +1070,31 @@ def pages(f: dict) -> dict:
         "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f), ""),
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
         "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
+        "project.html": ("عن المشروع — مِعيار", project_page(f), ""),
         "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]),
                        '<script type="module" src="assets/check.js"></script>\n'),
     }
 
 
+def subnav_html(current: str) -> str:
+    """شريط فرعي في صفحات «عن المشروع»: الروابط الأربعة وصفحة المشروع، للتنقل بينها بنقرة."""
+    items = [("project.html", "عن المشروع")] + [(h, label) for h, label, _ in ABOUT_PAGES]
+    cur = ' aria-current="location"'
+    lis = "".join(f'<li><a href="{h}"{cur if h == current else ""}>{label}</a></li>' for h, label in items)
+    return f'<nav class="subnav" aria-label="أقسام «عن المشروع»"><ul>{lis}</ul></nav>\n'
+
+
+def project_page(f: dict) -> str:
+    cards = "".join(f'<li><a href="{h}">{label}</a><span>{desc}</span></li>' for h, label, desc in ABOUT_PAGES)
+    return f"""
+<h1>عن المشروع</h1>
+<p class="lead">مِعيار يختبر المساعد الذكي في المحتوى الإسلامي. هذه الصفحات تشرح كيف يعمل وما حدوده وما اكتمل منه.</p>
+<ul class="index-list about-list">{cards}</ul>
+"""
+
+
 def nav_html(current: str) -> str:
+    current = "project.html" if current in ABOUT_HREFS else current
     items = []
     for href, label in NAV:
         cur = ' aria-current="page"' if href == current else ""
@@ -1073,11 +1102,19 @@ def nav_html(current: str) -> str:
     return "\n".join(items)
 
 
+def _with_subnav(name: str, html: str) -> str:
+    """يضع الشريط الفرعي مباشرة بعد رأس الصفحة في صفحات «عن المشروع» (عدا صفحة المشروع نفسها)."""
+    if name not in ABOUT_HREFS or name == "project.html":
+        return html
+    head, sep, rest = html.partition("</header>\n")
+    return head + sep + subnav_html(name) + rest
+
+
 def render() -> dict[str, str]:
     f = facts()
     card = status_card(f)
     return {
-        name: LAYOUT.format(title=title, body=page_head(body.strip("\n")), head_extra=head_extra,
+        name: LAYOUT.format(title=title, body=_with_subnav(name, page_head(body.strip("\n"))), head_extra=head_extra,
                             nav=nav_html("cases.html" if name == "case.html" else name),
                             quran_version=f["quran_version"], repo=REPO, blob=BLOB, status_card=card, brand_mark=BRAND_MARK)
         for name, (title, body, head_extra) in pages(f).items()
