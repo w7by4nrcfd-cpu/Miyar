@@ -84,6 +84,6 @@ def test_case_page_shell_and_links():
     cases_html = (WEB / "cases.html").read_text(encoding="utf-8")
     assert all(f'href="case.html?id={cid}"' in cases_html for cid in CASES)
     js = (WEB / "assets/case.js").read_text(encoding="utf-8") + (WEB / "assets/case-core.js").read_text(encoding="utf-8")
-    for needle in ("لا سجل رسمي بعد", "إجابة المساعد المُختبَر — ليست من مِعيار", "أُحيلت إلى مراجعة بشرية", "ثقة الحَكَم", "سبب الحكم"):
+    for needle in ("ليست ضمن الحالات الاثنتي عشرة المُشغَّلة رسمياً", "إجابة المساعد المُختبَر — ليست من مِعيار", "أُحيلت إلى مراجعة بشرية", "ثقة الحَكَم", "سبب الحكم"):
         assert needle in js, needle
     assert ".innerHTML" not in js and "insertAdjacentHTML" not in js  # نص فقط، لا HTML من البيانات

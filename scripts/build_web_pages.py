@@ -388,9 +388,6 @@ def home(f: dict) -> str:
   <figure class="flow">
     <figcaption>مسار العمل: حالة كل مرحلة محسوبة من كود المستودع</figcaption>
 {flow_svg(steps)}
-    <ul class="legend" aria-label="مفتاح الرسم">
-      <li>{badge("ok", "جاهز")}</li><li>{badge("rev", "جاهز جزئياً")}</li><li>{badge("todo", "لم يُبنَ بعد")}</li>
-    </ul>
   </figure>
 </div>
 </header>
@@ -398,12 +395,6 @@ def home(f: dict) -> str:
 <section class="sec">
 <h2>ما هو مِعيار؟</h2>
 <p class="prose">مِعيار يختبر <strong>المساعد الذكي نفسه</strong> ويحكم على إجاباته في المحتوى الإسلامي، <strong>ولا يجيب هو</strong> عن الأسئلة، وهو مشاركة في <strong>المسار الرابع: أدوات المعرفة والتحقق</strong> من تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026.</p>
-</section>
-
-<section class="sec">
-<h2>مسار العمل</h2>
-<p class="prose">كل سؤال يمر بست مراحل. حالة كل مرحلة («جاهز» أو «لم يُبنَ بعد») محسوبة من كود المستودع نفسه؛
-وما لم يُبنَ يُبنى في أيام التحدي (4–6 أكتوبر 2026). انظر <a href="status.html">الحالة</a>.</p>
 </section>
 
 <section class="sec">
@@ -504,7 +495,7 @@ def levels(f: dict) -> str:
 <h2>تنبيه</h2>
 <div class="notice">
   <p>نص الأمثلة منقول من الحزمة العلمية، أما وسم كل مثال بمستواه وسلوكه المتوقع فمن إعداد المشروع،
-  و{specialist_sentence(f)} {source_check_sentence(f)}</p>
+  و{source_check_sentence(f)}</p>
 </div>
 """
 
@@ -657,8 +648,7 @@ def sources(f: dict) -> str:
   <li><strong>الحَكَم الآلي يطبّق معياراً مكتوباً ولا يضعه</strong>، ونموذج الحكم يختلف عن نموذج المساعد المُختبَر.</li>
   <li><strong>المراجعة:</strong> النوع المعتمد الآن <strong>تحقق المصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
     وهو غير متخصص شرعياً، مقابل Quranpedia والدرر السنية والمكتبة الشاملة؛ وهذا <strong>ليس</strong> مراجعة شرعية.
-    والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية ومعلّقة حتى يتوفر مراجع، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.
-    {specialist_sentence(f)}</li>
+    والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية ومعلّقة حتى يتوفر مراجع، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.</li>
   <li><strong>حدود المقارنة بين baseline وrag:</strong> {COMPARISON_CAVEAT}
     والأرقام من عدد محدود من الحالات (N مذكور بجانب كل رقم)، فلا تُعمَّم. والتنبيه نفسه ثابت بجوار المقارنة وقرار البوابة في <a href="results.html">النتائج</a>.</li>
 </ol>
@@ -711,10 +701,10 @@ def review_badge(c: dict) -> str:
     if status == "approved" and role == "specialist":
         return badge("ok", "معتمدة شرعياً")
     if status == "approved" and role == "source_check":
-        return badge("rev", "تحقق مصادر (ليس مراجعة شرعية)")
+        return badge("rev", "راجعها صاحب المشروع (تحقق مصادر)")
     if status == "rejected":
         return badge("bad", "مرفوضة")
-    return badge("todo", "لم يُتحقق منها بعد")
+    return ""  # غير المراجَعة بلا شارة؛ وعدد المراجَعة في أعلى القائمة
 
 
 def cases_page(f: dict) -> str:
@@ -740,7 +730,7 @@ def cases_page(f: dict) -> str:
 تُقرأ من ملفات المستودع عند توليد هذه الصفحة ({link("testsets/official_v0.json")} و{link("testsets/extended_v1.json")}).</p>
 <div class="notice">
   <p><strong>لا حكم ولا نتيجة هنا.</strong> هذه الصفحة تعرض ما يُنتظر من المساعد فقط، لا ما أجاب به.
-  والسلوك المتوقع مسودة من إعداد المشروع. {specialist_sentence(f)} {source_check_sentence(f)}
+  والسلوك المتوقع مسودة من إعداد المشروع.
   ولا يُعرض نص السؤال في هذا الجدول، لأن بعض الأسئلة تتضمن عمداً آيات منقولة بخطأ أو أحاديث لا تصح لاختبار المساعد؛
   واضغط معرّف الحالة لصفحتها: السؤال مع تنبيه الفخ والنص الصحيح من البيانات، وما سُجّل لها في تشغيل رسمي إن وُجد.</p>
 </div>
@@ -750,6 +740,7 @@ def cases_page(f: dict) -> str:
   <div><label for="lv">المستوى</label><select id="lv"><option value="">كل المستويات</option>{lvl_opts}</select></div>
   <div><label for="ty">نوع الحالة</label><select id="ty"><option value="">كل الأنواع</option>{type_opts}</select></div>
 </form>
+<p class="review-line" id="review-line"><strong>المراجعة البشرية: {s["approved"]["source_check"] + s["approved"]["specialist"]} من {f["n"]} حالة</strong></p>
 <p class="count" id="count" aria-live="polite">يُعرض {f["n"]} من {f["n"]} حالة.</p>
 
 <div class="table-wrap" role="region" aria-label="جدول حالات الاختبار" tabindex="0"><table class="stack" id="cases" data-total="{f["n"]}">
@@ -962,8 +953,7 @@ def status(f: dict) -> str:
     return f"""
 <h1>الحالة</h1>
 <div class="notice">
-  <p>{runs} وأي رقم تقييم سيُعرض لاحقاً يكون ناتجاً عن تشغيل فعلي مسجّل في المستودع مع عدد الحالات.</p>
-  <p class="muted">كل بند أدناه يُحسب «اكتمل» أو «لم يُنفَّذ» من ملفات المستودع عند توليد الصفحة، لا يدوياً.</p>
+  <p>{runs} كل بند أدناه محسوب من ملفات المستودع عند توليد الصفحة.</p>
 </div>
 
 <h2>قبل أيام التحدي: الأساس</h2>
@@ -985,7 +975,6 @@ def status(f: dict) -> str:
 <h2>حدود معروفة</h2>
 <ul class="plain">
   <li>التحقق من الأحاديث محدود بما في الملف اليدوي؛ غياب المدخل أو نقصه يعني «يحتاج تحقق»، لا «غير صحيح».</li>
-  <li>{f["unused_domains"]} من مجالات الحزمة التسعة لم تُستخدم مراجعها بعد (انظر <a href="sources.html">المصادر والمنهجية</a>).</li>
   <li>نص القرآن العثماني المعروض «غير موافق للمطبوع» بحسب وصف ملفه في المصدر؛ وتحديث النسخة يدوي مع تسجيله.</li>
   <li>الحكم الآلي قد يخطئ، وهو مساعد للمراجعة البشرية لا بديل عنها؛ والمراجعة البشرية الآن تحقق مصادر، لا مراجعة شرعية متخصصة.</li>
 </ul>
@@ -1009,6 +998,7 @@ def transparency(f: dict) -> str:
   <li>لا يرجّح في مسائل الخلاف، ولا يحكم على حديث بالصحة أو الضعف.</li>
   <li>المطابقة الحرفية تكشف النقل المحرّف والإحالة الخاطئة، لكنها لا تحكم على صحة التفسير أو المعنى.</li>
   <li>فحص السلوك يعتمد على نموذج لغوي <strong>قد يخطئ</strong>؛ لذلك الحكم الآلي مساعد للمراجعة البشرية لا بديل عنها.</li>
+  <li>{SPECIALIST}</li>
 </ul>
 
 <h2>الإفصاح عن أدوات الذكاء الاصطناعي</h2>
@@ -1023,7 +1013,6 @@ def transparency(f: dict) -> str:
   </tbody>
 </table></div>
 <p>هذا الموقع ثابت ولا يستدعي أي نموذج لغوي. ومطابقة الآيات برمجية حرفية دون أي نموذج لغوي.</p>
-<p>لم يُستخدم أي نموذج من Anthropic داخل المنتج في التشغيل الرسمي (دعمه كحَكَم مبني في الكود ولم يُستدعَ).</p>
 <p>وضع التشغيل الحي موجود في المحرك عبر سطر الأوامر وغير متاح من الموقع؛ الموقع يعرض نتائج محفوظة من تشغيلات رسمية.</p>
 
 <h2>الخصوصية</h2>
@@ -1070,7 +1059,7 @@ def pages(f: dict) -> dict:
         "sources.html": ("المصادر والمنهجية — مِعيار", sources(f), ""),
         "cases.html": ("حالات الاختبار — مِعيار", cases_page(f), '<script type="module" src="assets/cases.js"></script>\n'),
         "status.html": ("الحالة — مِعيار", status(f), ""),
-        "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f), ""),
+        "transparency.html": ("الشفافية والخصوصية — مِعيار", transparency(f).replace("{SPECIALIST}", specialist_sentence(f)), ""),
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
         "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
         "project.html": ("عن المشروع — مِعيار", project_page(f), ""),
@@ -1119,7 +1108,8 @@ def render() -> dict[str, str]:
     return {
         name: LAYOUT.format(title=title, body=_with_subnav(name, page_head(body.strip("\n"))), head_extra=head_extra,
                             nav=nav_html("cases.html" if name == "case.html" else name),
-                            quran_version=f["quran_version"], repo=REPO, blob=BLOB, status_card=card, brand_mark=BRAND_MARK)
+                            quran_version=f["quran_version"], repo=REPO, blob=BLOB,
+                            status_card=card if name == "status.html" else "", brand_mark=BRAND_MARK)
         for name, (title, body, head_extra) in pages(f).items()
     }
 

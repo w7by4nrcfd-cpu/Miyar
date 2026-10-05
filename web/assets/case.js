@@ -141,8 +141,8 @@ function runCard(run, c, meta) {
 function recordSection(view, c, meta) {
   const sec = el("section", { class: "case-card", "aria-labelledby": "r-h" }, el("h2", { id: "r-h" }, "السجل الرسمي"));
   if (view.state === "none") {
-    sec.append(notice("empty", "لا سجل رسمي بعد",
-      "لم يُنشر لهذه الحالة تشغيل رسمي مسجّل في evaluation/official/؛ فلا إجابة ولا حكم يُعرض، ولا بيانات تجريبية."));
+    sec.append(notice("empty", "ليست ضمن الحالات الاثنتي عشرة المُشغَّلة رسمياً",
+      "فلا إجابة ولا حكم يُعرض لها، ولا بيانات تجريبية."));
     return sec;
   }
   if (view.state === "invalid") {

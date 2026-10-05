@@ -28,10 +28,15 @@ def test_page_is_arabic_rtl_mobile(page):
 
 
 @pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
-def test_mode_bar_cached_only_no_live_button(page):
-    """وضع العرض «نتائج محفوظة» وحده: لا زر «تشغيل حي» ولا عبارة «معطّل حالياً» في أي صفحة."""
+def test_status_card_only_on_status_page_and_no_live_button(page):
+    """البطاقة الجانبية (وضع العرض «نتائج محفوظة» والأساس ونواة التقييم مع الشريطين) في صفحة الحالة وحدها؛
+    ولا زر «تشغيل حي» ولا عبارة «معطّل حالياً» في أي صفحة."""
     html = (WEB / page).read_text(encoding="utf-8")
-    assert "نتائج محفوظة" in html and 'class="mode on"' in html
+    if page == "status.html":
+        assert 'class="status-card"' in html and "نتائج محفوظة" in html and 'class="mode on"' in html
+        assert html.count("<progress") >= 2
+    else:
+        assert 'class="status-card"' not in html and 'class="sc-progress"' not in html
     assert "تشغيل حي — معطّل" not in html and "معطّل حالياً" not in html
     assert not re.search(r'<button[^>]*class="mode"', html)
 
@@ -170,7 +175,7 @@ def test_transparency_ai_table_matches_reality():
     t = _text("transparency.html")
     assert "gemini-3.5-flash-lite" in t and "المساعد المُختبَر" in t
     assert "openai/gpt-oss-120b" in t and "استخراج الإسنادات وحكم السلوك" in t and "بلا نموذج احتياط" in t
-    assert "لم يُستخدم أي نموذج من Anthropic داخل المنتج في التشغيل الرسمي" in t
+    assert "Anthropic" not in t  # تبقى في README لا في الموقع
     assert "مخطط استخدامه" not in t and "اختبارات اتصال تطويرية فقط" not in t
 
 
@@ -278,7 +283,7 @@ def test_transparency_page_disclosures():
         assert needle in t, needle
 
 
-@pytest.mark.parametrize("page", PAGES)
+@pytest.mark.parametrize("page", ["status.html"])  # البطاقة الجانبية في صفحة الحالة وحدها
 def test_mode_bar_says_display_only_not_official(page):
     t = _text(page)
     if _published_runs():
@@ -340,7 +345,7 @@ def test_results_core_js():
     assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-2000:]
 
 
-@pytest.mark.parametrize("page", ["status.html", "levels.html", "sources.html", "cases.html"])
+@pytest.mark.parametrize("page", ["status.html", "transparency.html"])
 def test_no_specialist_review_is_stated_honestly(page):
     """ما دامت لا توجد مراجعة specialist مسجّلة: تقول الصفحة صراحة إنها لم تُجرَ، ولا تعرض «معتمدة شرعياً» شارةً لأي حالة."""
     f = _load_builder().facts()
@@ -360,3 +365,27 @@ def test_comparison_caveat_on_methodology_and_results():
     js = (WEB / "assets/results.js").read_text(encoding="utf-8")
     assert '"compare-caveat"' in js and '"gate-caveat"' in js
     assert "تميل لصالح rag" in (ROOT / "docs/METHODOLOGY.md").read_text(encoding="utf-8")
+
+
+def test_noise_removed_and_specialist_phrase_only_where_kept():
+    """قرارات التنظيف: لا فقرة «ست مراحل» ولا مفتاح الرسم في الرئيسية، ولا سطر «مجالات الحزمة التسعة» في الحالة،
+    وعبارة «لم تُجرَ مراجعة شرعية متخصصة» في الشفافية والحالة (والنتائج من results.js) فقط."""
+    home = _page("index.html")
+    assert "ست مراحل" not in home and 'class="legend"' not in home and "لم يُبنَ بعد" not in home
+    status = _text("status.html")
+    assert "مجالات الحزمة التسعة" not in status and "وحدة Red Teaming" in status
+    assert "كل بند أدناه محسوب من ملفات المستودع عند توليد الصفحة." in status
+    for page in ("levels.html", "sources.html", "cases.html", "index.html", "project.html", "check.html"):
+        assert "لم تُجرَ مراجعة شرعية متخصصة" not in _page(page), page
+    assert "لم تُجرَ مراجعة شرعية متخصصة" in (WEB / "assets/results.js").read_text(encoding="utf-8")
+
+
+def test_cases_list_review_line_and_badges_from_data():
+    cases = [c for name in ("official_v0", "extended_v1")
+             for c in json.loads((ROOT / f"testsets/{name}.json").read_text(encoding="utf-8"))["cases"]]
+    approved = [c for c in cases if c.get("review_status") == "approved"]
+    html = _page("cases.html")
+    assert f"المراجعة البشرية: {len(approved)} من {len(cases)} حالة" in _text("cases.html")
+    assert "لم يُتحقق منها بعد" not in html
+    src = sum(1 for c in approved if c.get("reviewer_role") == "source_check")
+    assert html.count("راجعها صاحب المشروع (تحقق مصادر)") == src
