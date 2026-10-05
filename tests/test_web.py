@@ -149,16 +149,29 @@ def _registry_rows():
     return re.findall(r'<tr><th scope="row">([^<]*)</th>(.*?)</tr>', table, re.S)
 
 
-def test_sources_registry_nine_domains_only_quran_and_hadith_used():
+def test_sources_registry_shows_only_used_sources_and_states_scope():
+    """السجل يعرض المستخدم فقط (القرآن والحديث)؛ والمجالات الأخرى خارج النطاق وتفاصيلها في SOURCES.md. المولّد يحتفظ بالتسعة داخلياً."""
     rows = _registry_rows()
-    assert len(rows) == 9
-    used = [name for name, body in rows if "b-todo" not in body.split('data-label="الحالة">', 1)[1].split("</td>", 1)[0]]
-    assert used == ["القرآن الكريم", "الحديث"]
+    assert [name for name, _ in rows] == ["القرآن الكريم", "الحديث"]
+    assert len(_load_builder().domains(_load_builder().facts())) == 9  # العدّاد في صفحة الحالة يبقى محسوباً من التسعة
+    page = re.sub(r"\s+\)", ")", _text("sources.html"))
+    for gone in ("الموضوعات الدعوية", "dorar.net/tafseer", "dorar.net/aqeeda", "dorar.net/feqhia", "dorar.net/history", "dawa.center",
+                 "islamic-content.com", "الترجمة والمصطلحات", "لم يُستخدم بعد"):
+        assert gone not in _page("sources.html").split("أصناف الحكم")[0], gone
+    assert ("المرجعية المعتمدة أوسع مما نستخدمه؛ مِعيار يغطي القرآن والحديث فقط، وباقي مجالاتها خارج النطاق الحالي (التفاصيل في SOURCES.md).") in page
     for name, body in rows:
         # كل صف: رابط رسمي للمرجع ورابط إثبات في المستودع، والأعمدة السبعة
         for label in ("المرجع المعتمد في الحزمة", "الحالة", "كيف استُخدم", "كيف يُتحقق منه", "الترخيص والحقوق", "القيود والحدود", "الإثبات في المستودع"):
             assert f'data-label="{label}"' in body, (name, label)
         assert 'href="https://' in body and "github.com/w7by4nrcfd-cpu/Miyar/blob/main/" in body, name
+
+
+def test_transparency_ai_table_matches_reality():
+    t = _text("transparency.html")
+    assert "gemini-3.5-flash-lite" in t and "المساعد المُختبَر" in t
+    assert "openai/gpt-oss-120b" in t and "استخراج الإسنادات وحكم السلوك" in t and "بلا نموذج احتياط" in t
+    assert "لم يُستخدم أي نموذج من Anthropic داخل المنتج في التشغيل الرسمي" in t
+    assert "مخطط استخدامه" not in t and "اختبارات اتصال تطويرية فقط" not in t
 
 
 @pytest.mark.parametrize("page", PAGES)
