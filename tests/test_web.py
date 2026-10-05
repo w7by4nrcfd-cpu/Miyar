@@ -427,3 +427,35 @@ def test_review_wording_relative_not_brother_on_site_and_snapshot_explained():
     case_js = (WEB / "assets/case.js").read_text(encoding="utf-8")
     assert "راجعها بعد التشغيل خريج شريعة (قريب لصاحب المشروع)، والسجل الرسمي نفسه لم يتغير." in case_js
     assert "لم تُجرَ مراجعة شرعية متخصصة." in case_js  # لبقية الحالات
+
+
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+def test_page_identity_metadata_inline_and_static(page):
+    """وصف وعنوان لكل صفحة، وtheme-color، وأيقونتان مضمّنتان (data:)، وOpen Graph ثابت بلا صور خارجية."""
+    h = _page(page)
+    head = h[:h.index("</head>")]
+    assert re.search(r'<meta name="description" content="[^"]{20,}">', head)
+    assert head.count('name="theme-color"') == 2
+    assert '<link rel="icon" href="data:image/svg+xml,' in head and '<link rel="apple-touch-icon" href="data:image/png;base64,' in head
+    for prop in ("og:title", "og:description", "og:url", "og:type"):
+        assert f'property="{prop}"' in head, prop
+    assert "og:image" not in head
+
+
+def test_page_descriptions_are_distinct():
+    descs = {p: re.search(r'<meta name="description" content="([^"]+)">', _page(p)).group(1) for p in [*PAGES, "case.html", "check.html"]}
+    assert len(set(descs.values())) == len(descs)
+
+
+@pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html"])
+def test_footer_one_line_with_repo_and_license(page):
+    foot = _page(page)
+    foot = foot[foot.index('<footer class="site">'):foot.index("</footer>")]
+    assert 'class="foot-line"' in foot and "github.com/w7by4nrcfd-cpu/Miyar" in foot and "LICENSE" in foot and "MIT" in foot
+
+
+def test_cases_lead_counts_from_data():
+    b = _load_builder()
+    f = b.facts()
+    assert f"{f['n']} حالة اختُبرت منها {f['n_tested']} رسمياً" in _text("cases.html")
+    assert f["n_tested"] == max(r["n_cases"] for r in f["results"]["runs"])

@@ -167,6 +167,28 @@ test("صفحة التحقق في المتصفح", { skip: !pw && !process.env.CI
         const limits = await page.locator("#check-limits").innerText();
         for (const needle of ["ليست تقييماً لمساعد", "لا فتوى", "الأحاديث محدودة جداً", "يحتاج تحقق"]) assert.ok(limits.includes(needle), needle);
         assert.ok(!requests.includes("/assets/check/quran.json"), "حُمّل المصحف قبل الضغط");
+        assert.ok(!requests.includes("/assets/check/hadith.json"), "حُمّل ملف الأحاديث قبل الضغط");
+        assert.match(limits, /المدخلات المكتملة \(\d+\) فقط/);
+      });
+
+      await t.test(`${width} ${scheme}: أول ضغط ← «جارٍ تحميل بيانات القرآن…»، وفشل التحميل ← خطأ بخطوة تالية`, async () => {
+        const url = "**/assets/check/quran.json";
+        await page.route(url, (r) => r.abort());
+        await page.fill("#check-text", "قال تعالى: ﴿قل هو الله أحد﴾ (الإخلاص: 1)");
+        await page.click("#check-run");
+        await page.waitForSelector("#check-results .notice.error");
+        const err = await page.locator("#check-results").innerText();
+        assert.ok(err.includes("تعذّر تحميل بيانات القرآن والأحاديث") && err.includes("اضغط «تحقق» مرة أخرى"), err);
+        assert.equal(await page.locator("#check-results .badge").count(), 0, "حكم دون بيانات");
+        await page.unroute(url);
+        let release;
+        const gate = new Promise((r) => { release = r; });
+        await page.route(url, async (r) => { await gate; await r.continue(); });
+        await page.click("#check-run");
+        await page.waitForFunction(() => document.getElementById("check-results").innerText.includes("جارٍ تحميل بيانات القرآن…"));
+        release();
+        await page.waitForSelector(".check-card");
+        await page.unroute(url);
       });
 
       await t.test(`${width} ${scheme}: لصق نص ← حكم لكل آية وحديث`, async () => {

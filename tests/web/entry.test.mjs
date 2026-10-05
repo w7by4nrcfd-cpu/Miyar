@@ -97,6 +97,16 @@ test("أول شاشة في الرئيسية: سطران وزران، والقا�
         assert.equal(await details.evaluate((d) => d.open), true);
         assert.ok((await details.innerText()).includes("miyar/"), "أسماء الملفات غائبة من التفاصيل التقنية");
       });
+      await t.test(`${width} ${scheme}: الحالات: سطر العدد من البيانات، وحالة فارغة مهذبة للبحث بلا نتيجة`, async () => {
+        await page.goto(base + "cases.html", { waitUntil: "networkidle" });
+        assert.match(await page.locator(".page-head .lead").innerText(), /^\d+ حالة اختُبرت منها \d+ رسمياً/);
+        assert.equal(await page.locator("#no-match").isVisible(), false);
+        await page.fill("#q", "لا-يوجد-شيء-بهذا-النص");
+        assert.equal(await page.locator("#no-match").isVisible(), true);
+        assert.ok((await page.locator("#no-match").innerText()).includes("لا حالات تطابق البحث أو التصفية"));
+        await page.fill("#q", "");
+        assert.equal(await page.locator("#no-match").isVisible(), false);
+      });
       assert.deepEqual(errors, []);
       await ctx.close();
     }

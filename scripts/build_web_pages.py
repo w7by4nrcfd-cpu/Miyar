@@ -7,6 +7,7 @@
 """
 
 import ast
+import base64
 import hashlib
 import html
 import json
@@ -14,6 +15,7 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
@@ -30,6 +32,7 @@ QURAN_SOURCE = QURAN_DIR / "source.json"
 RESULTS_JSON = WEB / "data/results.json"
 BUILD_PLAN = ROOT / "docs/BUILD_PLAN.md"
 REPO = "https://github.com/w7by4nrcfd-cpu/Miyar"
+SITE = "https://miyar.w7by4nrcfd.workers.dev"
 BLOB = f"{REPO}/blob/main/"
 
 NAV = [
@@ -49,7 +52,7 @@ ABOUT_HREFS = {h for h, _, _ in ABOUT_PAGES} | {"project.html"}
 
 DEMO_NOTE = "للعرض فقط: لا توجد نتائج تقييم رسمية بعد؛ التشغيل الرسمي في أيام التحدي 4–6 أكتوبر 2026."
 # تنبيه المقارنة: النص نفسه في web/assets/results-core.js (COMPARISON_CAVEAT)، ويتحقق من تطابقهما tests/test_web.py
-COMPARISON_CAVEAT = ("مدخلات الأحاديث اليدوية التي يسترجعها rag (data/hadith/manual_hadith.json) أُعدّت لحالات الاختبار نفسها، "
+COMPARISON_CAVEAT = ("مدخلات الأحاديث اليدوية التي يسترجعها rag أُعدّت لحالات الاختبار نفسها، "
                      "فالمقارنة تميل لصالح rag.")
 # بعد نشر أول تشغيل رسمي (web/data/results.json غير فارغ) تتغير الصياغة؛ ولا تُدّعى نتائج قبل ذلك
 PUBLISHED_NOTE = "نتائج محفوظة من تشغيلات رسمية مسجّلة في evaluation/official/، كل رقم مع N."
@@ -64,9 +67,18 @@ LAYOUT = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
-<meta name="description" content="مِعيار يختبر المساعد الذكي نفسه في المحتوى الإسلامي ويحكم على إجاباته، ولا يجيب هو عن الأسئلة. المسار الرابع: أدوات المعرفة والتحقق.">
+<meta name="description" content="{description}">
+<meta name="theme-color" content="#0b1311" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f1e6" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="مِعيار">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{description}">
+<meta property="og:url" content="{site}/{page_path}">
 <title>{title}</title>
-<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="{favicon}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{touch_icon}">
 <link rel="stylesheet" href="assets/style.css">
 {head_extra}</head>
 <body>
@@ -85,22 +97,10 @@ LAYOUT = """<!doctype html>
 {body}
 </main>
 <footer class="site">
-  <div class="foot-grid">
-    <div>
-      <p><strong>مِعيار</strong> أداة مدعومة بالذكاء الاصطناعي لاختبار المساعدات الذكية في المحتوى الإسلامي،
-      <strong>ليست مختصاً شرعياً ولا تُصدر فتاوى</strong>. مشاركة في تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي 2026، المسار الرابع.</p>
-      <p>نص القرآن من تنزيلات <a href="https://quranpedia.net">Quranpedia.net</a> (النسخة {quran_version}).</p>
-      <p class="small foot-mode">يعرض الموقع نتائج محفوظة من تشغيلات رسمية؛ لا يشغّل التقييم من المتصفح</p>
-    </div>
-    <div>
-      <p class="foot-title">المستودع والتوثيق</p>
-      <ul>
-        <li><a href="{repo}" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a> (MIT)</li>
-        <li><a href="{blob}README.md">README</a> · <a href="{blob}docs/METHODOLOGY.md">المنهجية</a> · <a href="{blob}SOURCES.md">المصادر</a></li>
-        <li><a href="{blob}SOURCES_LICENSES.md">المكتبات والتراخيص</a> · <a href="{blob}BASELINE.md">نسخة البداية</a></li>
-      </ul>
-    </div>
-  </div>
+  <p class="foot-line"><strong>مِعيار</strong> <span class="muted">أداة مدعومة بالذكاء الاصطناعي، لا تُصدر فتاوى</span>
+  <span class="sep" aria-hidden="true">·</span> <a href="{repo}" class="ltr" lang="en">github.com/w7by4nrcfd-cpu/Miyar</a>
+  <span class="sep" aria-hidden="true">·</span> <a href="{blob}LICENSE">رخصة MIT</a></p>
+  <p class="small foot-mode">يعرض الموقع نتائج محفوظة من تشغيلات رسمية؛ لا يشغّل التقييم من المتصفح</p>
 </footer>
 </div>
 </div>
@@ -295,6 +295,8 @@ def facts() -> dict:
         "official_runs": len(runs),
         "published_runs": len(results.get("runs", [])),
         "results": results,
+        # عدد الحالات المُشغَّلة رسمياً (من سجلات النتائج المنشورة)
+        "n_tested": max((r["n_cases"] for r in results.get("runs", [])), default=0),
         # لقطة المراجعة البشرية في آخر تشغيل رسمي منشور (من results.json، لا من الحالات كلها)
         "official_review": (results["runs"][-1].get("human_reviewed") if results.get("runs") else None),
         "quran_version": src["dump_version"],
@@ -358,7 +360,7 @@ def results_glance(f: dict) -> str:
   <div class="stat"><span class="stat-label">الحالات في كل جولة</span><span class="stat-value"><span class="ltr" lang="en">N = {"/".join(map(str, n_cases))}</span></span><span class="small muted">أمثلة الحزمة العلمية</span></div>
   <div class="stat"><span class="stat-label">قرار البوابة</span>{gate_text}</div>
 </div>
-<p><a href="results.html">التفاصيل في صفحة النتائج</a></p>"""
+<p class="more"><a href="results.html">التفاصيل في صفحة النتائج</a></p>"""
 
 
 def home(f: dict) -> str:
@@ -579,7 +581,7 @@ def sources(f: dict) -> str:
 وأمثلة الحزمة العلمية ({f["n_off"]} أسئلة) منقولة نصاً في مجموعة الاختبار. التراخيص التفصيلية في {link("SOURCES.md")} و{link("SOURCES_LICENSES.md")}.</p>
 
 <h2 id="judgements">أصناف الحكم ({len(f["judgements"])})</h2>
-<p class="section-intro">كل خطأ يرصده مِعيار في إجابة المساعد سيُصنَّف في واحد من هذه الأصناف (من {link("docs/BUILD_PLAN.md")}).
+<p class="section-intro">كل خطأ يرصده مِعيار في إجابة المساعد يُصنَّف في واحد من هذه الأصناف (من {link("docs/BUILD_PLAN.md")}).
 الحكم الآلي نفسه {judge_badge}.</p>
 <div class="table-wrap" role="region" aria-label="أصناف الحكم" tabindex="0"><table class="stack">
   <caption>أصناف الحكم</caption>
@@ -621,7 +623,7 @@ def sources(f: dict) -> str:
   <li><strong>الحَكَم الآلي يطبّق معياراً مكتوباً ولا يضعه</strong>، ونموذج الحكم يختلف عن نموذج المساعد المُختبَر.</li>
   <li><strong>المراجعة:</strong> النوع المعتمد الآن <strong>تحقق المصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
     وهو غير متخصص شرعياً، مقابل Quranpedia والدرر السنية والمكتبة الشاملة؛ وهذا <strong>ليس</strong> مراجعة شرعية.
-    والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية ومعلّقة حتى يتوفر مراجع، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.</li>
+    والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية، وأُجريت بعد التشغيل الرسمي لحالة واحدة فقط (OFF-06)، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.</li>
   <li><strong>حدود المقارنة بين baseline وrag:</strong> {COMPARISON_CAVEAT}
     والأرقام من عدد محدود من الحالات (N مذكور بجانب كل رقم)، فلا تُعمَّم. والتنبيه نفسه ثابت بجوار المقارنة وقرار البوابة في <a href="results.html">النتائج</a>.</li>
 </ol>
@@ -695,8 +697,10 @@ def cases_page(f: dict) -> str:
     s = f["review"]
     return f"""
 <h1>حالات الاختبار</h1>
-<p class="lead">مجموعة الأسئلة التي سيُختبر بها المساعد: {f["n"]} حالة ({f["n_off"]} من أمثلة الحزمة العلمية + {f["n_ext"]} إضافية)،
-تُقرأ من ملفات المستودع عند توليد هذه الصفحة ({link("testsets/official_v0.json")} و{link("testsets/extended_v1.json")}).</p>
+<p class="lead">{f["n"]} حالة اختُبرت منها {f["n_tested"]} رسمياً <span class="muted">({f["n_off"]} من أمثلة الحزمة العلمية + {f["n_ext"]} إضافية)</span>.</p>
+<details class="tech"><summary>مصدر البيانات (ملفات المستودع)</summary>
+  <p>تُقرأ الحالات من {link("testsets/official_v0.json")} و{link("testsets/extended_v1.json")} عند توليد هذه الصفحة.</p>
+</details>
 <div class="notice">
   <p><strong>لا حكم ولا نتيجة هنا.</strong> هذه الصفحة تعرض ما يُنتظر من المساعد فقط، لا ما أجاب به.
   والسلوك المتوقع مسودة من إعداد المشروع.
@@ -720,6 +724,8 @@ def cases_page(f: dict) -> str:
 {chr(10).join(rows)}
   </tbody>
 </table></div>
+<div class="notice empty" id="no-match" role="status" hidden><strong>لا حالات تطابق البحث أو التصفية</strong>
+<span>جرّب كلمة أخرى، أو اختر «كل المستويات» و«كل الأنواع».</span></div>
 """
 
 
@@ -950,7 +956,7 @@ def status(f: dict) -> str:
 {progress("حالات تحقق المصادر المقبولة (النوع المعتمد الآن)", s["approved"]["source_check"], n, "pg3")}
 <p>{SPECIALIST_REVIEW_NOTE} التحقق الحالي <strong>تحقق مصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
 وهو غير متخصص شرعياً، مقابل نص القرآن من Quranpedia.net والأحاديث من الدرر السنية أو المكتبة الشاملة (الملف اليدوي).
-<strong>وتحقق المصادر ليس مراجعة شرعية متخصصة.</strong> والمراجعة الشرعية المتخصصة اختيارية ومعلّقة حتى يتوفر مراجع.</p>
+<strong>وتحقق المصادر ليس مراجعة شرعية متخصصة.</strong> والمراجعة الشرعية المتخصصة اختيارية، ولم تُجرَ لبقية الحالات.</p>
 </div>
 </section>
 
@@ -1047,7 +1053,8 @@ def pages(f: dict) -> dict:
         "results.html": ("النتائج — مِعيار", results_page(f), '<script type="module" src="assets/results.js"></script>\n'),
         "case.html": ("تفصيل الحالة — مِعيار", CASE_PAGE, '<script type="module" src="assets/case.js"></script>\n'),
         "project.html": ("عن المشروع — مِعيار", project_page(f), ""),
-        "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]).replace("{examples}", check_examples(f)),
+        "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]).replace("{examples}", check_examples(f))
+                       .replace("{hadith_count}", str(f["manual_done"])),
                        '<script type="module" src="assets/check.js"></script>\n'),
     }
 
@@ -1086,12 +1093,36 @@ def _with_subnav(name: str, html: str) -> str:
     return head + sep + subnav_html(name) + rest
 
 
+def page_descriptions(f: dict) -> dict:
+    """وصف كل صفحة (meta description وOpen Graph)؛ الأرقام فيه محسوبة من البيانات."""
+    about = {h: desc for h, _, desc in ABOUT_PAGES}
+    return {
+        "index.html": "مِعيار يختبر المساعد الذكي نفسه في المحتوى الإسلامي ويحكم على إجاباته، ولا يجيب هو عن الأسئلة. المسار الرابع: أدوات المعرفة والتحقق.",
+        "results.html": "نتائج التشغيلات الرسمية المحفوظة: مقارنة المساعدَين baseline وrag، ودرجة كل مستوى، وقرار البوابة، مع عدد الحالات N.",
+        "cases.html": f"{f['n']} حالة اختبار موسومة بمستوى المحتوى A–D والسلوك المتوقع، اختُبرت منها {f['n_tested']} رسمياً.",
+        "case.html": "تفصيل حالة اختبار: السؤال، والسلوك المتوقع، وما سُجّل لها في التشغيل الرسمي إن وُجد.",
+        "check.html": "تحقق من آية أو حديث تلصقه: مطابقة حرفية داخل متصفحك مع نص القرآن والملف اليدوي للأحاديث، دون نموذج لغوي.",
+        "project.html": "عن مِعيار: مستويات المحتوى، والمصادر والمنهجية، والشفافية والخصوصية، والحالة.",
+        **about,
+    }
+
+
+# أيقونة الموقع مضمّنة (SVG بنجمة الشعار)، وأيقونة الشاشة الرئيسية PNG مضمّنة من scripts/apple-touch-icon.png
+FAVICON_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b1311"/>'
+               '<g fill="#7dd3b0" fill-opacity=".2" stroke="#7dd3b0" stroke-width="3" stroke-linejoin="round">'
+               '<rect x="20" y="20" width="24" height="24"/><rect x="20" y="20" width="24" height="24" transform="rotate(45 32 32)"/></g></svg>')
+FAVICON = "data:image/svg+xml," + quote(FAVICON_SVG, safe=" =:/")
+TOUCH_ICON = "data:image/png;base64," + base64.b64encode((ROOT / "scripts/apple-touch-icon.png").read_bytes()).decode()
+
+
 def render() -> dict[str, str]:
     f = facts()
+    desc = page_descriptions(f)
     return {
         name: LAYOUT.format(title=title, body=_with_subnav(name, page_head(body.strip("\n"))), head_extra=head_extra,
                             nav=nav_html("cases.html" if name == "case.html" else name),
-                            quran_version=f["quran_version"], repo=REPO, blob=BLOB,
+                            repo=REPO, blob=BLOB, site=SITE, page_path="" if name == "index.html" else name.removesuffix(".html"),
+                            description=_attr(desc[name]), favicon=_attr(FAVICON), touch_icon=TOUCH_ICON,
                             brand_mark=BRAND_MARK)
         for name, (title, body, head_extra) in pages(f).items()
     }
@@ -1137,7 +1168,7 @@ CHECK_PAGE = """
     <li><strong>ليست تقييماً لمساعد:</strong> الوظيفة الأساسية لمِعيار اختبار المساعد كاملاً على مجموعة حالات (انظر <a href="results.html">النتائج</a>)؛ هذه الصفحة تفحص نصاً واحداً فقط.</li>
     <li><strong>لا فتوى ولا حكم شرعي:</strong> تفحص نسبة النص إلى مصدره فقط، ولا تحكم على معنى ولا على مسألة.</li>
     <li><strong>الآيات:</strong> مطابقة حرفية بعد توحيد التشكيل والهمزات مع نص Quranpedia (6236 آية). «مؤيَّد» فقط عند تطابق فعلي.</li>
-    <li><strong>الأحاديث محدودة جداً:</strong> تُطابَق مع <span id="hadith-count">المدخلات المكتملة</span> في الملف اليدوي وحدها؛ وكل حديث سواها «يحتاج تحقق»، وهذا لا يعني أنه ضعيف ولا صحيح.</li>
+    <li><strong>الأحاديث محدودة جداً:</strong> تُطابَق مع <span id="hadith-count">المدخلات المكتملة ({hadith_count}) فقط</span> في الملف اليدوي وحدها؛ وكل حديث سواها «يحتاج تحقق»، وهذا لا يعني أنه ضعيف ولا صحيح.</li>
   </ul>
   <details class="tech"><summary>تفاصيل الاستخراج والمطابقة</summary>
   <ul>
@@ -1148,8 +1179,11 @@ CHECK_PAGE = """
 </div>
 <noscript><div class="notice empty"><strong>تحتاج هذه الصفحة إلى JavaScript.</strong></div></noscript>
 <p class="muted">المصادر: نص القرآن من <a href="https://quranpedia.net" rel="noopener">Quranpedia.net</a> (النسخة {quran_version})، والأحاديث من الملف اليدوي
-<span class="ltr" lang="en">data/hadith/manual_hadith.json</span> (روابطه إلى الدرر السنية أو المكتبة الشاملة). المنطق نفسه في
-<span class="ltr" lang="en">miyar/paste_check.py</span>، واختبار يضمن تطابق نتائج المتصفح مع بايثون.</p>
+(روابطه إلى الدرر السنية أو المكتبة الشاملة).</p>
+<details class="tech"><summary>الملفات والاختبار</summary>
+  <p>الأحاديث من <span class="ltr" lang="en">data/hadith/manual_hadith.json</span>. والمنطق نفسه في
+  <span class="ltr" lang="en">miyar/paste_check.py</span>، واختبار يضمن تطابق نتائج المتصفح مع بايثون.</p>
+</details>
 """
 
 

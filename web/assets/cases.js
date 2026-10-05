@@ -25,6 +25,7 @@ function main() {
   const lv = document.getElementById("lv");
   const ty = document.getElementById("ty");
   const count = document.getElementById("count");
+  const noMatch = document.getElementById("no-match");
   const rows = [...table.tBodies[0].rows].map((tr) => ({
     tr, level: tr.dataset.level, type: tr.dataset.type, text: tr.textContent,
   }));
@@ -40,6 +41,7 @@ function main() {
       if (ok) shown += 1;
     }
     count.textContent = `يُعرض ${shown} من ${total} حالة.`;
+    if (noMatch) noMatch.hidden = shown > 0;
   };
   q.addEventListener("input", apply);
   lv.addEventListener("change", apply);
