@@ -339,7 +339,16 @@ def test_cloudflare_headers_file():
 def test_results_core_js():
     files = sorted(str(p) for p in (ROOT / "tests/web").glob("*.test.mjs"))
     r = subprocess.run(["node", "--test", *files], cwd=ROOT, capture_output=True, text=True)
-    assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-2000:]
+    # يشغّل كل ملفات tests/web (منها اختبارات المتصفح)؛ فرسالة الفشل تسمّي الاختبارات الفاشلة وأخطاءها،
+    # لا ذيل المخرجات وحده (الذيل قد يكون اسم اختبار ناجح مثل «run_id مكرر» فيضلّل)
+    lines = r.stdout.splitlines()
+    failed = []
+    for i, ln in enumerate(lines):
+        if ln.lstrip().startswith("not ok"):
+            failed.append(ln.strip())
+        elif ln.strip().startswith("error:") and any("not ok" in x for x in lines[max(0, i - 6):i]):
+            failed.extend(x.strip() for x in lines[i:i + 3])  # السطر الأول من نص الخطأ متعدد الأسطر
+    assert r.returncode == 0, "\n".join(failed[:40]) + "\n--- stderr ---\n" + r.stderr[-1500:]
 
 
 SPECIALIST_NOTE = ("المراجعة الشرعية: مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو قريب لصاحب المشروع؛ "
