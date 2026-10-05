@@ -261,20 +261,17 @@ def test_accuracy_item_is_partial_not_counted_complete():
     assert f"{sum(1 for i in p1 if i[1])} من {len(p1)}" in status_text
 
 
-def test_home_flow_svg_marks_built_and_unbuilt():
+def test_home_how_it_works_and_results_glance_from_data():
+    """الرئيسية: ثلاث بطاقات «كيف يعمل»، ولمحة نتائج من web/data/results.json (لا أرقام مكتوبة يدوياً)."""
     html = _page("index.html")
-    svg = html.split('aria-labelledby="flow-title flow-desc"', 1)[1].split("</svg>", 1)[0]
-    for step in ("سؤال موسوم", "إجابة المساعد", "استخراج الاستشهاد", "مطابقة المصدر", "حكم", "درجة وقرار"):
-        assert step in svg
-    # حالة كل مرحلة («جاهز» / «جاهز جزئياً» / «لم يُبنَ بعد») محسوبة من المستودع، لا مكتوبة يدوياً
-    gen = _load_builder()
-    steps = gen.pipeline(gen.facts())
-    desc = re.search(r'<desc id="flow-desc">(.*?)</desc>', html, re.S).group(1)
-    for st in steps:
-        assert f'{st["title"]} ({gen.STATE_TEXT[st["state"]]})' in desc, st["title"]
-    for card in ("ماذا نختبر", "لماذا", "ما الذي يميّزنا"):
-        assert card in _text("index.html")
-
+    assert html.count('class="card how"') == 3 and html.count('class="how-icon"') == 3
+    runs = _published_runs()
+    t = _text("index.html")
+    if runs:
+        assert f"الجولات الرسمية {len(runs)}" in t
+        gate = json.loads((WEB / "data/results.json").read_text(encoding="utf-8")).get("gate")
+        if gate:
+            assert ("نشر rag" if gate["allow"] else "منع rag") in t and "حساس لاختيار الجولة المرجعية" in t
 
 def test_transparency_page_disclosures():
     t = _text("transparency.html")

@@ -133,7 +133,8 @@ def test_check_link_is_first_in_nav_on_every_page_and_home_has_two_buttons():
         positions = [nav.index(f'href="{h}"') for h in expected]
         assert positions == sorted(positions), page.name
     home = (WEB / "index.html").read_text(encoding="utf-8")
-    hero = home[home.index('<header class="hero">'):home.index("</header>")]
+    start = home.index('<header class="hero">')
+    hero = home[start:home.index("</header>", start)]
     # زران فقط في أول شاشة: «جرّب التحقق» و«شاهد النتائج»، بلا ميزة جديدة
     assert hero.count('class="btn') == 2
     assert '<a class="btn btn-try" href="check.html">جرّب التحقق</a>' in hero
