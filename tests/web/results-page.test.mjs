@@ -79,6 +79,13 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
           assert.ok(text.includes(needle), needle);
         }
         assert.equal(await page.locator("#compare tbody tr").count(), 10);
+        // بطاقة تمهيد واحدة في أعلى النتائج (لا بطاقتان متتاليتان) بعنوان يتبع عدد الجولات
+        assert.equal(await page.locator("#results-notice").count(), 1);
+        assert.equal(await page.locator("#results > .notice").first().getAttribute("id"), "results-notice");
+        const head = (await page.locator("#results-notice strong").innerText()).replace(/[\u2066-\u2069]/g, "");
+        assert.equal(FIXTURE_RESULTS.runs.length, 2);
+        assert.equal(head, "نتائج جولتين رسميتين مسجّلتين في evaluation/official/.");
+        assert.equal(await page.locator("h1 + .notice").count(), 0, "لا بطاقة ثابتة قبل بطاقة JavaScript");
         // التنبيه ثابت بجوار المقارنة وبجوار قرار البوابة، مع N من الملف
         for (const id of ["#compare-caveat", "#gate-caveat"]) {
           const caveat = (await page.locator(id).innerText()).replace(/[\u2066-\u2069]/g, "");
