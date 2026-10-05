@@ -428,3 +428,8 @@ details.tech .tech-body h3:first-of-type { margin-top: var(--s2); }
 /* ---------- صفحات المحتوى (المستويات، المصادر، الشفافية): تباعد مريح للعناوين ---------- */
 main > h2, main section > h2 { scroll-margin-top: 96px; }
 .subnav + * { margin-top: var(--s3); }
+
+/* «ماذا اكتشف مِعيار؟»: قائمة موجزة بأرقام مشتقة من السجلات الرسمية */
+.disc-list { padding-inline-start: 1.25em; max-width: var(--measure); }
+.disc-list li { margin-bottom: var(--s1); }
+#discovered > h2 { margin-top: var(--s4); }

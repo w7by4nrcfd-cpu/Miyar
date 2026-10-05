@@ -145,6 +145,8 @@ function renderOk(root, view) {
       el("strong", {}, officialRunsHeadline(view.runs.length), " المستودع."),
       el("span", {}, " كل رقم من سجله المذكور ومعه عدد الحالات N، ويحسبه سكربت النشر من أحكام السجلات. الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
     gateSection(view.gate, latest, view.runs),
+    // «ماذا اكتشف مِعيار؟» قسم ثابت مولَّد من السجلات الرسمية؛ يُنقل إلى ما بعد قرار البوابة مباشرة
+    ...(document.getElementById("discovered") ? [document.getElementById("discovered")] : []),
     el("h2", { id: "compare-h" }, "المقارنة: baseline مقابل rag"),
     el("p", {}, "rag هو نموذج baseline نفسه مع بحث في المصادر المعتمدة فقط (آيات Quranpedia ومدخلات الملف اليدوي المكتملة)، "
       + "ومِعيار لا يستعمل محرك حكمه داخل أي مساعد. الحالة المحالة إلى مراجعة بشرية أو المتعذّرة لا تُحتسب في الدرجة."),

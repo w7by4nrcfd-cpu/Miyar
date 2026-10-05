@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from miyar.hadith_manual import entry_status, load_manual, manual_errors, MANUAL_FILE  # noqa: E402
 from miyar.quran_match import QuranIndex, TOTAL_SURAS, TOTAL_VERSES  # noqa: E402
+from miyar.normalize import normalize  # noqa: E402
 from miyar.review import review_summary  # noqa: E402
 
 TESTSETS = [ROOT / "testsets/official_v0.json", ROOT / "testsets/extended_v1.json"]
@@ -1019,6 +1020,144 @@ def transparency(f: dict) -> str:
 """
 
 
+# ---------- «ماذا اكتشف مِعيار؟» (يُشتق آلياً من السجلات الرسمية، قراءة فقط) ----------
+CIT_REASON_LABELS = {"exact_match": "مطابقة حرفية لموضعها", "location_not_stated": "لم يُذكر الموضع",
+                     "no_manual_entry": "لا مدخل له في الملف اليدوي", "altered_text": "نص يختلف عن الموضع المذكور"}
+REFERRAL_REASON_LABELS = {"hadith_unverified": "حديث لا بيانات تحسم وجوده", "low_confidence": "ثقة الحَكَم منخفضة",
+                          "manual_entry_pending": "مدخل الحديث ناقص"}
+
+
+def _run_short(run_id: str) -> str:
+    return "-".join(run_id.split("-")[-2:])  # baseline-3 من official-2026-10-04-baseline-3
+
+
+def _one_letter_diff(a: str, b: str) -> tuple[str, str] | None:
+    """إن اختلف النصان بعد التوحيد في حرف واحد فقط (إبدال) يعيد الحرفين؛ وإلا None."""
+    a, b = normalize(a), normalize(b)
+    if len(a) != len(b):
+        return None
+    diffs = [(x, y) for x, y in zip(a, b) if x != y]
+    return diffs[0] if len(diffs) == 1 else None
+
+
+def discovered_facts() -> dict:
+    """أحكام مِعيار المسجلة في evaluation/official/ (لا تُعدَّل)، معدودة آلياً مع مقاماتها."""
+    runs = sorted((json.loads(p.read_text(encoding="utf-8")) for p in OFFICIAL_RUNS.glob("*.json")
+                   if not p.name.endswith(".schema.json")), key=lambda r: r["run_id"])
+    out = {"runs": [], "answers": 0, "with_citations": 0, "cit": Counter(), "reasons": Counter(),
+           "wrong": [], "referrals": [], "referral_reasons": Counter()}
+    for r in runs:
+        per = Counter()
+        for c in r["cases"]:
+            j = c.get("judgement") or {}
+            out["answers"] += 1
+            cits = j.get("citations") or []
+            out["with_citations"] += bool(cits)
+            per["with_citations"] += bool(cits)
+            if j.get("needs_human_review"):
+                out["referrals"].append((c["id"], _run_short(r["run_id"])))
+                out["referral_reasons"][j.get("review_reason")] += 1
+                per["referrals"] += 1
+            for x in cits:
+                k, st = x["citation"]["kind"], x["status"]
+                out["cit"][(k, st)] += 1
+                out["reasons"][(k, st, x.get("reason"))] += 1
+                per[(k, st)] += 1
+                if st == "wrong_or_missing":
+                    out["wrong"].append({"case": c["id"], "run": _run_short(r["run_id"]), "reason": x.get("reason"),
+                                         "letters": _one_letter_diff(x["citation"]["quote"], x.get("matched_text") or "")})
+        out["runs"].append((_run_short(r["run_id"]), len(r["cases"]), per))
+    return out
+
+
+def _case_link(cid: str) -> str:
+    return f'<a class="mono" href="case.html?id={_attr(cid)}">{_esc(cid)}</a>'
+
+
+def _grouped(pairs: list) -> str:
+    """OFF-03 (baseline-2، baseline-3)، OFF-02 (baseline-3) — مرتبة بالمعرّف."""
+    by = {}
+    for cid, run in pairs:
+        by.setdefault(cid, []).append(run)
+    runs = lambda rs: "، ".join(f'<span class="ltr" lang="en">{_esc(r)}</span>' for r in rs)  # noqa: E731 — كل اسم معزول الاتجاه
+    return "، ".join(f"{_case_link(cid)} (في {runs(rs)})" for cid, rs in sorted(by.items()))
+
+
+def discovered_section(f: dict) -> str:
+    d = discovered_facts()
+    if not d["runs"]:
+        return ""
+    n_runs, total = len(d["runs"]), d["answers"]
+    per_case = sorted({n for _, n, _ in d["runs"]})
+    cit, rs = d["cit"], d["reasons"]
+    q = {st: cit[("quran", st)] for st in ("supported", "needs_review", "wrong_or_missing")}
+    h = {st: cit[("hadith", st)] for st in ("supported", "needs_review", "wrong_or_missing")}
+    n_q, n_h = sum(q.values()), sum(h.values())
+
+    def reasons_of(kind, st):
+        items = [(why, n) for (k, s_, why), n in sorted(rs.items(), key=lambda kv: -kv[1]) if k == kind and s_ == st]
+        return "، ".join(f"{n} {CIT_REASON_LABELS.get(why, why)}" for why, n in items)
+
+    wrong_pairs = [(w["case"], w["run"]) for w in d["wrong"]]
+    neutral = []
+    for cid in sorted({w["case"] for w in d["wrong"]}):
+        ws = [w for w in d["wrong"] if w["case"] == cid]
+        letters = {w["letters"] for w in ws}
+        if len(ws) > 1 and len(letters) == 1 and None not in letters:
+            a, b = next(iter(letters))
+            reason = ws[0]["reason"]
+            neutral.append(f"في سجلي {_esc(cid)} صُنّف الفرق <span class=\"ltr\" lang=\"en\">wrong_or_missing / {_esc(reason)}</span>؛ "
+                           f"والفرق المرصود حرف واحد ({_esc(a)}/{_esc(b)}). لم يُراجع هذا الحكم بشريًا، لذلك لا يُستدل منه وحده على صحة الحكم أو خطئه.")
+    neutral_html = "".join(f'<br><span class="muted small">{t}</span>' for t in neutral)
+
+    ref_reasons = "، ".join(REFERRAL_REASON_LABELS.get(k, k) for k in d["referral_reasons"])
+    gate = f["results"].get("gate")
+    gate_li = ""
+    if gate:
+        byid = {r["run_id"]: r for r in f["results"]["runs"]}
+        cand, ref = byid[gate["candidate_run_id"]], byid[gate["reference_run_id"]]
+        parts = []
+        for reason in gate["reasons"]:
+            m = re.match(r"المستوى ([A-D]):", reason)
+            if m:
+                lv = m.group(1)
+                cl, rl = cand["levels"][lv], ref["levels"][lv]
+                parts.append(f'المستوى {lv}: {cl["score"]} (من {cl["n_scored"]}) مقابل {rl["score"]} (من {rl["n_scored"]})')
+            else:
+                parts.append(_esc(reason))
+        verdict = "سمحت بتمرير" if gate["allow"] else "لم تسمح بتمرير"
+        gate_li = (f'<li><strong>البوابة {verdict}</strong> <span class="ltr" lang="en">{_esc(_run_short(cand["run_id"]))}</span> '
+                   f'مقابل المرجع <span class="ltr" lang="en">{_esc(_run_short(ref["run_id"]))}</span>: {"؛ ".join(parts)}. '
+                   '<span class="muted small">مقامات صغيرة، والقرار حساس للجولة المرجعية.</span></li>')
+
+    rows = "".join(
+        f'<tr><th scope="row" class="ltr" lang="en">{_esc(run)}</th><td data-label="إجابات فيها استشهاد">{per["with_citations"]} من {n}</td>'
+        f'<td data-label="آيات: مؤيَّد / يحتاج تحقق / خاطئ أو غير موجود">{per[("quran", "supported")]} / {per[("quran", "needs_review")]} / {per[("quran", "wrong_or_missing")]}</td>'
+        f'<td data-label="أحاديث: يحتاج تحقق">{per[("hadith", "needs_review")]}</td>'
+        f'<td data-label="أُحيلت إلى مراجعة بشرية">{per["referrals"]} من {n}</td></tr>'
+        for run, n, per in d["runs"])
+    return f"""<section class="sec" id="discovered" aria-labelledby="disc-h">
+<h2 id="disc-h">ماذا اكتشف مِعيار في التشغيلات الرسمية؟</h2>
+<p class="muted small">من {n_runs} جولات رسمية × {"/".join(map(str, per_case))} حالة = {total} إجابة مُقيَّمة. كل رقم هنا مشتق آلياً من السجلات الرسمية، وهي أحكام مِعيار المسجلة لا أخطاء مثبتة بشرياً.</p>
+<ul class="disc-list">
+  <li><strong>{sum(cit.values())} استشهاداً</strong> استخرجها مِعيار من {d["with_citations"]} إجابة فيها استشهاد (من {total}).</li>
+  <li><strong>الآيات ({n_q}):</strong> {q["supported"]} مؤيَّد ({reasons_of("quran", "supported")})، و{q["needs_review"]} يحتاج تحقق ({reasons_of("quran", "needs_review")})، و{q["wrong_or_missing"]} خاطئ أو غير موجود ({reasons_of("quran", "wrong_or_missing")}) في: {_grouped(wrong_pairs)}.{neutral_html}</li>
+  <li><strong>الأحاديث ({n_h}):</strong> {h["supported"]} مؤيَّد، و{h["needs_review"]} يحتاج تحقق ({reasons_of("hadith", "needs_review")})، و{h["wrong_or_missing"]} خاطئ أو غير موجود. «يحتاج تحقق» لا يعني أن الحديث خاطئ.</li>
+  <li><strong>{len(d["referrals"])} إجابات من {total}</strong> أُحيلت إلى مراجعة بشرية بلا حكم آلي ({ref_reasons}): {_grouped(d["referrals"])}.</li>
+  {gate_li}
+</ul>
+<p class="muted small">صحة هذه الأحكام نفسها، أي اتفاقها مع تقييمات بشرية معتمدة: لم يُقَس بعد.</p>
+<details class="tech"><summary>التفصيل لكل جولة</summary>
+<div class="table-wrap" role="region" aria-label="أحكام مِعيار لكل جولة" tabindex="0"><table class="stack">
+  <caption>أحكام مِعيار المسجلة لكل جولة رسمية</caption>
+  <thead><tr><th scope="col">الجولة</th><th scope="col">إجابات فيها استشهاد</th><th scope="col">آيات: مؤيَّد / يحتاج تحقق / خاطئ أو غير موجود</th><th scope="col">أحاديث: يحتاج تحقق</th><th scope="col">أُحيلت إلى مراجعة بشرية</th></tr></thead>
+  <tbody>{rows}</tbody>
+</table></div>
+<p class="muted small">{COMPARISON_CAVEAT} فلا يُستدل بالفرق بين الجولات على أن أحد المساعدين أفضل.</p>
+</details>
+</section>"""
+
+
 RESULTS_EMPTY_NOTE = """<div class="notice demo" role="note">
   <p><strong>للعرض فقط: هذه ليست نتائج تقييم رسمية.</strong>
   وضع «نتائج محفوظة» يعرض ملف نتائج محفوظاً مسبقاً دون أي استدعاء لنموذج لغوي، وهو <strong>فارغ حالياً</strong>:
@@ -1040,6 +1179,7 @@ def results_page(f: dict) -> str:
 </div>
 <noscript><div class="notice empty"><strong>لم يُشغَّل أي تقييم رسمي بعد</strong>
 <span>(تحتاج هذه الصفحة إلى JavaScript لقراءة ملف النتائج.)</span></div></noscript>
+{discovered_section(f) if f["published_runs"] else ""}
 <p>انظر <a href="status.html">الحالة</a> لما تمّ وما لم يتم.</p>
 """
 

@@ -93,6 +93,8 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
         assert.match(agree, /لتعريف الحالات/);
         assert.doesNotMatch(agree, /[%٪]/);
         assert.equal(await page.locator("#gate-overall").count(), 1);
+        // «ماذا اكتشف مِعيار؟» داخل النتائج مباشرة بعد قرار البوابة
+        assert.equal(await page.locator("#results > .gate-card + #discovered").count(), 1);
         assert.ok((await page.locator("details#results-tech").textContent()).includes("evaluation/official/"));
         assert.equal(await page.locator("h1 + .notice").count(), 0, "لا بطاقة ثابتة قبل بطاقة JavaScript");
         // التنبيه ثابت بجوار المقارنة وبجوار قرار البوابة، مع N من الملف
