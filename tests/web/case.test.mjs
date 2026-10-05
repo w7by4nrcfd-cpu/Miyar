@@ -114,12 +114,12 @@ test("صفحة الحالة في المتصفح", { skip: !pw && !process.env.CI
         return { overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, low };
       });
 
-      await t.test(`${width} ${scheme}: بلا سجل رسمي → السؤال والتنبيه والنص الصحيح و«لا سجل رسمي بعد»`, async () => {
+      await t.test(`${width} ${scheme}: بلا سجل رسمي → السؤال والتنبيه والنص الصحيح و«ليست ضمن الحالات الاثنتي عشرة المُشغَّلة رسمياً»`, async () => {
         // غياب ملف الحالة يُفرض صراحةً (404)، فلا يتوقف الاختبار على ما نُشر في web/data/cases/
         await page.route("**/data/cases/OFF-11.json", (r) => r.fulfill({ status: 404, body: "" }));
         await page.goto(base + "case.html?id=OFF-11", { waitUntil: "networkidle" });
         const text = await page.locator("#case").innerText();
-        for (const needle of ["OFF-11", "السؤال", "تنبيه", "النص الصحيح من البيانات", "طه 20:114", "السلوك المتوقع", "لا سجل رسمي بعد"]) {
+        for (const needle of ["OFF-11", "السؤال", "تنبيه", "النص الصحيح من البيانات", "طه 20:114", "السلوك المتوقع", "ليست ضمن الحالات الاثنتي عشرة المُشغَّلة رسمياً"]) {
           assert.ok(text.includes(needle), needle);
         }
         assert.equal(await page.locator(".answer-card").count(), 0);
