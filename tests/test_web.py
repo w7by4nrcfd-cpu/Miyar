@@ -468,3 +468,12 @@ def test_cases_lead_counts_from_data():
     f = b.facts()
     assert f"{f['n']} حالة اختُبرت منها {f['n_tested']} رسمياً" in _text("cases.html")
     assert f["n_tested"] == max(r["n_cases"] for r in f["results"]["runs"])
+
+
+def test_review_counts_are_described_as_case_definition_review():
+    """أعداد source_check مراجعة لتعريف الحالات وسلوكها المتوقع، لا لأحكام مِعيار؛ ولا نسبة اتفاق في الموقع."""
+    assert "مراجعة لتعريف الحالات وسلوكها المتوقع (تحقق مصادر)، لا لأحكام مِعيار" in _text("cases.html")
+    st = _text("status.html")
+    assert "لا لأحكام مِعيار على إجابات المساعد" in st and "وتحقق المصادر مراجعة لتعريف الحالة لا لأحكام مِعيار" in st
+    for page in ["index.html", "results.html", "status.html", "cases.html"]:
+        assert not re.search(r"(اتفاق|Agreement)[^.؛\n]{0,40}\d+(\.\d+)?\s*[%٪]", _text(page)), page

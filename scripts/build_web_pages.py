@@ -713,7 +713,8 @@ def cases_page(f: dict) -> str:
   <div><label for="lv">المستوى</label><select id="lv"><option value="">كل المستويات</option>{lvl_opts}</select></div>
   <div><label for="ty">نوع الحالة</label><select id="ty"><option value="">كل الأنواع</option>{type_opts}</select></div>
 </form>
-<p class="review-line" id="review-line"><strong>المراجعة البشرية: {s["approved"]["source_check"] + s["approved"]["specialist"]} من {f["n"]} حالة</strong></p>
+<p class="review-line" id="review-line"><strong>المراجعة البشرية: {s["approved"]["source_check"] + s["approved"]["specialist"]} من {f["n"]} حالة</strong>
+<span class="muted small">— مراجعة لتعريف الحالات وسلوكها المتوقع (تحقق مصادر)، لا لأحكام مِعيار.</span></p>
 <p class="count" id="count" aria-live="polite">يُعرض {f["n"]} من {f["n"]} حالة.</p>
 
 <div class="table-wrap" role="region" aria-label="جدول حالات الاختبار" tabindex="0"><table class="stack" id="cases" data-total="{f["n"]}">
@@ -857,7 +858,7 @@ def accuracy_item(f: dict) -> tuple:
     reviewed = (f"المراجعة البشرية: {'حالة واحدة' if sc == 1 else f'{sc} حالات'} من {total} (تحقق مصادر) و{sp} مراجعة شرعية متخصصة (لقطة وقت التشغيل؛ وجرت بعده مراجعة شرعية لاحقة لحالة واحدة: OFF-06)"
                 if total else "المراجعة البشرية: لا بيانات")
     text = (f"التشغيل الرسمي مسجّل ({_rounds(f['official_runs'])} مكتملة)؛ قياس اتفاق أحكام الحَكَم مع الوسوم البشرية لم يُنفَّذ، "
-            f"و{reviewed}")
+            f"و{reviewed}؛ وتحقق المصادر مراجعة لتعريف الحالة لا لأحكام مِعيار")
     return (text, False, "evaluation/official/", True)
 
 
@@ -956,6 +957,7 @@ def status(f: dict) -> str:
 {progress("حالات تحقق المصادر المقبولة (النوع المعتمد الآن)", s["approved"]["source_check"], n, "pg3")}
 <p>{SPECIALIST_REVIEW_NOTE} التحقق الحالي <strong>تحقق مصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
 وهو غير متخصص شرعياً، مقابل نص القرآن من Quranpedia.net والأحاديث من الدرر السنية أو المكتبة الشاملة (الملف اليدوي).
+وهو مراجعة لتعريف الحالات (مصادرها ومستواها)، لا لأحكام مِعيار على إجابات المساعد.
 <strong>وتحقق المصادر ليس مراجعة شرعية متخصصة.</strong> والمراجعة الشرعية المتخصصة اختيارية، ولم تُجرَ لبقية الحالات.</p>
 </div>
 </section>

@@ -1,6 +1,7 @@
 // صفحة النتائج: تقرأ data/results.json (ناتج scripts/publish_results.py من evaluation/official/) وتعرضه دون أي رقم مصطنع.
 import {
-  comparisonCaveat, comparisonRows, interpretResults, latestByAssistant, LEVELS, officialRunsHeadline,
+  AGREEMENT_NOTE, comparisonCaveat, comparisonRows, gateRuleNote, interpretResults, latestByAssistant, LEVELS, officialRunsHeadline,
+  overallScoresNote,
 } from "./results-core.js";
 
 const RESULTS_URL = "data/results.json";
@@ -67,7 +68,7 @@ function techDetails(latest, runs) {
 
 const caveat = (runs, id) => el("p", { class: "notice demo caveat", role: "note", id }, comparisonCaveat(runs));
 
-function gateSection(gate, latest) {
+function gateSection(gate, latest, runs) {
   // الخلاصة أولاً: قرار البوابة في بطاقة واضحة بسببه وحساسيته
   const sec = el("section", { class: "card gate-card", "aria-labelledby": "gate-h" }, el("h2", { id: "gate-h" }, "الخلاصة: قرار البوابة"));
   if (!gate) {
@@ -81,12 +82,15 @@ function gateSection(gate, latest) {
   );
   const reasons = el("ul", { class: "gate-reasons" });
   for (const r of gate.reasons) reasons.append(el("li", {}, r));
+  const scores = overallScoresNote(gate, runs);
   sec.append(el("h3", {}, "السبب"), reasons,
+    ...(scores ? [el("p", { class: "muted small", id: "gate-overall" }, scores)] : []),
     el("p", { class: "notice demo", role: "note", id: "gate-sensitivity" },
       el("strong", {}, "القرار حساس لاختيار الجولة المرجعية. "),
       "يُحسب القرار مقابل آخر جولة baseline منشورة، وجولات baseline تتفاوت درجاتها فيما بينها؛ فقد تتغير الأسباب وهوامشها بتغيير الجولة المرجعية. "
       + "لا تُختار جولة مرجعية بحسب النتيجة."),
     el("p", { class: "small" }, el("strong", {}, "القاعدة: "), gate.rule),
+    ...(gateRuleNote(gate.rule) ? [el("p", { class: "muted small", id: "gate-unmeasured" }, gateRuleNote(gate.rule))] : []),
     el("p", { class: "muted small" }, "القرار محسوب من السجلين الرسميين، لا من هذه الصفحة."),
     caveat(latest, "gate-caveat"));
   return sec;
@@ -140,7 +144,7 @@ function renderOk(root, view) {
     el("div", { class: "notice", role: "status", id: "results-notice" },
       el("strong", {}, officialRunsHeadline(view.runs.length), " المستودع."),
       el("span", {}, " كل رقم من سجله المذكور ومعه عدد الحالات N، ويحسبه سكربت النشر من أحكام السجلات. الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
-    gateSection(view.gate, latest),
+    gateSection(view.gate, latest, view.runs),
     el("h2", { id: "compare-h" }, "المقارنة: baseline مقابل rag"),
     el("p", {}, "rag هو نموذج baseline نفسه مع بحث في المصادر المعتمدة فقط (آيات Quranpedia ومدخلات الملف اليدوي المكتملة)، "
       + "ومِعيار لا يستعمل محرك حكمه داخل أي مساعد. الحالة المحالة إلى مراجعة بشرية أو المتعذّرة لا تُحتسب في الدرجة."),
@@ -151,6 +155,8 @@ function renderOk(root, view) {
     el("strong", {}, "المراجعة الشرعية: "),
     "مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو قريب لصاحب المشروع، لا لجنة مستقلة؛ "
     + "وما عداها تحقق مصادر (source_check) يجريه المشارك وليس مراجعة شرعية."));
+  nodes.push(el("p", { class: "muted small", id: "agreement-line" },
+    "وتحقق المصادر مراجعة لتعريف الحالات وسلوكها المتوقع، لا لأحكام مِعيار. ", AGREEMENT_NOTE));
   nodes.push(
     stabilitySection(view.stability),
     ...singleRunNotes(view.runs, view.stability),

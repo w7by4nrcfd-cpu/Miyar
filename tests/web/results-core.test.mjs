@@ -211,3 +211,35 @@ test("عنوان بطاقة النتائج بحسب عدد الجولات (جو�
   assert.equal(officialRunsHeadline(10), "نتائج 10 جولات رسمية مسجّلة في");
   assert.equal(officialRunsHeadline(11), "نتائج 11 جولة رسمية مسجّلة في");
 });
+
+// توضيحات الدقة العلمية: المقام بجانب كل درجة، ولا استنتاج «أفضل/أسوأ»، ولا نسبة اتفاق قبل القياس
+import { AGREEMENT_NOTE, gateRuleNote, overallScoresNote } from "../../web/assets/results-core.js";
+
+test("سطر الدرجة الكلية بجوار البوابة: المقام من السجلات، ولا يدل الفرق على أفضلية", () => {
+  const res = JSON.parse(readFileSync(new URL("../../web/data/results.json", import.meta.url), "utf8"));
+  const note = overallScoresNote(res.gate, res.runs);
+  const byId = Object.fromEntries(res.runs.map((r) => [r.run_id, r]));
+  for (const id of [res.gate.candidate_run_id, res.gate.reference_run_id]) {
+    assert.ok(note.includes(`${byId[id].overall_score} (محتسبة من ${byId[id].n_scored} `), id);
+  }
+  assert.ok(!/أفضل من|أسوأ|حسّن/.test(note.replace("ولا يدل على أن أحدهما أفضل", "")), note);
+  if (!res.gate.allow) assert.ok(note.includes("لم تحقق شروط المرور في البوابة"));
+  assert.equal(overallScoresNote(null, res.runs), null);
+});
+
+test("مقامان مختلفان ← «ليس مقارنة متكافئة»؛ ومقامان متساويان ← بلا هذه الجملة", () => {
+  const run = (id, score, scored, review) => ({ run_id: id, overall_score: score, n_cases: 12, n_scored: scored, human_review_needed: review });
+  const gate = { candidate_run_id: "x-rag-1", reference_run_id: "x-baseline-1", allow: false };
+  const diff = overallScoresNote(gate, [run("x-rag-1", 56.1, 12, 0), run("x-baseline-1", 53.3, 9, 3)]);
+  assert.match(diff, /ليس مقارنة متكافئة/);
+  assert.match(diff, /3 حالات أُحيلت إلى مراجعة بشرية فلم تدخل الحساب/);
+  const same = overallScoresNote(gate, [run("x-rag-1", 50, 12, 0), run("x-baseline-1", 60, 12, 0)]);
+  assert.doesNotMatch(same, /ليس مقارنة متكافئة/);
+});
+
+test("شرط «مؤيَّد خاطئ في حالة حرجة» يُوصف بأنه لم يُقَس؛ والاتفاق نص بلا نسبة", () => {
+  assert.match(gateRuleNote("… أو ظهر حكم «مؤيَّد» خاطئ في حالة حرجة."), /لم يُقَس/);
+  assert.equal(gateRuleNote("قاعدة بلا هذا الشرط"), null);
+  assert.equal(AGREEMENT_NOTE, "اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد.");
+  assert.doesNotMatch(AGREEMENT_NOTE, /[%٪]|\d/);
+});

@@ -87,6 +87,12 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
         assert.equal(head, "نتائج جولتين رسميتين مسجّلتين في المستودع.");
         // أسماء الملفات في طبقة مطوية
         assert.equal(await page.locator("details#results-tech").getAttribute("open"), null);
+        // الاتفاق مع التقييمات البشرية: نص «لم يُقَس بعد» بلا أي نسبة
+        const agree = await page.locator("#agreement-line").innerText();
+        assert.match(agree, /اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد\./);
+        assert.match(agree, /لتعريف الحالات/);
+        assert.doesNotMatch(agree, /[%٪]/);
+        assert.equal(await page.locator("#gate-overall").count(), 1);
         assert.ok((await page.locator("details#results-tech").textContent()).includes("evaluation/official/"));
         assert.equal(await page.locator("h1 + .notice").count(), 0, "لا بطاقة ثابتة قبل بطاقة JavaScript");
         // التنبيه ثابت بجوار المقارنة وبجوار قرار البوابة، مع N من الملف
