@@ -58,24 +58,26 @@ function recordsList(runs) {
 const caveat = (runs, id) => el("p", { class: "notice demo caveat", role: "note", id }, comparisonCaveat(runs));
 
 function gateSection(gate, latest) {
-  const sec = el("section", { "aria-labelledby": "gate-h" }, el("h2", { id: "gate-h" }, "قرار البوابة"));
+  // الخلاصة أولاً: قرار البوابة في بطاقة واضحة بسببه وحساسيته
+  const sec = el("section", { class: "card gate-card", "aria-labelledby": "gate-h" }, el("h2", { id: "gate-h" }, "الخلاصة: قرار البوابة"));
   if (!gate) {
     sec.append(el("p", {}, "لا قرار بوابة: يحتاج تشغيلاً رسمياً منشوراً لكل من baseline (المرجع) وrag (المرشحة)."));
     return sec;
   }
   sec.append(
     el("p", { class: "gate-verdict" },
-      el("span", { class: `badge ${gate.allow ? "b-ok" : "b-bad"}` }, gate.allow ? "نشر rag" : "حجب rag"),
+      el("span", { class: `badge badge-lg ${gate.allow ? "b-ok" : "b-bad"}` }, gate.allow ? "نشر rag" : "حجب rag"),
       " المرشحة ", ltr(gate.candidate_run_id), " مقابل المرجع ", ltr(gate.reference_run_id), "."),
-    el("p", {}, el("strong", {}, "القاعدة: "), gate.rule),
   );
-  const reasons = el("ul");
+  const reasons = el("ul", { class: "gate-reasons" });
   for (const r of gate.reasons) reasons.append(el("li", {}, r));
-  sec.append(reasons, el("p", { class: "muted" }, "القرار محسوب بـ scoring.gate_decision من السجلين الرسميين، لا من هذه الصفحة."),
+  sec.append(el("h3", {}, "السبب"), reasons,
     el("p", { class: "notice demo", role: "note", id: "gate-sensitivity" },
       el("strong", {}, "القرار حساس لاختيار الجولة المرجعية. "),
       "يُحسب القرار مقابل آخر جولة baseline منشورة، وجولات baseline تتفاوت درجاتها فيما بينها؛ فقد تتغير الأسباب وهوامشها بتغيير الجولة المرجعية. "
       + "لا تُختار جولة مرجعية بحسب النتيجة."),
+    el("p", { class: "small" }, el("strong", {}, "القاعدة: "), gate.rule),
+    el("p", { class: "muted small" }, "القرار محسوب بـ scoring.gate_decision من السجلين الرسميين، لا من هذه الصفحة."),
     caveat(latest, "gate-caveat"));
   return sec;
 }
@@ -128,6 +130,7 @@ function renderOk(root, view) {
     el("div", { class: "notice", role: "status", id: "results-notice" },
       el("strong", {}, officialRunsHeadline(view.runs.length), " ", ltr("evaluation/official/"), "."),
       el("span", {}, " كل رقم من سجله المذكور ومعه عدد الحالات N، ويحسبه سكربت النشر من أحكام السجلات. الحكم الآلي مساعد للمراجعة لا بديل عنها.")),
+    gateSection(view.gate, latest),
     el("h2", { id: "compare-h" }, "المقارنة: baseline مقابل rag"),
     el("p", {}, "rag هو نموذج baseline نفسه مع بحث في المصادر المعتمدة فقط (آيات Quranpedia ومدخلات الملف اليدوي المكتملة)، "
       + "ومِعيار لا يستعمل محرك حكمه داخل أي مساعد. الحالة المحالة إلى مراجعة بشرية أو المتعذّرة لا تُحتسب في الدرجة."),
@@ -141,7 +144,6 @@ function renderOk(root, view) {
   }
   nodes.push(
     el("h3", {}, "السجلات المعروضة في المقارنة"), recordsList(latest),
-    gateSection(view.gate, latest),
     stabilitySection(view.stability),
     ...singleRunNotes(view.runs, view.stability),
     el("h2", {}, "كل التشغيلات الرسمية المنشورة"), recordsList(view.runs),

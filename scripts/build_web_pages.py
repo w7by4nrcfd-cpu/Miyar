@@ -930,28 +930,42 @@ def status(f: dict) -> str:
   <p>{runs} كل بند أدناه محسوب من ملفات المستودع عند توليد الصفحة.</p>
 </div>
 
-<h2>قبل أيام التحدي: الأساس</h2>
+<section class="sec status-sec" aria-labelledby="st-base">
+<h2 id="st-base">قبل أيام التحدي: الأساس</h2>
+<div class="card">
 {progress("الأساس (البنية التحتية والبيانات والموقع)", d0, len(p0), "pg0")}
 {checklist(p0)}
+</div>
+</section>
 
-<h2>أيام التحدي: 4–6 أكتوبر 2026</h2>
+<section class="sec status-sec" aria-labelledby="st-core">
+<h2 id="st-core">أيام التحدي: 4–6 أكتوبر 2026</h2>
 <p class="section-intro">بترتيب البناء الملزم: لا انتقال إلى بند قبل أن يعمل سابقه.</p>
+<div class="card">
 {progress("نواة التقييم والنتائج", d1, len(p1), "pg1")}
 {checklist(p1)}
+</div>
+</section>
 
-<h2>البيانات والمراجعة</h2>
+<section class="sec status-sec" aria-labelledby="st-data">
+<h2 id="st-data">البيانات والمراجعة</h2>
+<div class="card">
 {progress("مدخلات الملف اليدوي للأحاديث المكتملة", f["manual_done"], f["manual_total"], "pg2")}
 {progress("حالات تحقق المصادر المقبولة (النوع المعتمد الآن)", s["approved"]["source_check"], n, "pg3")}
 <p>{specialist_sentence(f)} التحقق الحالي <strong>تحقق مصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
 وهو غير متخصص شرعياً، مقابل نص القرآن من Quranpedia.net والأحاديث من الدرر السنية أو المكتبة الشاملة (الملف اليدوي).
 <strong>وتحقق المصادر ليس مراجعة شرعية متخصصة.</strong> والمراجعة الشرعية المتخصصة اختيارية ومعلّقة حتى يتوفر مراجع.</p>
+</div>
+</section>
 
-<h2>حدود معروفة</h2>
+<section class="sec status-sec" aria-labelledby="st-limits">
+<h2 id="st-limits">حدود معروفة</h2>
 <ul class="plain">
   <li>التحقق من الأحاديث محدود بما في الملف اليدوي؛ غياب المدخل أو نقصه يعني «يحتاج تحقق»، لا «غير صحيح».</li>
   <li>نص القرآن العثماني المعروض «غير موافق للمطبوع» بحسب وصف ملفه في المصدر؛ وتحديث النسخة يدوي مع تسجيله.</li>
   <li>الحكم الآلي قد يخطئ، وهو مساعد للمراجعة البشرية لا بديل عنها؛ والمراجعة البشرية الآن تحقق مصادر، لا مراجعة شرعية متخصصة.</li>
 </ul>
+</section>
 """
 
 

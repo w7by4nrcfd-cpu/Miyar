@@ -379,3 +379,25 @@ details.tech .tech-list { padding: var(--s2); }
 .stat .badge { align-self: start; }
 .small { font-size: var(--fs-small); }
 @media (min-width: 768px) { .hero-buttons .btn-try { flex: 0 0 auto; min-width: 220px; } .hero-text { max-width: 860px; } }
+
+/* ---------- النتائج: بطاقة الخلاصة؛ والحالة: أقسام في بطاقات ---------- */
+.card > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.card > h2:first-child::before { display: none; }
+.gate-card { margin: var(--s4) 0; border-inline-start: 4px solid var(--accent); }
+.gate-verdict { font-size: var(--fs-lead); display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1); }
+.badge-lg { font-size: 1rem; min-height: 36px; padding: 0 14px; }
+.gate-reasons { padding-inline-start: 1.25em; margin: 0 0 var(--s2); }
+.gate-reasons li { margin-bottom: 4px; }
+.status-sec .card { margin-top: var(--s2); }
+.status-sec .card > .progress-block:first-child { margin-top: 0; }
+.status-sec .checklist { margin-bottom: var(--s2); }
+.status-sec details.tech { margin-bottom: 0; }
+.progress-block { margin: 0 0 var(--s2); }
+@media (max-width: 767px) {
+  /* جدول المقارنة على الجوال: بطاقة لكل مقياس، وقيمتا المساعدين متجاورتان */
+  table#compare tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  table#compare tbody th { grid-column: 1 / -1; }
+  table#compare td { border-bottom: 0; }
+  table#compare td + td { border-inline-start: 1px solid var(--line); }
+  .card .notice { padding: 12px var(--s2); }
+}
