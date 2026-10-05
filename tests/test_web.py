@@ -342,7 +342,7 @@ def test_results_core_js():
     assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-2000:]
 
 
-SPECIALIST_NOTE = ("المراجعة الشرعية: مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو أخو صاحب المشروع؛ "
+SPECIALIST_NOTE = ("المراجعة الشرعية: مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو قريب لصاحب المشروع؛ "
                    "لا مراجعة من لجنة مستقلة.")
 
 
@@ -378,10 +378,11 @@ def test_noise_removed_and_specialist_phrase_only_where_kept():
     assert "مجالات الحزمة التسعة" not in status and "وحدة Red Teaming" in status
     assert "كل بند أدناه محسوب من ملفات المستودع عند توليد الصفحة." in status
     for page in ("levels.html", "sources.html", "cases.html", "index.html", "project.html", "check.html"):
-        assert "لم تُجرَ مراجعة شرعية متخصصة" not in _page(page) and "أخو صاحب المشروع" not in _page(page), page
+        assert "لم تُجرَ مراجعة شرعية متخصصة" not in _page(page) and "قريب لصاحب المشروع" not in _page(page), page
     js = (WEB / "assets/results.js").read_text(encoding="utf-8")
     assert "لم تُجرَ مراجعة شرعية متخصصة" not in js
-    assert "مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو أخو صاحب المشروع؛ لا مراجعة من لجنة مستقلة." in js
+    assert ("مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو قريب لصاحب المشروع، لا لجنة مستقلة؛ "
+            "وما عداها تحقق مصادر (source_check) يجريه المشارك وليس مراجعة شرعية.") in js.replace('"\n    + "', "")
 
 
 def test_cases_list_review_line_and_badges_from_data():
@@ -413,3 +414,16 @@ def test_specialist_review_file_quotes_reviewer_with_header():
     for needle in ("خريج شريعة (بحسب قوله)", "أخو صاحب المشروع", "الاسم:** غير مذكور", "5 أكتوبر 2026", "OFF-06 وحدها",
                    "رواه مسلم (2699)", "«لا يصح، وليس في الصحيحين»", "فانا خريج شريعة"):
         assert needle in doc, needle
+
+
+def test_review_wording_relative_not_brother_on_site_and_snapshot_explained():
+    """«قريب لصاحب المشروع» في الموقع كله، و«أخو» في ملف المراجعة وحده؛ وصفر المراجعة المتخصصة موصوف بأنه لقطة وقت التشغيل."""
+    for p in [*WEB.glob("*.html"), *(WEB / "assets").glob("*.js")]:
+        assert "أخو صاحب المشروع" not in p.read_text(encoding="utf-8"), p.name
+    assert "أخو صاحب المشروع" in (ROOT / "evaluation/review/SPECIALIST_REVIEW_2026-10-05.md").read_text(encoding="utf-8")
+    status = _text("status.html")
+    assert "(لقطة وقت التشغيل؛ وجرت بعده مراجعة شرعية لاحقة لحالة واحدة: OFF-06)" in status
+    assert "وجرت بعده مراجعة شرعية لاحقة لحالة واحدة (OFF-06)" in status
+    case_js = (WEB / "assets/case.js").read_text(encoding="utf-8")
+    assert "راجعها بعد التشغيل خريج شريعة (قريب لصاحب المشروع)، والسجل الرسمي نفسه لم يتغير." in case_js
+    assert "لم تُجرَ مراجعة شرعية متخصصة." in case_js  # لبقية الحالات
