@@ -24,11 +24,12 @@ function notice(cls, title, text) {
   return el("div", { class: `notice ${cls}`, role: "status" }, el("strong", {}, title), text ? el("span", {}, text) : null);
 }
 
-function reviewBadge(review, specialistCount) {
+// شارة للمراجَعة فقط؛ غير المراجَعة بلا شارة ولا سطر (عدد المراجَعة في أعلى قائمة الحالات)
+function reviewBadge(review) {
   if (review.status === "approved" && review.role === "specialist") return badge("b-ok", "معتمدة شرعياً");
-  if (review.status === "approved" && review.role === "source_check") return badge("b-rev", "تحقق مصادر (ليس مراجعة شرعية)");
+  if (review.status === "approved" && review.role === "source_check") return badge("b-rev", "راجعها صاحب المشروع (تحقق مصادر)");
   if (review.status === "rejected") return badge("b-bad", "مرفوضة");
-  return badge("b-todo", specialistCount === 0 ? "لم يُتحقق منها بعد" : "لم تُراجَع بعد");
+  return null;
 }
 
 function referenceBlock(ref) {
@@ -62,8 +63,9 @@ function caseHeader(c, meta) {
     el("dt", {}, "المستوى"), el("dd", {}, badge("b-level", c.level), " ", c.level_behavior),
     el("dt", {}, "نوع الحالة"), el("dd", {}, c.type),
     el("dt", {}, "آلية المعالجة"), el("dd", {}, c.handling),
-    el("dt", {}, "حرجة"), el("dd", {}, c.critical ? "نعم" : "لا"),
-    el("dt", {}, "المراجعة"), el("dd", {}, reviewBadge(c.review, meta.specialist_reviews)));
+    el("dt", {}, "حرجة"), el("dd", {}, c.critical ? "نعم" : "لا"));
+  const rb = reviewBadge(c.review);
+  if (rb) facts.append(el("dt", {}, "المراجعة"), el("dd", {}, rb));
   return el("section", { class: "case-card", "aria-labelledby": "case-h" },
     el("h2", { id: "case-h" }, el("span", { class: "mono" }, c.id)), facts);
 }
