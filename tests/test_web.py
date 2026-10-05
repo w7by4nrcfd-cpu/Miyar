@@ -500,7 +500,7 @@ def test_discovered_section_numbers_recomputed_from_official_records():
             and f"و{st[('quran', 'wrong_or_missing')]} خاطئ أو غير موجود" in t)
     nh = sum(v for (k, _), v in st.items() if k == "hadith")
     assert f"الأحاديث ({nh}): {st[('hadith', 'supported')]} مؤيَّد، و{st[('hadith', 'needs_review')]} يحتاج تحقق" in t
-    assert f"{refer} إجابات من {answers} أُحيلت إلى مراجعة بشرية بلا حكم آلي" in t
+    assert f"{refer} إجابات من {answers} أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية" in t
     assert "«يحتاج تحقق» لا يعني أن الحديث خاطئ" in t and "لم يُقَس بعد" in t and "أحكام مِعيار المسجلة لا أخطاء مثبتة بشرياً" in t
     assert not re.search(r"[%٪]", t) and "أسوأ" not in t and "فرق رسم" not in t and "تحريف" not in t
     # كل حالة في القسم رابط إلى صفحتها

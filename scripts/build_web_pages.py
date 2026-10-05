@@ -1143,7 +1143,7 @@ def discovered_section(f: dict) -> str:
   <li><strong>{sum(cit.values())} استشهاداً</strong> استخرجها مِعيار من {d["with_citations"]} إجابة فيها استشهاد (من {total}).</li>
   <li><strong>الآيات ({n_q}):</strong> {q["supported"]} مؤيَّد ({reasons_of("quran", "supported")})، و{q["needs_review"]} يحتاج تحقق ({reasons_of("quran", "needs_review")})، و{q["wrong_or_missing"]} خاطئ أو غير موجود ({reasons_of("quran", "wrong_or_missing")}) في: {_grouped(wrong_pairs)}.{neutral_html}</li>
   <li><strong>الأحاديث ({n_h}):</strong> {h["supported"]} مؤيَّد، و{h["needs_review"]} يحتاج تحقق ({reasons_of("hadith", "needs_review")})، و{h["wrong_or_missing"]} خاطئ أو غير موجود. «يحتاج تحقق» لا يعني أن الحديث خاطئ.</li>
-  <li><strong>{len(d["referrals"])} إجابات من {total}</strong> أُحيلت إلى مراجعة بشرية بلا حكم آلي ({ref_reasons}): {_grouped(d["referrals"])}.</li>
+  <li><strong>{len(d["referrals"])} إجابات من {total}</strong> أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية ({ref_reasons}): {_grouped(d["referrals"])}.</li>
   {gate_li}
 </ul>
 <p class="muted small">صحة هذه الأحكام نفسها، أي اتفاقها مع تقييمات بشرية معتمدة: لم يُقَس بعد.</p>
