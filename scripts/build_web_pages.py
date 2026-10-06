@@ -175,7 +175,9 @@ def _attr(s) -> str:
 
 
 def link(path: str, label: str | None = None) -> str:
-    return f'<a class="ltr" lang="en" href="{BLOB}{path}">{_esc(label or path)}</a>'
+    # المجلدات (المنتهية بـ /) تُفتح بـ tree لا blob، فلا تمر بإعادة توجيه في GitHub
+    base = BLOB.replace("/blob/", "/tree/") if path.endswith("/") else BLOB
+    return f'<a class="ltr" lang="en" href="{base}{path}">{_esc(label or path)}</a>'
 
 
 # ---------- حالة البناء محسوبة من الكود ----------

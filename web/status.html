@@ -70,10 +70,10 @@
     <li><span class="what">نص القرآن من Quranpedia ببصمات ملفاته</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/data/quran/source.json">data/quran/source.json</a></span></li>
     <li><span class="what">توحيد النص العربي</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/normalize.py">miyar/normalize.py</a></span></li>
     <li><span class="what">مطابقة الآيات حرفياً</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/quran_match.py">miyar/quran_match.py</a></span></li>
-    <li><span class="what">مجموعة الاختبار موسومة بالمستوى والسلوك المتوقع</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/testsets/">testsets/</a></span></li>
+    <li><span class="what">مجموعة الاختبار موسومة بالمستوى والسلوك المتوقع</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/tree/main/testsets/">testsets/</a></span></li>
     <li><span class="what">قالب الملف اليدوي للأحاديث (البنية والتحقق)</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/hadith_manual.py">miyar/hadith_manual.py</a></span></li>
     <li><span class="what">طبقة مزوّد النماذج: نتائج محفوظة وتشغيل حي بسقف</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/llm.py">miyar/llm.py</a></span></li>
-    <li><span class="what">الموقع الثابت ونظام التصميم</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/web/">web/</a></span></li>
+    <li><span class="what">الموقع الثابت ونظام التصميم</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/tree/main/web/">web/</a></span></li>
   </ul>
 </details>
 </div>
@@ -100,14 +100,14 @@
 </ul>
 <details class="tech"><summary>التفاصيل التقنية (الملفات والأدلة)</summary>
   <ul class="checklist tech-list">
-    <li><span class="what">المساعدان المرجعيان (baseline و rag)</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/assistants/">miyar/assistants/</a></span></li>
+    <li><span class="what">المساعدان المرجعيان (baseline و rag)</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/tree/main/miyar/assistants/">miyar/assistants/</a></span></li>
     <li><span class="what">وحدة تشغيل مجموعة الاختبار وحفظ سجل التشغيل (runner)</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/runner.py">miyar/runner.py</a></span></li>
     <li><span class="what">استخراج الاستشهادات من الإجابات</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/extract.py">miyar/extract.py</a></span></li>
     <li><span class="what">مطابقة الأحاديث مع الملف اليدوي</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/hadith_match.py">miyar/hadith_match.py</a></span></li>
     <li><span class="what">حكم السلوك حسب المستوى A–D</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/judge.py">miyar/judge.py</a></span></li>
     <li><span class="what">وحدة حساب الدرجة والمقارنة وقرار البوابة (scoring)</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/miyar/scoring.py">miyar/scoring.py</a></span></li>
     <li><span class="what">لوحة النتائج والمقارنة (تشغيلات منشورة)</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/web/data/results.json">web/data/results.json</a></span></li>
-    <li><span class="what">التشغيل الرسمي مسجّل (4 جولات مكتملة)؛ قياس اتفاق أحكام الحَكَم مع الوسوم البشرية لم يُنفَّذ، وقيس التحقق النصي للاستشهادات القرآنية فقط (Gold Set، غير مستقل)، والمراجعة البشرية: حالة واحدة من 12 (تحقق مصادر) و0 مراجعة شرعية متخصصة (لقطة وقت التشغيل؛ وجرت بعده مراجعة شرعية لاحقة لحالة واحدة: OFF-06)؛ وتحقق المصادر مراجعة لتعريف الحالة لا لأحكام مِعيار</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/blob/main/evaluation/official/">evaluation/official/</a></span></li>
+    <li><span class="what">التشغيل الرسمي مسجّل (4 جولات مكتملة)؛ قياس اتفاق أحكام الحَكَم مع الوسوم البشرية لم يُنفَّذ، وقيس التحقق النصي للاستشهادات القرآنية فقط (Gold Set، غير مستقل)، والمراجعة البشرية: حالة واحدة من 12 (تحقق مصادر) و0 مراجعة شرعية متخصصة (لقطة وقت التشغيل؛ وجرت بعده مراجعة شرعية لاحقة لحالة واحدة: OFF-06)؛ وتحقق المصادر مراجعة لتعريف الحالة لا لأحكام مِعيار</span><span class="evidence">الدليل: <a class="ltr" lang="en" href="https://github.com/w7by4nrcfd-cpu/Miyar/tree/main/evaluation/official/">evaluation/official/</a></span></li>
     <li><span class="what">وحدة Red Teaming</span><span class="evidence">الملف <span class="mono">miyar/redteam.py</span> غير موجود بعد</span></li>
   </ul>
 </details>
