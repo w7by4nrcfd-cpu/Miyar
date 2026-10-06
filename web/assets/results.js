@@ -1,6 +1,6 @@
 // صفحة النتائج: تقرأ data/results.json (ناتج scripts/publish_results.py من evaluation/official/) وتعرضه دون أي رقم مصطنع.
 import {
-  AGREEMENT_NOTE, comparisonCaveat, comparisonRows, gateRuleNote, interpretResults, latestByAssistant, LEVELS, officialRunsHeadline,
+  AGREEMENT_NOTE, chartData, comparisonCaveat, comparisonRows, gateRuleNote, interpretResults, latestByAssistant, LEVELS, officialRunsHeadline,
   overallScoresNote, reasonDenominator,
 } from "./results-core.js";
 
@@ -147,6 +147,33 @@ function singleRunNotes(runs, stability) {
   return notes;
 }
 
+// رسم المقارنة لكل مستوى: عمود لكل جولة رسمية، ارتفاعه الدرجة (0–100)، وتحته عدد الحالات المحتسبة من حالات المستوى.
+// الأرقام كلها من results.json عبر chartData؛ والمستوى بلا درجة عمود فارغ مُعلَّم «—» لا صفر.
+function levelChart(runs) {
+  const data = chartData(runs);
+  const legend = el("ul", { class: "chart-legend", "aria-hidden": "true", "data-budget": "data" });
+  runs.forEach((r, i) => legend.append(el("li", {}, el("span", { class: `sw run-${r.assistant} run-i${i}` }), ltr(data[0].bars[i].run))));
+  const plot = el("div", { class: "chart-plot", "data-budget": "data", role: "img", "aria-label": "رسم مقارنة الدرجات لكل مستوى؛ القيم نفسها في جدول المقارنة أدناه" });
+  for (const g of data) {
+    const bars = el("div", { class: "chart-bars" });
+    g.bars.forEach((b, i) => {
+      const empty = b.score === null;
+      const tip = `${b.run} · ${g.label}: ${empty ? "بلا درجة" : b.score.toFixed(1)} (المحتسب ${b.n_scored ?? "—"} من ${b.n_cases})`;
+      const bar = el("span", { class: `chart-bar run-${b.assistant} run-i${i}` });
+      bar.style.height = `${empty ? 0 : b.score}%`; // عبر CSSOM: سياسة CSP تمنع سمة style المضمّنة
+      bars.append(el("div", { class: `chart-col${empty ? " empty" : ""}`, title: tip },
+        el("span", { class: "chart-track" }, el("span", { class: "chart-val ltr", lang: "en" }, empty ? "—" : b.score.toFixed(1)), bar),
+        el("span", { class: "chart-n ltr", lang: "en" }, `${b.n_scored ?? 0}/${b.n_cases}`)));
+    });
+    plot.append(el("div", { class: "chart-group", "data-metric": g.key }, bars, el("span", { class: "chart-label" }, g.label)));
+  }
+  return el("section", { class: "card chart-card", "aria-labelledby": "chart-h", id: "level-chart" },
+    el("h2", { id: "chart-h" }, "المقارنة بصرياً: كل جولة رسمية لكل مستوى"),
+    el("figure", { class: "chart" }, legend, el("div", { class: "chart-scroll" }, plot),
+      el("figcaption", { class: "muted small" },
+        "الرقم تحت العمود: المحتسب من حالات المستوى. «—» بلا درجة، لا صفر.")));
+}
+
 function renderOk(root, view) {
   const latest = latestByAssistant(view.runs);
   const nodes = [
@@ -156,6 +183,7 @@ function renderOk(root, view) {
     gateSection(view.gate, latest, view.runs),
     // «ماذا اكتشف مِعيار؟» قسم ثابت مولَّد من السجلات الرسمية؛ يُنقل إلى ما بعد قرار البوابة مباشرة
     ...(document.getElementById("discovered") ? [document.getElementById("discovered")] : []),
+    levelChart(view.runs),
     el("h2", { id: "compare-h" }, "المقارنة: baseline مقابل rag"),
     el("p", {}, "rag هو baseline نفسه مع بحث في المصادر المعتمدة فقط؛ ومِعيار لا يستعمل محرك حكمه داخل أي مساعد."),
     comparisonTable(latest),
@@ -173,6 +201,8 @@ function renderOk(root, view) {
     techDetails(latest, view.runs),
   );
   root.replaceChildren(...nodes);
+  // عرض أجزاء رسم أحكام الاستشهادات بأعدادها (CSSOM مسموح في CSP، بخلاف style المضمّن)
+  for (const seg of document.querySelectorAll(".verdict-bar span[data-n]")) seg.style.flexGrow = seg.dataset.n;
 }
 
 async function main() {

@@ -283,3 +283,18 @@ export function reasonDenominator(reason, gate, runs) {
   if (!c || !r) return null;
   return `(المرشحة من ${c.n_scored}، والمرجع من ${r.n_scored})`;
 }
+
+// بيانات رسم المقارنة: كل جولة رسمية بترتيب النشر، لكل مقياس (الكلية ثم A–D) درجتها ومقامها كما في الملف حرفياً.
+// لا يُحسب هنا أي رقم جديد: score وn_scored وn_cases منسوخة من results.json، والمستوى بلا درجة يبقى null.
+export const CHART_METRICS = [["overall", "الكلية"], ...LEVELS.map((lv) => [lv, `المستوى ${lv}`])];
+export function chartData(runs) {
+  return CHART_METRICS.map(([key, label]) => ({
+    key, label,
+    bars: runs.map((r) => {
+      const src = key === "overall" ? { score: r.overall_score, n_scored: r.n_scored, n_cases: r.n_cases } : r.levels[key];
+      return { run: shortRunId(r.run_id), assistant: r.assistant, score: src.score ?? null, n_scored: src.n_scored ?? null, n_cases: src.n_cases };
+    }),
+  }));
+}
+// official-2026-10-04-baseline-1 → baseline-1
+export const shortRunId = (id) => id.replace(/^official-\d{4}-\d{2}-\d{2}-/, "");
