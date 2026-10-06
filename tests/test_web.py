@@ -435,7 +435,7 @@ def test_review_wording_relative_not_brother_on_site_and_snapshot_explained():
     assert "وجرت بعده مراجعة شرعية لاحقة لحالة واحدة (OFF-06)" in status
     case_js = (WEB / "assets/case.js").read_text(encoding="utf-8")
     assert "راجعها بعد التشغيل خريج شريعة (قريب لصاحب المشروع)، والسجل الرسمي نفسه لم يتغير." in case_js
-    assert "لم تُجرَ مراجعة شرعية متخصصة." in case_js  # لبقية الحالات
+    assert "لم تُجرَ مراجعة شرعية لهذه الحالة." in case_js  # لبقية الحالات
 
 
 @pytest.mark.parametrize("page", [*PAGES, "case.html", "check.html", "replay.html"])
@@ -501,7 +501,8 @@ def test_discovered_section_numbers_recomputed_from_official_records():
     nh = sum(v for (k, _), v in st.items() if k == "hadith")
     assert f"الأحاديث ({nh}): {st[('hadith', 'supported')]} مؤيَّد، و{st[('hadith', 'needs_review')]} يحتاج تحقق" in t
     assert f"{refer} إجابات من {answers} أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية" in t
-    assert "«يحتاج تحقق» لا يعني أن الحديث خاطئ" in t and "لم يُقَس بعد" in t and "أحكام مِعيار المسجلة لا أخطاء مثبتة بشرياً" in t
+    assert "«يحتاج تحقق» لا يعني أن الحديث خاطئ" in t
+    assert ("تحقق بشري نصي للآيات" in t) if (ROOT / "evaluation/gold/quran/agreement.json").exists() else ("لم يُقَس بعد" in t)
     assert not re.search(r"[%٪]", t) and "أسوأ" not in t and "فرق رسم" not in t and "تحريف" not in t
     # كل حالة في القسم رابط إلى صفحتها
     for cid in re.findall(r'href="case.html\?id=([A-Z]+-\d+)"', sec):
@@ -513,7 +514,16 @@ def test_discovered_neutral_wording_for_single_letter_rulings():
     t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", _page("results.html")))
     if "في سجلي OFF-03" in t:
         assert ("في سجلي OFF-03 صُنّف الفرق wrong_or_missing / altered_text؛ والفرق المرصود حرف واحد (س/ص). "
-                "لم يُراجع هذا الحكم بشريًا، لذلك لا يُستدل منه وحده على صحة الحكم أو خطئه.") in t
+                "وأكّده التحقق البشري النصي دون حسم أهو خطأ أم وجه رسم أو قراءة.") in t
+
+
+def test_gold_line_from_locked_agreement():
+    """سطر Gold Set في النتائج محسوب من evaluation/gold/quran/agreement.json المقفل، بالأعداد والمقامات وحدوده، بلا نسب."""
+    g = json.loads((ROOT / "evaluation/gold/quran/agreement.json").read_text(encoding="utf-8"))["by_automated_verdict"]
+    t = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", _page("results.html")))
+    assert (f"وافق {g['supported']['agree']} من {g['supported']['of']} «مؤيَّد»، و{g['wrong_or_missing']['agree']} من "
+            f"{g['wrong_or_missing']['of']} «خاطئ»، و{g['needs_review']['agree']} من {g['needs_review']['of']} «يحتاج تحقق»") in t
+    assert "تحقق بشري نصي للآيات" in t and "صاحب المشروع، غير مستقل، ليس مراجعة شرعية" in t
 
 
 def test_replay_banner_same_in_page_and_js():

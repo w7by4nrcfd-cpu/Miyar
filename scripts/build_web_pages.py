@@ -613,7 +613,7 @@ def sources(f: dict) -> str:
   <li><strong>الحَكَم الآلي يطبّق معياراً مكتوباً ولا يضعه</strong>، ونموذج الحكم يختلف عن نموذج المساعد المُختبَر.</li>
   <li><strong>المراجعة:</strong> النوع المعتمد الآن <strong>تحقق المصادر</strong> (<span lang="en" class="ltr">source_check</span>) يجريه المشارك،
     وهو غير متخصص شرعياً، مقابل Quranpedia والدرر السنية والمكتبة الشاملة؛ وهذا <strong>ليس</strong> مراجعة شرعية.
-    والمراجعة الشرعية المتخصصة (<span lang="en" class="ltr">specialist</span>) اختيارية، وأُجريت بعد التشغيل الرسمي لحالة واحدة فقط (OFF-06)، ولا تُحسب حالة «معتمدة شرعياً» إلا بها.</li>
+    والمراجعة الشرعية (<span lang="en" class="ltr">specialist</span>) اختيارية؛ وجرت بعد التشغيل الرسمي مراجعة واحدة غير مستقلة لحالة واحدة (OFF-06)، ولا تُحسب حالة «معتمدة شرعياً» إلا بمراجعة مختص مستقل.</li>
   <li><strong>حدود المقارنة بين baseline وrag:</strong> {COMPARISON_CAVEAT}
     والأرقام من عدد محدود من الحالات (N مذكور بجانب كل رقم)، فلا تُعمَّم. والتنبيه نفسه ثابت بجوار المقارنة وقرار البوابة في <a href="results.html">النتائج</a>.</li>
 </ol>
@@ -849,7 +849,7 @@ def accuracy_item(f: dict) -> tuple:
     reviewed = (f"المراجعة البشرية: {'حالة واحدة' if sc == 1 else f'{sc} حالات'} من {total} (تحقق مصادر) و{sp} مراجعة شرعية متخصصة (لقطة وقت التشغيل؛ وجرت بعده مراجعة شرعية لاحقة لحالة واحدة: OFF-06)"
                 if total else "المراجعة البشرية: لا بيانات")
     text = (f"التشغيل الرسمي مسجّل ({_rounds(f['official_runs'])} مكتملة)؛ قياس اتفاق أحكام الحَكَم مع الوسوم البشرية لم يُنفَّذ، "
-            f"و{reviewed}؛ وتحقق المصادر مراجعة لتعريف الحالة لا لأحكام مِعيار")
+            f"وقيس التحقق النصي للاستشهادات القرآنية فقط (Gold Set، غير مستقل)، و{reviewed}؛ وتحقق المصادر مراجعة لتعريف الحالة لا لأحكام مِعيار")
     return (text, False, "evaluation/official/", True)
 
 
@@ -1030,6 +1030,29 @@ def _one_letter_diff(a: str, b: str) -> tuple[str, str] | None:
     return diffs[0] if len(diffs) == 1 else None
 
 
+GOLD_QURAN = ROOT / "evaluation/gold/quran/agreement.json"
+
+
+def gold_quran_facts() -> dict | None:
+    """نتيجة Gold Set المقفلة (evaluation/gold/quran/agreement.json، قراءة فقط): تحقق بشري نصي للاستشهادات القرآنية."""
+    if not GOLD_QURAN.exists():
+        return None
+    g = json.loads(GOLD_QURAN.read_text(encoding="utf-8"))
+    by = g["by_automated_verdict"]
+    return {"n": g["counts"]["n_items"], "cd": g["n_cannot_determine_excluded"],
+            **{k: (by[k]["agree"], by[k]["of"]) for k in ("supported", "needs_review", "wrong_or_missing")},
+            "off03_note": any("OFF-03" in n for n in g.get("notes", []))}
+
+
+def gold_sentence(gf: dict | None) -> str:
+    """جملة واحدة متسقة لحال اتفاق أحكام مِعيار مع تقييم بشري، بالأعداد والمقامات ودون نسب."""
+    if not gf:
+        return "صحة هذه الأحكام نفسها، أي اتفاقها مع تقييمات بشرية معتمدة: لم يُقَس بعد."
+    s, w, r = gf["supported"], gf["wrong_or_missing"], gf["needs_review"]
+    return (f"<a href=\"{BLOB}evaluation/gold/README.md\">تحقق بشري نصي للآيات</a> (صاحب المشروع، غير مستقل، ليس مراجعة شرعية): "
+            f"وافق {s[0]} من {s[1]} «مؤيَّد»، و{w[0]} من {w[1]} «خاطئ»، و{r[0]} من {r[1]} «يحتاج تحقق».")
+
+
 def discovered_facts() -> dict:
     """أحكام مِعيار المسجلة في evaluation/official/ (لا تُعدَّل)، معدودة آلياً مع مقاماتها."""
     runs = sorted((json.loads(p.read_text(encoding="utf-8")) for p in OFFICIAL_RUNS.glob("*.json")
@@ -1097,7 +1120,10 @@ def discovered_section(f: dict) -> str:
             a, b = next(iter(letters))
             reason = ws[0]["reason"]
             neutral.append(f"في سجلي {_esc(cid)} صُنّف الفرق <span class=\"ltr\" lang=\"en\">wrong_or_missing / {_esc(reason)}</span>؛ "
-                           f"والفرق المرصود حرف واحد ({_esc(a)}/{_esc(b)}). لم يُراجع هذا الحكم بشريًا، لذلك لا يُستدل منه وحده على صحة الحكم أو خطئه.")
+                           f"والفرق المرصود حرف واحد ({_esc(a)}/{_esc(b)}). "
+                           + ("وأكّده التحقق البشري النصي دون حسم أهو خطأ أم وجه رسم أو قراءة."
+                              if (gold_quran_facts() or {}).get("off03_note")
+                              else "لم يُراجع هذا الحكم بشريًا، لذلك لا يُستدل منه وحده على صحة الحكم أو خطئه."))
     neutral_html = "".join(f'<br><span class="muted small">{t}</span>' for t in neutral)
 
     ref_reasons = "، ".join(REFERRAL_REASON_LABELS.get(k, k) for k in d["referral_reasons"])
@@ -1110,14 +1136,14 @@ def discovered_section(f: dict) -> str:
     cases_of = lambda pairs: "، ".join(_case_link(cid) for cid in sorted({c for c, _ in pairs}))  # noqa: E731
     return f"""<section class="sec" id="discovered" aria-labelledby="disc-h">
 <h2 id="disc-h">ماذا اكتشف مِعيار في التشغيلات الرسمية؟</h2>
-<p class="muted small">{total} إجابة مُقيَّمة ({n_runs} جولات × {"/".join(map(str, per_case))} حالة)؛ أحكام مِعيار المسجلة لا أخطاء مثبتة بشرياً.</p>
+<p class="muted small">{total} إجابة مُقيَّمة ({n_runs} جولات × {"/".join(map(str, per_case))} حالة).</p>
 <ul class="disc-list">
   <li><strong>{sum(cit.values())} استشهاداً</strong> استخرجها مِعيار من {d["with_citations"]} إجابة فيها استشهاد (من {total}).</li>
   <li><strong>الآيات ({n_q}):</strong> {q["supported"]} مؤيَّد، و{q["needs_review"]} يحتاج تحقق، و{q["wrong_or_missing"]} خاطئ أو غير موجود في: {cases_of(wrong_pairs)}.{neutral_html}</li>
   <li><strong>الأحاديث ({n_h}):</strong> {h["supported"]} مؤيَّد، و{h["needs_review"]} يحتاج تحقق، و{h["wrong_or_missing"]} خاطئ أو غير موجود. «يحتاج تحقق» لا يعني أن الحديث خاطئ.</li>
   <li><strong>{len(d["referrals"])} إجابات من {total}</strong> أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية: {cases_of(d["referrals"])}.</li>
 </ul>
-<p class="muted small">صحة هذه الأحكام نفسها، أي اتفاقها مع تقييمات بشرية معتمدة: لم يُقَس بعد.</p>
+<p class="muted small" id="gold-line">{gold_sentence(gold_quran_facts())}</p>
 <details class="tech"><summary>التفصيل لكل جولة</summary>
 <div class="tech-body">
 <ul class="disc-list">

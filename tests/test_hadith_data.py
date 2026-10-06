@@ -5,7 +5,12 @@ import json
 from collections import Counter
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
+# حُذف المجلد من آخر نسخة (تاريخ git يحتفظ بنسخته المجلوبة آلياً)؛ فلا يُفحص إن غاب
+pytestmark = pytest.mark.skipif(not (ROOT / "data/unapproved/hadith").exists(),
+                                reason="data/unapproved/hadith/ محذوف من آخر نسخة")
 REQUIRED = ("id", "collection", "collection_ar", "number", "text", "grade", "grade_basis", "source")
 
 

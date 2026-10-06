@@ -6,14 +6,20 @@ import pytest
 from miyar.hadith_data import UNAPPROVED_DATA_DIR, Hadith, UnapprovedSource, load_hadiths, register_format
 
 ROOT = Path(__file__).resolve().parent.parent
+# المجموعة غير المعتمدة حُذفت من آخر نسخة (التاريخ يحتفظ بها)؛ اختبارات المحمّل بالبيانات الاصطناعية تبقى
+needs_unapproved = pytest.mark.skipif(not (UNAPPROVED_DATA_DIR / "hadith").exists(),
+                                      reason="data/unapproved/hadith/ محذوف من آخر نسخة")
 
 
 @pytest.fixture(scope="module")
 def store():
+    if not (UNAPPROVED_DATA_DIR / "hadith").exists():
+        pytest.skip("data/unapproved/hadith/ محذوف من آخر نسخة")
     # المجموعة الخارجية غير معتمدة: تُحمَّل في الاختبارات بإذن صريح فقط
     return load_hadiths(UNAPPROVED_DATA_DIR, allow_unapproved=True)
 
 
+@needs_unapproved
 def test_unapproved_set_is_refused_by_default():
     with pytest.raises(UnapprovedSource):
         load_hadiths(UNAPPROVED_DATA_DIR)

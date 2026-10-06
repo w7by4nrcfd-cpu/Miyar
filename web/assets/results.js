@@ -166,7 +166,7 @@ function renderOk(root, view) {
     "مراجعة واحدة لحالة واحدة من 12 (OFF-06) أجراها خريج شريعة هو قريب لصاحب المشروع، لا لجنة مستقلة؛ "
     + "وما عداها تحقق مصادر (source_check) يجريه المشارك وليس مراجعة شرعية."));
   nodes.push(el("p", { class: "muted small", id: "agreement-line" },
-    "وتحقق المصادر مراجعة لتعريف الحالات وسلوكها المتوقع، لا لأحكام مِعيار. ", AGREEMENT_NOTE));
+    "وتحقق المصادر لتعريف الحالات، لا لأحكام مِعيار. ", AGREEMENT_NOTE));
   nodes.push(
     stabilitySection(view.stability),
     ...singleRunNotes(view.runs, view.stability),

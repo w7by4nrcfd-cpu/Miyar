@@ -169,7 +169,7 @@ function recordSection(view, c, meta) {
     // راجعها بعد التشغيل الرسمي خريج شريعة (evaluation/review/SPECIALIST_REVIEW_2026-10-05.md)؛ والسجل نفسه لم يتغير
     sec.append(el("p", { class: "muted small" }, "راجعها بعد التشغيل خريج شريعة (قريب لصاحب المشروع)، والسجل الرسمي نفسه لم يتغير."));
   } else if (meta.specialist_reviews === 0) {
-    sec.append(el("p", { class: "muted small" }, "لم تُجرَ مراجعة شرعية متخصصة."));
+    sec.append(el("p", { class: "muted small" }, "لم تُجرَ مراجعة شرعية لهذه الحالة."));
   }
   return sec;
 }
