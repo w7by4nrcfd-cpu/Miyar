@@ -1133,6 +1133,23 @@ def _grouped(pairs: list) -> str:
     return "، ".join(f"{_case_link(cid)} (في {runs(rs)})" for cid, rs in sorted(by.items()))
 
 
+VERDICT_SEGMENTS = (("supported", "v-ok", "مؤيَّد"), ("needs_review", "v-rev", "يحتاج تحقق"), ("wrong_or_missing", "v-bad", "خاطئ أو غير موجود"))
+
+
+def verdict_chart(q: dict, h: dict) -> str:
+    """رسم أحكام الاستشهادات (الأعداد نفسها في القائمة فوقه): شريط لكل نوع، وعرض كل جزء بعدده (يضبطه results.js من data-n
+    لأن سياسة CSP تمنع style المضمّن). الجزء الذي عدده صفر لا يُرسم."""
+    def row(label: str, counts: dict) -> str:
+        segs = "".join(f'<span class="{cls}" data-n="{counts[st]}" title="{name}: {counts[st]}">{counts[st]}</span>'
+                       for st, cls, name in VERDICT_SEGMENTS if counts[st])
+        return (f'<div class="verdict-row"><span class="chart-label">{label} ({sum(counts.values())})</span>'
+                f'<div class="verdict-bar chart-plot-v" data-budget="data" role="img" aria-label="{label}: '
+                + "، ".join(f"{counts[st]} {name}" for st, _, name in VERDICT_SEGMENTS) + f'">{segs}</div></div>')
+    legend = "".join(f'<li class="{cls}">{name}</li>' for _, cls, name in VERDICT_SEGMENTS)
+    return (f'<figure class="chart verdict-chart" id="verdict-chart">{row("الآيات", q)}{row("الأحاديث", h)}'
+            f'<ul class="verdict-legend" aria-hidden="true">{legend}</ul></figure>')
+
+
 def discovered_section(f: dict) -> str:
     d = discovered_facts()
     if not d["runs"]:
@@ -1180,6 +1197,7 @@ def discovered_section(f: dict) -> str:
   <li><strong>الأحاديث ({n_h}):</strong> {h["supported"]} مؤيَّد، و{h["needs_review"]} يحتاج تحقق، و{h["wrong_or_missing"]} خاطئ أو غير موجود. «يحتاج تحقق» لا يعني أن الحديث خاطئ.</li>
   <li><strong>{len(d["referrals"])} إجابات من {total}</strong> أُحيلت إلى مراجعة بشرية ولم تدخل في الدرجة الآلية: {cases_of(d["referrals"])}.</li>
 </ul>
+{verdict_chart(q, h)}
 <p class="muted small" id="gold-line">{gold_sentence(gold_quran_facts())}</p>
 <details class="tech"><summary>التفصيل لكل جولة</summary>
 <div class="tech-body">

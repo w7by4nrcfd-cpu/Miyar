@@ -36,7 +36,8 @@ const latest = Object.values(Object.fromEntries(results.runs.map((r) => [r.assis
 
 // ميزانيات الكلمات الظاهرة (الأقسام المطوية مغلقة). النتائج: 530 مؤقتاً، أي أعلى من هدف 500؛ ما بقي ظاهراً هناك كله
 // تنبيهات أو أدلة محمية (سطر الدرجات ومقاماتها، وجملة OFF-03، والمراجعة الشرعية، والاتفاق، وتنبيه المقارنة) وجدول المقارنة.
-const BUDGET = { "index.html": 220, "results.html": 530, "cases.html": 600, "case.html?id=OFF-02": 400, "replay.html": 160, "check.html": 110 };
+// النتائج 560 = 530 + 30 كلمة لعنواني الرسمين وتعليقهما وتسميات صفوفهما (قيم الرسوم نفسها بيانات مستثناة، انظر open أدناه).
+const BUDGET = { "index.html": 220, "results.html": 560, "cases.html": 600, "case.html?id=OFF-02": 400, "replay.html": 160, "check.html": 110 };
 
 test("الأدلة المحمية والميزانيات في المتصفح", { skip: !pw && !process.env.CI ? "Playwright غير متوفر محلياً" : false }, async (t) => {
   assert.ok(pw, "Playwright مطلوب في CI");
@@ -64,7 +65,14 @@ test("الأدلة المحمية والميزانيات في المتصفح", {
       const open = async (pg, ready) => {
         await page.goto(base + pg, { waitUntil: "networkidle" });
         if (ready) await page.waitForSelector(ready);
-        return { visible: clean(await page.locator("main").innerText()), all: clean(await page.locator("main").textContent()) };
+        // قيم الرسوم (أعمدة وأعداد ومفاتيح ألوان، data-budget="data") بيانات لا نص؛ تُستثنى من ميزانية الكلمات،
+        // وصحتها مختبرة مقابل results.json في results-core.test.mjs. عناوين الرسوم وتعليقاتها تبقى محسوبة.
+        const prose = await page.evaluate(() => {
+          const m = document.querySelector("main").cloneNode(true);
+          for (const d of m.querySelectorAll('[data-budget="data"]')) d.remove();
+          document.body.append(m); m.hidden = false; const t = m.innerText; m.remove(); return t;
+        });
+        return { visible: clean(await page.locator("main").innerText()), all: clean(await page.locator("main").textContent()), prose: clean(prose) };
       };
       const words = (s) => s.split(" ").filter(Boolean).length;
 
@@ -97,6 +105,15 @@ test("الأدلة المحمية والميزانيات في المتصفح", {
         // مطوية لكنها في DOM: القاعدة وشرطها غير المُقاس
         for (const s of [results.gate.rule, gateRuleNote(results.gate.rule)]) assert.ok(all.includes(clean(s)), `مفقود: ${s}`);
         assert.ok(!visible.includes(clean(results.gate.rule)), "القاعدة يجب أن تكون مطوية");
+        // رسم المقارنة: قيمة كل عمود ومقامه كما في results.json (بلا درجة → «—» لا صفر)، ورسم الأحكام بالأعداد نفسها
+        const shown = await page.locator("#level-chart .chart-col").evaluateAll((cs) => cs.map((c) => [c.querySelector(".chart-val").textContent, c.querySelector(".chart-n").textContent]));
+        const expect = [["overall_score", "n_scored", "n_cases"], ...["A", "B", "C", "D"]].flatMap((m) => results.runs.map((r) => {
+          const src = Array.isArray(m) ? { score: r.overall_score, n_scored: r.n_scored, n_cases: r.n_cases } : r.levels[m];
+          return [src.score === null ? "—" : src.score.toFixed(1), `${src.n_scored ?? 0}/${src.n_cases}`];
+        }));
+        assert.deepEqual(shown, expect);
+        const segs = await page.locator("#verdict-chart .verdict-bar span").allTextContents();
+        assert.deepEqual(segs.map(Number), [count("quran", "supported"), count("quran", "needs_review"), count("quran", "wrong_or_missing"), count("hadith", "needs_review")]);
         // تنبيه المقارنة ظاهر مرة واحدة
         assert.equal(await page.locator(".caveat:visible").count(), 1);
         // التفاصيل تُفتح بلوحة المفاتيح
@@ -130,8 +147,8 @@ test("الأدلة المحمية والميزانيات في المتصفح", {
       await t.test(`${width}: ميزانية الكلمات الظاهرة (الأقسام المطوية مغلقة)`, async () => {
         for (const [pg, max] of Object.entries(BUDGET)) {
           const ready = pg.startsWith("results") ? "#discovered" : pg.startsWith("case.html") ? ".answer-card" : pg.startsWith("replay") ? ".replay-step" : null;
-          const { visible } = await open(pg, ready);
-          assert.ok(words(visible) <= max, `${pg}: ${words(visible)} كلمة ظاهرة > ${max}`);
+          const { prose } = await open(pg, ready);
+          assert.ok(words(prose) <= max, `${pg}: ${words(prose)} كلمة ظاهرة > ${max}`);
         }
       });
       assert.deepEqual(errors, []);
