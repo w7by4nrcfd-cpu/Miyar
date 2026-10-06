@@ -533,3 +533,66 @@ def test_replay_banner_same_in_page_and_js():
     m = re.search(r'export const BANNER = "([^"]+)"', js)
     assert m and m.group(1) == b.REPLAY_BANNER == "إعادة عرض لتشغيل رسمي محفوظ — ليس تشغيلاً حياً"
     assert b.REPLAY_BANNER in _page("replay.html")
+
+
+def _critical_recomputed():
+    """«مؤيَّد» خاطئ في الحالات الحرجة، يُعاد حسابه هنا مستقلاً عن المولّد من الملفات المقفلة."""
+    critical = {c["id"] for c in json.loads((WEB / "data/testcases.json").read_text(encoding="utf-8"))["cases"] if c.get("critical")}
+    key = {(k["run_id"], k["case_id"], k["citation_index"]): k["item_id"]
+           for k in json.loads((ROOT / "evaluation/gold/quran/key.json").read_text(encoding="utf-8"))["items"]}
+    labels = {x["item_id"]: x["human_verdict"] for x in json.loads((ROOT / "evaluation/gold/quran/labels.json").read_text(encoding="utf-8"))["labels"]}
+    sup, hadith_sup = [], 0
+    for p in sorted((ROOT / "evaluation/official").glob("official-*.json")):
+        run = json.loads(p.read_text(encoding="utf-8"))
+        for case in run["cases"]:
+            for i, cit in enumerate((case.get("judgement") or {}).get("citations") or []):
+                if case["id"] in critical and cit["status"] == "supported":
+                    if cit["citation"]["kind"] == "quran":
+                        sup.append(labels[key[(run["run_id"], case["id"], i)]])
+                    else:
+                        hadith_sup += 1
+    return sum(v != "matches_at_location" for v in sup), len(sup), hadith_sup
+
+
+def test_critical_supported_recomputed_from_locked_files():
+    """الرقم في الموقع وREADME محسوب من Gold Set والسجلات الرسمية المقفلة، لا مكتوب يدوياً؛ وبلا «دقة 100%» ولا «صفر أخطاء»."""
+    wrong, n, hadith_sup = _critical_recomputed()
+    assert hadith_sup == 0  # لا «مؤيَّد» لحديث في حالة حرجة، فالآيات وحدها تغطي المقياس
+    phrase = f"«مؤيَّد» خاطئ في الحالات الحرجة: {wrong} من {n} — تحقق نصي غير مستقل، للآيات فقط"
+    assert _load_builder().critical_supported_facts() == {"wrong": wrong, "n": n}
+    assert phrase in _text("results.html")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert phrase in readme
+    for bad in ("دقة 100", "100% دقة", "صفر أخطاء", "دقة مِعيار"):
+        assert bad not in readme and bad not in _text("results.html"), bad
+
+
+def test_readme_benefit_and_delivery_sections_match_locked_files():
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    g = json.loads((ROOT / "evaluation/gold/quran/agreement.json").read_text(encoding="utf-8"))
+    by = g["by_automated_verdict"]
+    assert "## لمن ينفع مِعيار، وما الذي ثبت فعلاً" in readme
+    assert (f"وافق {by['supported']['agree']} من {by['supported']['of']} «مؤيَّد»، و{by['wrong_or_missing']['agree']} من "
+            f"{by['wrong_or_missing']['of']} «خاطئ أو غير موجود»، و{by['needs_review']['agree']} من {by['needs_review']['of']} «يحتاج تحقق»") in readme
+    assert f"({g['counts']['n_items']} استشهاداً، {g['counts']['n_unique_quote_location_pairs']} زوجاً فريداً)" in readme
+    referrals = sum(1 for p in (ROOT / "evaluation/official").glob("official-*.json")
+                    for c in json.loads(p.read_text(encoding="utf-8"))["cases"] if (c.get("judgement") or {}).get("needs_human_review"))
+    assert f"{referrals} إجابات من 48 أحالها إلى مراجعة بشرية" in readme
+    assert "زمن التقييم، ونفع المستخدم" in readme and "لا Benefit Benchmark ضمن هذا التسليم" in readme
+    assert "غير مستقل، وليس مراجعة شرعية" in readme
+
+
+def test_freeze_claim_is_true():
+    """ادعاء التجميد في README وARCHITECTURE يطابق الواقع: لا تغيير في miyar/testsets/data/quran/data/hadith منذ e9facf4."""
+    for doc in ("README.md", "ARCHITECTURE.md"):
+        t = (ROOT / doc).read_text(encoding="utf-8")
+        assert "ولا `data/`؛" not in t and "ولا `data/` (" not in t, doc
+        assert "حُذف `data/unapproved/hadith/`" in t or "حُذفت من `data/unapproved/hadith/`" in t, doc
+    try:
+        out = subprocess.run(["git", "diff", "--name-only", "e9facf4", "HEAD", "--", "miyar", "testsets", "data/quran", "data/hadith"],
+                             cwd=ROOT, capture_output=True, text=True, timeout=30)
+    except Exception:
+        pytest.skip("git غير متاح")
+    if out.returncode != 0:
+        pytest.skip("تاريخ git غير كامل في هذه النسخة")
+    assert out.stdout.strip() == ""
