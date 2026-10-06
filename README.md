@@ -10,6 +10,32 @@
 **رابط التجربة المباشرة:** <https://miyar.w7by4nrcfd.workers.dev>. موقع ثابت على Cloudflare Workers بوضع «نتائج محفوظة»
 (لا استدعاء لأي نموذج من الموقع). وضع التشغيل الحي موجود في المحرك عبر سطر الأوامر وغير متاح من الموقع؛ الموقع يعرض نتائج محفوظة من تشغيلات رسمية.
 
+## في 90 ثانية (للمحكّم)
+- **ما هو:** أداة تختبر **المساعد الذكي** كنظام. تطرح عليه أسئلة موسومة بالمستوى، وتتحقق من إسناداته وسلوكه، وتُصدر قرار نشر أو منع. لا تتحقق من نص مفرد.
+- **الروابط:**
+  - [الموقع الحي](https://miyar.w7by4nrcfd.workers.dev).
+  - [المستودع](https://github.com/w7by4nrcfd-cpu/Miyar).
+  - الفيديو: الملف الحالي `miyar-demo.mp4` على الفرع [`media/video`](https://github.com/w7by4nrcfd-cpu/Miyar/tree/media/video). أُنتج قبل تحديثات 6 أكتوبر.
+- **جرّبه في أربع خطوات:**
+  1. افتح [النتائج](https://miyar.w7by4nrcfd.workers.dev/results): قرار البوابة، وما اكتشفه مِعيار، والمقارنة، مع المقامات.
+  2. افتح [إعادة العرض](https://miyar.w7by4nrcfd.workers.dev/replay): كيف حكم مِعيار على حالة محفوظة، خطوة بخطوة.
+  3. افتح [الحالات](https://miyar.w7by4nrcfd.workers.dev/cases)، ثم حالة مثل OFF-06: السؤال، والسلوك المتوقع، والسجل الرسمي.
+  4. افتح [المصادر والمنهجية](https://miyar.w7by4nrcfd.workers.dev/sources): من أين يأتي كل نص شرعي، وكيف يُحكم.
+- **أين النتائج الرسمية:**
+  - السجلات: [`evaluation/official/`](evaluation/official/)، وهي 4 جولات، وفي كل جولة 12 حالة.
+  - بصماتها: [`evaluation/gold/OFFICIAL_SHA256SUMS`](evaluation/gold/OFFICIAL_SHA256SUMS).
+  - التحقق البشري النصي: [`evaluation/gold/`](evaluation/gold/README.md).
+- **كيف تعيد التحقق دون أي مفتاح:**
+  - `python scripts/publish_results.py --check`: الموقع يطابق السجلات.
+  - `sha256sum -c evaluation/gold/OFFICIAL_SHA256SUMS`: السجلات لم تتغير.
+  - `python -m pytest -q` و`node --test tests/web/*.test.mjs`.
+- **الحدود:** في [الحدود المعروفة](#الحدود-المعروفة). أبرزها:
+  - مراجعة شرعية واحدة غير مستقلة.
+  - تحقق بشري نصي غير مستقل لأحكام الآيات فقط.
+  - لا قياس لزمن التقييم ولا لنفع المستخدم.
+- **التراخيص:** [SOURCES_LICENSES.md](SOURCES_LICENSES.md)، والكود برخصة MIT.
+- **الادعاءات وأدلتها وحدودها:** [docs/CLAIMS_EVIDENCE.md](docs/CLAIMS_EVIDENCE.md).
+
 ## كيف يعمل
 1. **المساعد المُختبَر يجيب** عن حالات الاختبار (`runner` + `assistants`): **baseline** يجيب مباشرة، و**rag** هو النموذج نفسه
    مع بحث محلي في المصادر المعتمدة فقط (آيات Quranpedia ومدخلات الملف اليدوي المكتملة).
