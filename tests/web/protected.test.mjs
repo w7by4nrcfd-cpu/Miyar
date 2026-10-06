@@ -37,7 +37,8 @@ const latest = Object.values(Object.fromEntries(results.runs.map((r) => [r.assis
 // ميزانيات الكلمات الظاهرة (الأقسام المطوية مغلقة). النتائج: 530 مؤقتاً، أي أعلى من هدف 500؛ ما بقي ظاهراً هناك كله
 // تنبيهات أو أدلة محمية (سطر الدرجات ومقاماتها، وجملة OFF-03، والمراجعة الشرعية، والاتفاق، وتنبيه المقارنة) وجدول المقارنة.
 // النتائج 560 = 530 + 30 كلمة لعنواني الرسمين وتعليقهما وتسميات صفوفهما (قيم الرسوم نفسها بيانات مستثناة، انظر open أدناه).
-const BUDGET = { "index.html": 220, "results.html": 560, "cases.html": 600, "case.html?id=OFF-02": 400, "replay.html": 160, "check.html": 110 };
+const BUDGET = { "index.html": 220, "results.html": 560, "cases.html": 600, "case.html?id=OFF-02": 400, "replay.html": 160, "check.html": 118 };
+// التحقق 118 = 110 + 8 كلمات لسطر عنوان «اختبر مساعدك» (القسم نفسه مطوي).
 
 test("الأدلة المحمية والميزانيات في المتصفح", { skip: !pw && !process.env.CI ? "Playwright غير متوفر محلياً" : false }, async (t) => {
   assert.ok(pw, "Playwright مطلوب في CI");

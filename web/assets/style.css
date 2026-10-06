@@ -502,3 +502,13 @@ main > h2, main section > h2 { scroll-margin-top: 96px; }
 .verdict-legend .v-rev::before { background: var(--rev-bg); border-color: var(--rev-bd); }
 .verdict-legend .v-bad::before { background: var(--bad-bg); border-color: var(--bad-bd); }
 @media (max-width: 480px) { .verdict-row { grid-template-columns: 1fr; gap: var(--s0); } }
+
+/* ---------- «اختبر مساعدك» في صفحة التحقق ---------- */
+.batch-box { margin: var(--s4) 0; }
+.batch-box > summary { cursor: pointer; font-size: var(--fs-lead); padding: var(--s1) 0; min-height: var(--tap); }
+.batch-list { margin: var(--s2) 0; padding-inline-start: 0; list-style: none; display: grid; gap: var(--s2); }
+.batch-item label { display: block; margin-bottom: var(--s1); line-height: 1.6; }
+.batch-item textarea { width: 100%; }
+.batch-summary { margin: var(--s2) 0; }
+.batch-badges { display: flex; flex-wrap: wrap; gap: var(--s1); }
+#batch-run { min-height: var(--control); border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); color: var(--text); font: inherit; padding: 0 var(--s2); }

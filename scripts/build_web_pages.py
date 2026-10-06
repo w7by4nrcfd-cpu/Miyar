@@ -1259,7 +1259,7 @@ def pages(f: dict) -> dict:
                         '<script type="module" src="assets/replay.js"></script>\n'),
         "check.html": ("تحقق من نص — مِعيار", CHECK_PAGE.replace("{quran_version}", f["quran_version"]).replace("{examples}", check_examples(f))
                        .replace("{hadith_count}", str(f["manual_done"])),
-                       '<script type="module" src="assets/check.js"></script>\n'),
+                       '<script type="module" src="assets/check.js"></script>\n<script type="module" src="assets/batch.js"></script>\n'),
     }
 
 
@@ -1381,6 +1381,10 @@ CHECK_PAGE = """
   <p class="muted" id="check-size">عند أول تحقق يُحمَّل نص المصحف مرة واحدة (نحو نصف ميغابايت مضغوطاً)، ثم يحفظه المتصفح.</p>
 </form>
 <div id="check-results" aria-live="polite"></div>
+<details class="card batch-box" id="batch"><summary><strong>اختبر مساعدك:</strong> إجاباته على الحالات الرسمية دفعة واحدة</summary>
+<p class="muted">الصق إجابة مساعدك عن كل سؤال من أسئلة <span class="ltr" lang="en">official_v0</span>، أو املأها بإجابات جولة رسمية محفوظة، فيفحص مِعيار إسنادات الإجابات كلها داخل متصفحك ويعدّ أحكامها. فحص الإسناد فقط، بلا حكم سلوك ولا قرار بوابة.</p>
+<div id="batch-root"></div>
+</details>
 <div class="limits-box" id="check-limits">
   <p class="limits-line muted">تفحص نصاً واحداً حرفياً؛ ليست تقييماً لمساعد ولا فتوى، والأحاديث المتاحة {hadith_count} فقط (وما عداها يحتاج تحقق).</p>
   <details class="tech"><summary>كل حدود هذه الصفحة</summary>
