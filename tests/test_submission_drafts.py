@@ -19,7 +19,7 @@ def test_drafts_exist_and_have_no_result_numbers():
 def test_drafts_state_no_specialist_review_and_placeholders():
     video = DRAFTS[0].read_text(encoding="utf-8")
     deck = DRAFTS[1].read_text(encoding="utf-8")
-    assert "لم تُجرَ مراجعة شرعية متخصصة" in video and "لم تُجرَ مراجعة شرعية متخصصة" in deck
+    assert "لم تُجرَ مراجعة شرعية مستقلة" in video and "لم تُجرَ مراجعة شرعية مستقلة" in deck and "OFF-06" in deck
     assert "≤ 2:00" in video
     for item in ("المشكلة", "الحل", "آلية العمل", "القيمة", "التقنيات", "خطة الاستمرار", "حالات التعارض", "صور من المنتج", "الفريق"):
         assert item in deck, item

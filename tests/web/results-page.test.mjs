@@ -89,7 +89,7 @@ test("صفحة النتائج: فارغة بصدق، ومقارنة وبوابة
         assert.equal(await page.locator("details#results-tech").getAttribute("open"), null);
         // الاتفاق مع التقييمات البشرية: نص «لم يُقَس بعد» بلا أي نسبة
         const agree = await page.locator("#agreement-line").innerText();
-        assert.match(agree, /اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد\./);
+        assert.match(agree, /اتفاق أحكام الأحاديث والسلوك مع تقييم بشري: لم يُقَس بعد\./);
         assert.match(agree, /لتعريف الحالات/);
         assert.doesNotMatch(agree, /[%٪]/);
         assert.equal(await page.locator("#gate-overall").count(), 1);

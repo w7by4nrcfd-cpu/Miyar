@@ -272,7 +272,7 @@ export function gateRuleNote(rule) {
 }
 
 /** حالة قياس الاتفاق: نص فقط؛ عدم القياس لا يعني 0% ولا 100%. */
-export const AGREEMENT_NOTE = "اتفاق أحكام مِعيار مع تقييمات بشرية معتمدة: لم يُقَس بعد.";
+export const AGREEMENT_NOTE = "اتفاق أحكام الأحاديث والسلوك مع تقييم بشري: لم يُقَس بعد.";
 
 /** مقام كل سبب منع على مستوى (من levels في results.json): «(المرشحة من 2، والمرجع من 1)»؛ أو null لسبب ليس مستوى. */
 export function reasonDenominator(reason, gate, runs) {
