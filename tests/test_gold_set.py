@@ -207,3 +207,23 @@ def test_behaviour_compute_excludes_referrals(tmp_path):
     referred = sum(1 for k in key if g._automated_checks(g.load_runs())[(k["run_id"], k["case_id"])].get("needs_human_review"))
     assert res["n_referred_no_automated_verdict"] == referred == 5
     assert "غير مستقل" in res["scope"] and "%" not in json.dumps(res, ensure_ascii=False)
+
+
+# ---------- النتيجة الفعلية المقفلة (الطبقة A) ----------
+def test_locked_quran_result_is_reproducible(tmp_path):
+    """الوسوم الفعلية مقفلة ببصمتها، وإعادة الحساب تعطي agreement.json نفسه (عدا وقت الحساب)."""
+    d = GOLD / "quran"
+    if not (d / "LOCK.json").exists():
+        pytest.skip("لم تُقفل وسوم بعد")
+    lock = _read(d / "LOCK.json")
+    assert g.sha256(d / "labels.json") == lock["labels_sha256"]
+    published = _read(d / "agreement.json")
+    shutil.copy(GOLD / g.SUMS_NAME, tmp_path / g.SUMS_NAME)
+    shutil.copytree(d, tmp_path / "quran")
+    again = g.cmd_compute("quran", ROOT, tmp_path)
+    published.pop("computed_at"), again.pop("computed_at")
+    assert again == published
+    text = (d / "agreement.json").read_text(encoding="utf-8")
+    for bad in ("%", "دقة مِعيار", "صفر أخطاء", "100"):
+        assert bad not in text
+    assert published["reviewer"]["reviewer_type"] == "owner_textual" and "غير مستقل" in published["reviewer"]["description"]

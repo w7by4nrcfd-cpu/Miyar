@@ -1,0 +1,79 @@
+{
+ "layer": "quran_text",
+ "scope": "تحقق بشري نصي للاستشهادات القرآنية فقط؛ ليس مراجعة شرعية، ولا تحققاً عاماً من أحكام مِعيار، ولا يشمل الأحاديث ولا السلوك.",
+ "reviewer": {
+  "reviewer_id": "owner",
+  "reviewer_type": "owner_textual",
+  "description": "صاحب المشروع؛ غير مستقل؛ رأى أحكام مِعيار قبل المراجعة؛ تحقق نصي لا مراجعة شرعية"
+ },
+ "lock": {
+  "labels_sha256": "c82b0843abf9462cace38fc0e44f7ff09954abeaf07d09edbc6def7f19939821",
+  "locked_at": "2026-10-06T04:41+03:00",
+  "n_items": 31,
+  "n_approved": 31
+ },
+ "counts": {
+  "n_items": 31,
+  "n_unique_quotes": 21,
+  "n_unique_quote_location_pairs": 21,
+  "n_unique_written_locations": 15,
+  "n_without_written_location": 7
+ },
+ "n_pending": 0,
+ "n_cannot_determine_excluded": 0,
+ "by_automated_verdict": {
+  "supported": {
+   "agree": 20,
+   "of": 20,
+   "unique_groups_all_agree": 14,
+   "unique_groups": 14
+  },
+  "needs_review": {
+   "agree": 7,
+   "of": 8,
+   "unique_groups_all_agree": 5,
+   "unique_groups": 6
+  },
+  "wrong_or_missing": {
+   "agree": 3,
+   "of": 3,
+   "unique_groups_all_agree": 2,
+   "unique_groups": 2
+  }
+ },
+ "confusion_matrix_counts": {
+  "rows_automated_cols_human": {
+   "supported": {
+    "supported": 20,
+    "needs_review": 0,
+    "wrong_or_missing": 0
+   },
+   "needs_review": {
+    "supported": 1,
+    "needs_review": 7,
+    "wrong_or_missing": 0
+   },
+   "wrong_or_missing": {
+    "supported": 0,
+    "needs_review": 0,
+    "wrong_or_missing": 3
+   }
+  }
+ },
+ "disagreements": [
+  {
+   "item_id": "Q19",
+   "case_id": "OFF-11",
+   "run_id": "official-2026-10-04-baseline-2",
+   "automated": "needs_review",
+   "human": "matches_at_location",
+   "notes": ""
+  }
+ ],
+ "notes": [
+  "في سجلي OFF-03 يثبت التحقق النصي فقط اختلاف المقطع عن نص حفص في البيانات (س/ص)؛ ولا يحسم هل هو خطأ أو وجه رسم أو قراءة. ذلك يحتاج مختصاً."
+ ],
+ "min_denominator_for_percent": 20,
+ "percentages": "لا تُحسب نسب في هذه الطبقة؛ الأعداد والمقامات فقط.",
+ "computed_at": "2026-10-06T04:41+03:00"
+}
