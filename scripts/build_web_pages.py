@@ -1053,6 +1053,41 @@ def gold_sentence(gf: dict | None) -> str:
             f"وافق {s[0]} من {s[1]} «مؤيَّد»، و{w[0]} من {w[1]} «خاطئ»، و{r[0]} من {r[1]} «يحتاج تحقق».")
 
 
+GOLD_KEY = ROOT / "evaluation/gold/quran/key.json"
+GOLD_LABELS = ROOT / "evaluation/gold/quran/labels.json"
+CRITICAL_PHRASE = "«مؤيَّد» خاطئ في الحالات الحرجة: {w} من {n} — تحقق نصي غير مستقل، للآيات فقط"
+
+
+def critical_supported_facts() -> dict | None:
+    """«مؤيَّد» خاطئ في الحالات الحرجة، محسوباً من الملفات المقفلة (قراءة فقط):
+    الحالات الحرجة من web/data/testcases.json، وأحكام «مؤيَّد» من evaluation/official/، والتحقق البشري النصي
+    من Gold Set (key.json وlabels.json). None إن لم يوجد Gold Set، أو وُجد «مؤيَّد» لحديث في حالة حرجة (لا تحقق بشري له)،
+    أو كان أي «مؤيَّد» حرج غير مُراجَع."""
+    if not (GOLD_KEY.exists() and GOLD_LABELS.exists()):
+        return None
+    critical = {c["id"] for c in json.loads(CASES_JSON.read_text(encoding="utf-8"))["cases"] if c.get("critical")}
+    status = {}
+    for p in sorted(OFFICIAL_RUNS.glob("official-*.json")):
+        run = json.loads(p.read_text(encoding="utf-8"))
+        for case in run["cases"]:
+            for i, cit in enumerate((case.get("judgement") or {}).get("citations") or []):
+                status[(run["run_id"], case["id"], i)] = (cit["citation"]["kind"], cit["status"])
+    sup = {k for k, (kind, st) in status.items() if k[1] in critical and st == "supported"}
+    if any(status[k][0] != "quran" for k in sup):
+        return None
+    key = {(k["run_id"], k["case_id"], k["citation_index"]): k["item_id"]
+           for k in json.loads(GOLD_KEY.read_text(encoding="utf-8"))["items"]}
+    labels = {x["item_id"]: x for x in json.loads(GOLD_LABELS.read_text(encoding="utf-8"))["labels"]}
+    verdicts = [labels.get(key.get(k), {}) for k in sup]
+    if any(v.get("review_status") != "approved" or v.get("human_verdict") == "cannot_determine" for v in verdicts):
+        return None
+    return {"wrong": sum(v["human_verdict"] != "matches_at_location" for v in verdicts), "n": len(verdicts)}
+
+
+def critical_sentence(cf: dict | None) -> str:
+    return CRITICAL_PHRASE.format(w=cf["wrong"], n=cf["n"]) + "." if cf else ""
+
+
 def discovered_facts() -> dict:
     """أحكام مِعيار المسجلة في evaluation/official/ (لا تُعدَّل)، معدودة آلياً مع مقاماتها."""
     runs = sorted((json.loads(p.read_text(encoding="utf-8")) for p in OFFICIAL_RUNS.glob("*.json")
@@ -1147,6 +1182,7 @@ def discovered_section(f: dict) -> str:
 <details class="tech"><summary>التفصيل لكل جولة</summary>
 <div class="tech-body">
 <ul class="disc-list">
+  {('<li id="critical-line">' + critical_sentence(critical_supported_facts()) + "</li>") if critical_supported_facts() else ""}
   <li>الآيات: {q["supported"]} مؤيَّد ({reasons_of("quran", "supported")})، و{q["needs_review"]} يحتاج تحقق ({reasons_of("quran", "needs_review")})، و{q["wrong_or_missing"]} خاطئ أو غير موجود ({reasons_of("quran", "wrong_or_missing")}) في: {_grouped(wrong_pairs)}.</li>
   <li>الأحاديث: {h["needs_review"]} يحتاج تحقق ({reasons_of("hadith", "needs_review")}).</li>
   <li>الإحالات ({ref_reasons}): {_grouped(d["referrals"])}.</li>

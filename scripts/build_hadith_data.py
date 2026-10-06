@@ -1,4 +1,4 @@
-"""توليد ملف الأحاديث المحلي data/unapproved/hadith/sahihayn.jsonl.gz (مجموعة غير معتمدة؛ انظر README المجلد).
+"""توليد ملف الأحاديث المحلي data/unapproved/hadith/sahihayn.jsonl.gz (مجموعة غير معتمدة؛ حُذف المجلد من آخر نسخة في 2026-10-06 ويبقى في تاريخ git؛ السكربت محفوظ للتوثيق).
 
 المصدر: fawazahmed0/hadith-api (ترخيص معلن: Unlicense؛ سلسلة المصادر غير واضحة — انظر SOURCES.md) بإصدار مثبّت برقم commit.
 الاستخدام:
