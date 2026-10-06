@@ -15,7 +15,7 @@
 - **الروابط:**
   - [الموقع الحي](https://miyar.w7by4nrcfd.workers.dev).
   - [المستودع](https://github.com/w7by4nrcfd-cpu/Miyar).
-  - الفيديو: الملف الحالي `miyar-demo.mp4` على الفرع [`media/video`](https://github.com/w7by4nrcfd-cpu/Miyar/tree/media/video). أُنتج قبل تحديثات 6 أكتوبر.
+  - الفيديو: `miyar-demo-v2.mp4` على الفرع [`media/video`](https://github.com/w7by4nrcfd-cpu/Miyar/tree/media/video)، والعرض التقديمي `Miyar_Presentation_v3.pdf` على الفرع [`media/deck`](https://github.com/w7by4nrcfd-cpu/Miyar/tree/media/deck). أُعدّا بمساعدة Claude Code.
 - **جرّبه في أربع خطوات:**
   1. افتح [النتائج](https://miyar.w7by4nrcfd.workers.dev/results): قرار البوابة، وما اكتشفه مِعيار، والمقارنة، مع المقامات.
   2. افتح [إعادة العرض](https://miyar.w7by4nrcfd.workers.dev/replay): كيف حكم مِعيار على حالة محفوظة، خطوة بخطوة.

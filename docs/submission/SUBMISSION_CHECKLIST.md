@@ -19,8 +19,8 @@
 - **الموقع الحي:** https://miyar.w7by4nrcfd.workers.dev
 - **المستودع (عام):** https://github.com/w7by4nrcfd-cpu/Miyar
 - **الفيديو:** `[رابط الفيديو النهائي]`
-  - الموجود الآن: `miyar-demo.mp4` على الفرع `media/video`.
-  - أُنتج قبل تحديثات 6 أكتوبر، أي قبل إعادة العرض وسطر Gold Set. فلا يُرفع قبل استبداله أو مراجعته.
+  - الموجود الآن: `miyar-demo-v2.mp4` على الفرع `media/video` (أقل من دقيقتين، تسجيل للموقع الحي بأرقامه الحالية).
+  - العرض التقديمي: `Miyar_Presentation_v3.pdf` على الفرع `media/deck`.
 
 ## 4. المصادر والأدوات والتراخيص (من [SOURCES_LICENSES.md](../../SOURCES_LICENSES.md))
 
