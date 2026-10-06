@@ -1,0 +1,191 @@
+{
+ "layer": "quran_text",
+ "items": [
+  {
+   "item_id": "Q01",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-02",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q02",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-01",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q03",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-09",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q04",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-04",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q05",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-01",
+   "citation_index": 3
+  },
+  {
+   "item_id": "Q06",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-03",
+   "citation_index": 1
+  },
+  {
+   "item_id": "Q07",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-11",
+   "citation_index": 1
+  },
+  {
+   "item_id": "Q08",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-09",
+   "citation_index": 1
+  },
+  {
+   "item_id": "Q09",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-03",
+   "citation_index": 2
+  },
+  {
+   "item_id": "Q10",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-03",
+   "citation_index": 1
+  },
+  {
+   "item_id": "Q11",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-02",
+   "citation_index": 1
+  },
+  {
+   "item_id": "Q12",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-03",
+   "citation_index": 1
+  },
+  {
+   "item_id": "Q13",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-01",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q14",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-09",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q15",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-01",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q16",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-01",
+   "citation_index": 2
+  },
+  {
+   "item_id": "Q17",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-11",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q18",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-03",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q19",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-11",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q20",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-02",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q21",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-09",
+   "citation_index": 2
+  },
+  {
+   "item_id": "Q22",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-03",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q23",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-11",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q24",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-09",
+   "citation_index": 3
+  },
+  {
+   "item_id": "Q25",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-01",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q26",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-02",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q27",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-02",
+   "citation_index": 2
+  },
+  {
+   "item_id": "Q28",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-01",
+   "citation_index": 1
+  },
+  {
+   "item_id": "Q29",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-03",
+   "citation_index": 0
+  },
+  {
+   "item_id": "Q30",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-03",
+   "citation_index": 2
+  },
+  {
+   "item_id": "Q31",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-11",
+   "citation_index": 0
+  }
+ ]
+}
