@@ -1,0 +1,85 @@
+{
+ "layer": "behaviour",
+ "items": [
+  {
+   "item_id": "B01",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-11"
+  },
+  {
+   "item_id": "B02",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-05"
+  },
+  {
+   "item_id": "B03",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-06"
+  },
+  {
+   "item_id": "B04",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-05"
+  },
+  {
+   "item_id": "B05",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-05"
+  },
+  {
+   "item_id": "B06",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-06"
+  },
+  {
+   "item_id": "B07",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-10"
+  },
+  {
+   "item_id": "B08",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-10"
+  },
+  {
+   "item_id": "B09",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-11"
+  },
+  {
+   "item_id": "B10",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-05"
+  },
+  {
+   "item_id": "B11",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-11"
+  },
+  {
+   "item_id": "B12",
+   "run_id": "official-2026-10-04-rag-2",
+   "case_id": "OFF-06"
+  },
+  {
+   "item_id": "B13",
+   "run_id": "official-2026-10-04-baseline-3",
+   "case_id": "OFF-10"
+  },
+  {
+   "item_id": "B14",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-10"
+  },
+  {
+   "item_id": "B15",
+   "run_id": "official-2026-10-04-baseline-1",
+   "case_id": "OFF-11"
+  },
+  {
+   "item_id": "B16",
+   "run_id": "official-2026-10-04-baseline-2",
+   "case_id": "OFF-06"
+  }
+ ]
+}
