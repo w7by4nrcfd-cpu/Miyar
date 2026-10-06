@@ -1,0 +1,456 @@
+{
+ "seed": "miyar-benefit-v2-2026-10-06",
+ "design": "ABBA كما في v1؛ قبل أول كتلة من كل حالة عنصرا إحماء لا يُحتسبان",
+ "condition_labels": {
+  "A": "Manual-only (يدوي)",
+  "B": "Miyar-assisted (بمساعدة مِعيار)"
+ },
+ "reviewers": {
+  "ind1": {
+   "reviewer_type": "independent_textual",
+   "description": "مراجع مستقل: لا صلة له بالمشروع، ولم يرَ المستودع ولا المفتاح ولا إجابات جلسة سابقة؛ تحقق نصي لا مراجعة شرعية"
+  },
+  "ind2": {
+   "reviewer_type": "independent_textual",
+   "description": "مراجع مستقل ثانٍ (اختياري) بتوزيع معكوس؛ الشروط نفسها؛ تحقق نصي لا مراجعة شرعية"
+  }
+ },
+ "sets": {
+  "ind1": {
+   "A": "S1",
+   "B": "S2"
+  },
+  "ind2": {
+   "A": "S2",
+   "B": "S1"
+  }
+ },
+ "set_items": {
+  "S1": [
+   "V2-T01",
+   "V2-T02",
+   "V2-T03",
+   "V2-T04",
+   "V2-T05",
+   "V2-T06",
+   "V2-T19",
+   "V2-T20",
+   "V2-T21",
+   "V2-T22",
+   "V2-T23",
+   "V2-T24"
+  ],
+  "S2": [
+   "V2-T07",
+   "V2-T08",
+   "V2-T09",
+   "V2-T10",
+   "V2-T11",
+   "V2-T12",
+   "V2-T13",
+   "V2-T14",
+   "V2-T15",
+   "V2-T16",
+   "V2-T17",
+   "V2-T18"
+  ]
+ },
+ "order": {
+  "ind1": [
+   {
+    "position": 1,
+    "item_id": "V2-W1",
+    "condition": "A",
+    "block": 0,
+    "warmup": true
+   },
+   {
+    "position": 2,
+    "item_id": "V2-W2",
+    "condition": "A",
+    "block": 0,
+    "warmup": true
+   },
+   {
+    "position": 3,
+    "item_id": "V2-T01",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 4,
+    "item_id": "V2-T02",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 5,
+    "item_id": "V2-T03",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 6,
+    "item_id": "V2-T04",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 7,
+    "item_id": "V2-T05",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 8,
+    "item_id": "V2-T06",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 9,
+    "item_id": "V2-W3",
+    "condition": "B",
+    "block": 2,
+    "warmup": true
+   },
+   {
+    "position": 10,
+    "item_id": "V2-W4",
+    "condition": "B",
+    "block": 2,
+    "warmup": true
+   },
+   {
+    "position": 11,
+    "item_id": "V2-T07",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 12,
+    "item_id": "V2-T08",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 13,
+    "item_id": "V2-T09",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 14,
+    "item_id": "V2-T10",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 15,
+    "item_id": "V2-T11",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 16,
+    "item_id": "V2-T12",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 17,
+    "item_id": "V2-T13",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 18,
+    "item_id": "V2-T14",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 19,
+    "item_id": "V2-T15",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 20,
+    "item_id": "V2-T16",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 21,
+    "item_id": "V2-T17",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 22,
+    "item_id": "V2-T18",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 23,
+    "item_id": "V2-T19",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 24,
+    "item_id": "V2-T20",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 25,
+    "item_id": "V2-T21",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 26,
+    "item_id": "V2-T22",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 27,
+    "item_id": "V2-T23",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 28,
+    "item_id": "V2-T24",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   }
+  ],
+  "ind2": [
+   {
+    "position": 1,
+    "item_id": "V2-W3",
+    "condition": "A",
+    "block": 0,
+    "warmup": true
+   },
+   {
+    "position": 2,
+    "item_id": "V2-W4",
+    "condition": "A",
+    "block": 0,
+    "warmup": true
+   },
+   {
+    "position": 3,
+    "item_id": "V2-T07",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 4,
+    "item_id": "V2-T08",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 5,
+    "item_id": "V2-T09",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 6,
+    "item_id": "V2-T10",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 7,
+    "item_id": "V2-T11",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 8,
+    "item_id": "V2-T12",
+    "condition": "A",
+    "block": 1,
+    "warmup": false
+   },
+   {
+    "position": 9,
+    "item_id": "V2-W1",
+    "condition": "B",
+    "block": 2,
+    "warmup": true
+   },
+   {
+    "position": 10,
+    "item_id": "V2-W2",
+    "condition": "B",
+    "block": 2,
+    "warmup": true
+   },
+   {
+    "position": 11,
+    "item_id": "V2-T01",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 12,
+    "item_id": "V2-T02",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 13,
+    "item_id": "V2-T03",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 14,
+    "item_id": "V2-T04",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 15,
+    "item_id": "V2-T05",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 16,
+    "item_id": "V2-T06",
+    "condition": "B",
+    "block": 2,
+    "warmup": false
+   },
+   {
+    "position": 17,
+    "item_id": "V2-T19",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 18,
+    "item_id": "V2-T20",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 19,
+    "item_id": "V2-T21",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 20,
+    "item_id": "V2-T22",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 21,
+    "item_id": "V2-T23",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 22,
+    "item_id": "V2-T24",
+    "condition": "B",
+    "block": 3,
+    "warmup": false
+   },
+   {
+    "position": 23,
+    "item_id": "V2-T13",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 24,
+    "item_id": "V2-T14",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 25,
+    "item_id": "V2-T15",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 26,
+    "item_id": "V2-T16",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 27,
+    "item_id": "V2-T17",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   },
+   {
+    "position": 28,
+    "item_id": "V2-T18",
+    "condition": "A",
+    "block": 4,
+    "warmup": false
+   }
+  ]
+ }
+}
