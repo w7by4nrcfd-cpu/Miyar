@@ -1,0 +1,38 @@
+{
+ "registered_at": "2026-10-06T05:03+03:00",
+ "seed": "miyar-benefit-2026-10-06",
+ "key_sha256": "38d675a417112504abd9bd1e0322c094e6034bdfc125c7ec7bbc1c148678c12f",
+ "files_sha256": {
+  "PROTOCOL.md": "842e18703b10ae36a4e7b84c6fd5537dd7b9dcf925cf06c00ee05922fb939878",
+  "items_blind.json": "e78eb95358039d869c55808f444a0dfb85b6721447ea30935e6b7e2924dfcab6",
+  "assignment.json": "74924742a464ff8e6db49bb9586afbcae497b6eead4f6c1256982b4fc414ceee",
+  "miyar_outputs.json": "3a71e9dcd36251a37845343af13556e5a2fd31ab00652f328ebfcaf91eb74f4c",
+  "tool/review_r1.html": "eb723e2f23e2746c02af604f2420591558ca5cabcaf73e1d41e39e538637d0d6",
+  "tool/review_r2.html": "863052769de1e5268ccf7fb226af62d21ac5b417c295ec43ff722abf87a254da"
+ },
+ "code_sha256": {
+  "scripts/benefit_benchmark.py": "89a960e48dd3bb89a576d8517ce83b580ca89dc225d0baedb9705197c5e7976e",
+  "scripts/benefit_tool_template.html": "0366b49100cc733f65977d50130fb32316a9bf0c78fecfead92c91a39aa6ce83"
+ },
+ "protected_sha256": {
+  "evaluation/official/README.md": "2bccb1919b6264467cbe56c1af8eb850baf076bca9d4fde556c00b45d9b0a81f",
+  "evaluation/official/official-2026-10-04-baseline-1.json": "284d177f7da22c89039ceb78031650fb817cf30928fdd4446b7623ac62e61f5a",
+  "evaluation/official/official-2026-10-04-baseline-2.json": "4fcfe3a8389b88b58a38dde2d2ea7bd5b0704253f7f644c6875f7609e55e512d",
+  "evaluation/official/official-2026-10-04-baseline-3.json": "8fb13a4a6605f2289682579b72a564ee7bde86b9a9ce6af9e7e65efbf388e90b",
+  "evaluation/official/official-2026-10-04-rag-2.json": "deb7736557e07e9cea2d6b8091d2e481750b9a9ebb3f71a5160e5be48d01714e",
+  "evaluation/official/official_run.schema.json": "b381948ba3ebb8df1d73afdeecea158bb144420fd106bd0890893d6c1dc5d853",
+  "evaluation/gold/OFFICIAL_SHA256SUMS": "9d0345c15f286f72f222ed2e0ba514439f242673fc97d4825bad1715fe527aa6",
+  "evaluation/gold/PROTOCOL.md": "5f98b7bf4e435c1665f4037d73ce198f0b699d34d59e49e3641d1b686e14d31c",
+  "evaluation/gold/README.md": "7ce29b0cdc2cb976957ce3611f1161f3e7b39cef8f3e2ba026333b24839cf7c2",
+  "evaluation/gold/behaviour/key.json": "538b4e35db3c3607cea3cc315764ce4901d9166e359d947df0452d65ee185dc3",
+  "evaluation/gold/behaviour/sheet_blind.json": "fe5072606a97fa814ab72eb1703ca01256c3098e0e56860759e393bd02cff4c5",
+  "evaluation/gold/behaviour/sheet_blind.md": "b081eb8db76c5ee801769236f4266666dfdbf1c0bc399f418a3627af8392e3f7",
+  "evaluation/gold/quran/LOCK.json": "c5e7b2377891b9297f925360b348c3b987123756e0f86f2a5f975fdf9df56c8f",
+  "evaluation/gold/quran/agreement.json": "fb1665ad2d99c074cca1e2e67a90a8f0edb8786551351fb26083efe0be034f08",
+  "evaluation/gold/quran/key.json": "2511403f36fc80ac4c6dbceb46a70c4163206ef09d9dbccfd3bb3aaa04cf0e77",
+  "evaluation/gold/quran/labels.json": "c82b0843abf9462cace38fc0e44f7ff09954abeaf07d09edbc6def7f19939821",
+  "evaluation/gold/quran/sheet_blind.json": "190fb7aab660731df7daca9492bd175da0515a06a04865a7c1ab8b29cedf551f",
+  "evaluation/gold/quran/sheet_blind.md": "59dd8a2c909ab8b75c2791598e6d5231a17578714b4eaff48a08594e44127377"
+ },
+ "note": "المفتاح لا يُرفع قبل قفل البيانات الخام؛ يُعاد توليده حتمياً من البذرة وتُطابق بصمته key_sha256."
+}

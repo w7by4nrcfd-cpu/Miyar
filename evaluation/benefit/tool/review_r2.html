@@ -1,0 +1,173 @@
+<title>جلسة قياس التحقق</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+/* Layout: one card at a time on a quiet ground; a slim status strip on top; the timer is invisible to the reviewer. */
+:root {
+  --bg: #f5f6f3; --paper: #ffffff; --ink: #1c2320; --muted: #5c6761; --line: #d8ddd7;
+  --manual: #8a4b14; --manual-soft: #f6ebdf; --assist: #1f6b52; --assist-soft: #e2efe8; --warn: #9a3b2b;
+  --f-ui: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --f-quran: "Amiri", "Traditional Arabic", "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121614; --paper: #1a201d; --ink: #e5ebe7; --muted: #9ba79f; --line: #2c3430;
+  --manual: #e6a76a; --manual-soft: #33261a; --assist: #6cc4a1; --assist-soft: #1c3028; --warn: #ec8f7d; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121614; --paper: #1a201d; --ink: #e5ebe7; --muted: #9ba79f; --line: #2c3430;
+  --manual: #e6a76a; --manual-soft: #33261a; --assist: #6cc4a1; --assist-soft: #1c3028; --warn: #ec8f7d; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 16px/1.7 var(--f-ui); direction: rtl; padding-inline: 16px; padding-block: 0 48px }
+main { max-width: 640px; margin-inline: auto; display: grid; gap: 16px }
+h1 { font-size: 1.3rem; margin: 18px 0 0; text-wrap: balance }
+h2 { font-size: 1.05rem; margin: 0 }
+p { margin: 0 }
+.strip { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); padding-block: 10px; border-bottom: 1px solid var(--line); display: flex; gap: 10px; align-items: center; justify-content: space-between; font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums }
+.pill { padding: 2px 10px; border-radius: 999px; font-weight: 600; font-size: .85rem }
+.pill.A { background: var(--manual-soft); color: var(--manual) }
+.pill.B { background: var(--assist-soft); color: var(--assist) }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 12px }
+.card.A { border-top: 4px solid var(--manual) }
+.card.B { border-top: 4px solid var(--assist) }
+.label { font-size: .8rem; color: var(--muted) }
+.quote { font-family: var(--f-quran); font-size: 1.45rem; line-height: 2.1; overflow-wrap: anywhere }
+.cited { font-weight: 600 }
+.notice { font-size: .85rem; color: var(--warn) }
+.miyar { background: var(--assist-soft); border-radius: 10px; padding: 12px; display: grid; gap: 6px }
+.miyar .v { font-weight: 600; color: var(--assist) }
+.miyar .t { font-family: var(--f-quran); font-size: 1.25rem; line-height: 2.05; overflow-wrap: anywhere }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px }
+legend { font-size: .8rem; color: var(--muted); margin-bottom: 6px }
+.opt { display: flex; gap: 10px; align-items: center; min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer }
+.opt input { width: 20px; height: 20px; flex: none }
+.opt:has(input:checked) { border-color: var(--ink) }
+textarea { width: 100%; font: inherit; font-size: .95rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-height: 44px; resize: vertical }
+.check { display: flex; gap: 8px; align-items: center; min-height: 44px; font-size: .9rem }
+button { font: inherit; font-weight: 600; min-height: 48px; border-radius: 8px; border: 0; cursor: pointer; padding-inline: 16px; background: var(--ink); color: var(--paper) }
+button:disabled { opacity: .4; cursor: not-allowed }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px }
+ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px }
+#out { font-family: ui-monospace, Menlo, monospace; font-size: .72rem; direction: ltr; min-height: 140px }
+.muted { color: var(--muted); font-size: .9rem }
+</style>
+
+<main>
+  <h1>جلسة قياس التحقق من الاستشهادات</h1>
+  <div class="strip"><span id="pos"></span><span id="cond"></span></div>
+  <div id="screen"></div>
+</main>
+
+<script>
+const DATA = {"reviewer": "r2", "build": "74924742a464ff8e6db49bb9586afbcae497b6eead4f6c1256982b4fc414ceee", "notice": "تنبيه: عناصر هذه التجربة محفزات اختبار، وبعضها مقطع معدل عمداً لأغراض الاختبار؛ لا يُعامل أي منها نصاً قرآنياً صحيحاً.", "verdicts": [["matches_at_location", "مطابق لنص المصحف عند الموضع الذي ذكره المساعد"], ["matches_no_location", "مطابق لنص المصحف، لكن لم يُذكر موضع محدد (سورة وآية)"], ["differs", "يختلف عن نص المصحف عند الموضع المذكور (حرف أو كلمة)"], ["wrong_location", "نص قرآني صحيح لكن في موضع غير المذكور"], ["not_quran", "ليس نصاً قرآنياً"], ["cannot_determine", "لا أستطيع الحكم"]], "sequence": [{"position": 1, "item_id": "W3", "condition": "A", "block": 0, "warmup": true, "quote": "«وَلَوْ أَنَّهُمْ رَضُوا مَا آتَاهُمُ اللَّهُ وَرَسُولُهُ وَقَالُوا»", "cited_as_written": "سورة التوبة، الآية 59"}, {"position": 2, "item_id": "W4", "condition": "A", "block": 0, "warmup": true, "quote": "{فَإِذَا رَكِبُوا فِي الْفُلْكِ ذَعَوُا اللَّهَ مُخْلِصِينَ لَهُ}", "cited_as_written": "سورة العنكبوت (29: 65)"}, {"position": 3, "item_id": "T07", "condition": "A", "block": 1, "warmup": false, "quote": "{قُرَنَاءَ فَزَيَّنُوا لَهُمْ مَا بَيْنَ أَيْذِيهِمْ وَمَا خَلْفَهُمْ}", "cited_as_written": "(فصلت: 25)"}, {"position": 4, "item_id": "T08", "condition": "A", "block": 1, "warmup": false, "quote": "{بِهِ مِنْ عَذَابِ يَوْمِ الْقِيَامَةِ مَا تُقُبِّلَ مِنْهُمْ ۖ}", "cited_as_written": "سورة المائدة (5: 36)"}, {"position": 5, "item_id": "T09", "condition": "A", "block": 1, "warmup": false, "quote": "﴿أَمْوَاتٌ غَيْرُ أَحْيَاءٍ ۖ وَمَا يَشْعُرُونَ أَيَّانَ﴾", "cited_as_written": "سورة النحل، الآية 21"}, {"position": 6, "item_id": "T10", "condition": "A", "block": 1, "warmup": false, "quote": "﴿الَّذِي يَخْتَلِفُونَ فِيهِ وَلِيَعْلَمَ الَّذِينَ كَفَرُوا أَنَّهُمْ كَانُوا كَاذِبِينَ﴾", "cited_as_written": "[النحل: 91]"}, {"position": 7, "item_id": "T11", "condition": "A", "block": 1, "warmup": false, "quote": "﴿مَنْ حَمَلْنَا مَعَ نُوحٍ ۚ إِنَّهُ كَانَ عَبْدًا شَكُورًا﴾", "cited_as_written": "سورة الإسراء، الآية 3"}, {"position": 8, "item_id": "T12", "condition": "A", "block": 1, "warmup": false, "quote": "﴿أَنَّكَ تَرَى خَاشِعَةً فَإِذَا أَنْزَلْنَا عَلَيْهَا الْمَاءَ اهْتَزَّتْ﴾", "cited_as_written": "سورة فصلت، الآية 39"}, {"position": 9, "item_id": "W1", "condition": "B", "block": 2, "warmup": true, "quote": "{وَرِزْقًا حَسَنًا ۗ إِنَّ فِي ذَٰلِكَ لَآيَةً لِقَوْمٍ}", "cited_as_written": "(النحل: 67)", "miyar": {"status": "مؤيَّد", "reason": "تطابق حرفي مع نص البيانات عند الموضع المذكور", "matched_ref": "16:67", "matched_text": "وَمِن ثَمَرَٰتِ ٱلنَّخِيلِ وَٱلۡأَعۡنَٰبِ تَتَّخِذُونَ مِنۡهُ سَكَرٗا وَرِزۡقًا حَسَنًاۚ إِنَّ فِي ذَٰلِكَ لَأٓيَةٗ لِّقَوۡمٖ يَعۡقِلُونَ", "suggestion": null}}, {"position": 10, "item_id": "W2", "condition": "B", "block": 2, "warmup": true, "quote": "«الْقُرْبَىٰ وَيَنْهَىٰ عَنِ الْفَخْشَاءِ وَالْمُنْكَرِ وَالْبَغْيِ ۚ»", "cited_as_written": "[النحل: 90]", "miyar": {"status": "خاطئ أو غير موجود", "reason": "قريب من نص الموضع المذكور لكنه ليس نصه (نقل محرّف)", "matched_ref": "16:90", "matched_text": "۞ إِنَّ ٱللَّهَ يَأۡمُرُ بِٱلۡعَدۡلِ وَٱلۡإِحۡسَٰنِ وَإِيتَآيِٕ ذِي ٱلۡقُرۡبَىٰ وَيَنۡهَىٰ عَنِ ٱلۡفَحۡشَآءِ وَٱلۡمُنكَرِ وَٱلۡبَغۡيِۚ يَعِظُكُمۡ لَعَلَّكُمۡ تَذَكَّرُونَ", "suggestion": {"ref": "16:90", "text": "۞ إِنَّ ٱللَّهَ يَأۡمُرُ بِٱلۡعَدۡلِ وَٱلۡإِحۡسَٰنِ وَإِيتَآيِٕ ذِي ٱلۡقُرۡبَىٰ وَيَنۡهَىٰ عَنِ ٱلۡفَحۡشَآءِ وَٱلۡمُنكَرِ وَٱلۡبَغۡيِۚ يَعِظُكُمۡ لَعَلَّكُمۡ تَذَكَّرُونَ"}}}, {"position": 11, "item_id": "T01", "condition": "B", "block": 2, "warmup": false, "quote": "{وَإِذَا صُرِفَتْ أَبْصَارُهُمْ تِلْقَاءَ أَصْحَابِ النَّارِ}", "cited_as_written": "سورة الأعراف (7: 47)", "miyar": {"status": "مؤيَّد", "reason": "تطابق حرفي مع نص البيانات عند الموضع المذكور", "matched_ref": "7:47", "matched_text": "۞ وَإِذَا صُرِفَتۡ أَبۡصَٰرُهُمۡ تِلۡقَآءَ أَصۡحَٰبِ ٱلنَّارِ قَالُواْ رَبَّنَا لَا تَجۡعَلۡنَا مَعَ ٱلۡقَوۡمِ ٱلظَّٰلِمِينَ", "suggestion": null}}, {"position": 12, "item_id": "T02", "condition": "B", "block": 2, "warmup": false, "quote": "«تَأْلَمُونَ فَإِنَّهُمْ يَأْلَمُونَ كَمَا تَأْلَمُونَ ۖ وَتَرْجُونَ مِنَ اللَّهِ»", "cited_as_written": "سورة النساء، الآية 104", "miyar": {"status": "مؤيَّد", "reason": "تطابق حرفي مع نص البيانات عند الموضع المذكور", "matched_ref": "4:104", "matched_text": "وَلَا تَهِنُواْ فِي ٱبۡتِغَآءِ ٱلۡقَوۡمِۖ إِن تَكُونُواْ تَأۡلَمُونَ فَإِنَّهُمۡ يَأۡلَمُونَ كَمَا تَأۡلَمُونَۖ وَتَرۡجُونَ مِنَ ٱللَّهِ مَا لَا يَرۡجُونَۗ وَكَانَ ٱللَّهُ عَلِيمًا حَكِيمًا", "suggestion": null}}, {"position": 13, "item_id": "T03", "condition": "B", "block": 2, "warmup": false, "quote": "«فَضْلًا مِنَ اللَّهِ وَنِعْمَةً ۚ وَاللَّهُ عَلِيمٌ حَكِيمٌ»", "cited_as_written": "(الحجرات: 2)", "miyar": {"status": "خاطئ أو غير موجود", "reason": "النص موجود في موضع آخر غير المذكور", "matched_ref": "49:8", "matched_text": "فَضۡلٗا مِّنَ ٱللَّهِ وَنِعۡمَةٗۚ وَٱللَّهُ عَلِيمٌ حَكِيمٞ", "suggestion": null}}, {"position": 14, "item_id": "T04", "condition": "B", "block": 2, "warmup": false, "quote": "{مَا أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۗ وَإِلَى}", "cited_as_written": "سورة الحج (22: 76)", "miyar": {"status": "خاطئ أو غير موجود", "reason": "قريب من نص الموضع المذكور لكنه ليس نصه (نقل محرّف)", "matched_ref": "22:76", "matched_text": "يَعۡلَمُ مَا بَيۡنَ أَيۡدِيهِمۡ وَمَا خَلۡفَهُمۡۚ وَإِلَى ٱللَّهِ تُرۡجَعُ ٱلۡأُمُورُ", "suggestion": {"ref": "22:76", "text": "يَعۡلَمُ مَا بَيۡنَ أَيۡدِيهِمۡ وَمَا خَلۡفَهُمۡۚ وَإِلَى ٱللَّهِ تُرۡجَعُ ٱلۡأُمُورُ"}}}, {"position": 15, "item_id": "T05", "condition": "B", "block": 2, "warmup": false, "quote": "﴿وَيَقُولُونَ طَاعَةٌ فَإِذَا بَرَزُوا مِنْ عِنْدِكَ بَيَّتَ طَائِفَةٌ﴾", "cited_as_written": "[النساء: 81]", "miyar": {"status": "مؤيَّد", "reason": "تطابق حرفي مع نص البيانات عند الموضع المذكور", "matched_ref": "4:81", "matched_text": "وَيَقُولُونَ طَاعَةٞ فَإِذَا بَرَزُواْ مِنۡ عِندِكَ بَيَّتَ طَآئِفَةٞ مِّنۡهُمۡ غَيۡرَ ٱلَّذِي تَقُولُۖ وَٱللَّهُ يَكۡتُبُ مَا يُبَيِّتُونَۖ فَأَعۡرِضۡ عَنۡهُمۡ وَتَوَكَّلۡ عَلَى ٱللَّهِۚ وَكَفَىٰ بِٱللَّهِ وَكِيلًا", "suggestion": null}}, {"position": 16, "item_id": "T06", "condition": "B", "block": 2, "warmup": false, "quote": "{مِنْ أَهْلِي وَإِنَّ وَعْذَكَ الْحَقُّ وَأَنْتَ أَحْكَمُ}", "cited_as_written": "(هود: 45)", "miyar": {"status": "خاطئ أو غير موجود", "reason": "قريب من نص الموضع المذكور لكنه ليس نصه (نقل محرّف)", "matched_ref": "11:45", "matched_text": "وَنَادَىٰ نُوحٞ رَّبَّهُۥ فَقَالَ رَبِّ إِنَّ ٱبۡنِي مِنۡ أَهۡلِي وَإِنَّ وَعۡدَكَ ٱلۡحَقُّ وَأَنتَ أَحۡكَمُ ٱلۡحَٰكِمِينَ", "suggestion": {"ref": "11:45", "text": "وَنَادَىٰ نُوحٞ رَّبَّهُۥ فَقَالَ رَبِّ إِنَّ ٱبۡنِي مِنۡ أَهۡلِي وَإِنَّ وَعۡدَكَ ٱلۡحَقُّ وَأَنتَ أَحۡكَمُ ٱلۡحَٰكِمِينَ"}}}, {"position": 17, "item_id": "T19", "condition": "B", "block": 3, "warmup": false, "quote": "﴿وَلِلَّهِ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۚ وَإِلَى﴾", "cited_as_written": "سورة آل عمران (3: 109)", "miyar": {"status": "مؤيَّد", "reason": "تطابق حرفي مع نص البيانات عند الموضع المذكور", "matched_ref": "3:109", "matched_text": "وَلِلَّهِ مَا فِي ٱلسَّمَٰوَٰتِ وَمَا فِي ٱلۡأَرۡضِۚ وَإِلَى ٱللَّهِ تُرۡجَعُ ٱلۡأُمُورُ", "suggestion": null}}, {"position": 18, "item_id": "T20", "condition": "B", "block": 3, "warmup": false, "quote": "«فِي السَّمَاوَا وَالْأَرْضِ طَوْعًا وَكَرْهًا وَظِلَالُهُمْ بِالْغُدُوِّ وَالْآصَالِ ۩»", "cited_as_written": "سورة الرعد (13: 15)", "miyar": {"status": "خاطئ أو غير موجود", "reason": "قريب من نص الموضع المذكور لكنه ليس نصه (نقل محرّف)", "matched_ref": "13:15", "matched_text": "وَلِلَّهِۤ يَسۡجُدُۤ مَن فِي ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِ طَوۡعٗا وَكَرۡهٗا وَظِلَٰلُهُم بِٱلۡغُدُوِّ وَٱلۡأٓصَالِ۩", "suggestion": {"ref": "13:15", "text": "وَلِلَّهِۤ يَسۡجُدُۤ مَن فِي ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِ طَوۡعٗا وَكَرۡهٗا وَظِلَٰلُهُم بِٱلۡغُدُوِّ وَٱلۡأٓصَالِ۩"}}}, {"position": 19, "item_id": "T21", "condition": "B", "block": 3, "warmup": false, "quote": "﴿لِلرَّحْمَٰنِ قَالُوا وَمَا الرَّحْمَٰنُ أَنَسْجُدُ لِمَا تَأْمُرُنَا وَزَادَهُمْ نُفُورًا﴾", "cited_as_written": "(الفرقان: 60)", "miyar": {"status": "مؤيَّد", "reason": "تطابق حرفي مع نص البيانات عند الموضع المذكور", "matched_ref": "25:60", "matched_text": "وَإِذَا قِيلَ لَهُمُ ٱسۡجُدُواْۤ لِلرَّحۡمَٰنِ قَالُواْ وَمَا ٱلرَّحۡمَٰنُ أَنَسۡجُدُ لِمَا تَأۡمُرُنَا وَزَادَهُمۡ نُفُورٗا۩", "suggestion": null}}, {"position": 20, "item_id": "T22", "condition": "B", "block": 3, "warmup": false, "quote": "﴿أُوتُوا الْكِتَابَ إِلَّا مِنْ بَعْدِ مَا جَاءَتْهُمُ الْبَيِّنَةُ﴾", "cited_as_written": "سورة البينة", "miyar": {"status": "يحتاج تحقق", "reason": "لم يُذكر موضع (سورة وآية)؛ النص موجود في البيانات", "matched_ref": "98:4", "matched_text": "وَمَا تَفَرَّقَ ٱلَّذِينَ أُوتُواْ ٱلۡكِتَٰبَ إِلَّا مِنۢ بَعۡدِ مَا جَآءَتۡهُمُ ٱلۡبَيِّنَةُ", "suggestion": null}}, {"position": 21, "item_id": "T23", "condition": "B", "block": 3, "warmup": false, "quote": "{إِلَيْكَ وَإِلَى الَّذِينَ مِنْ قَبْلِكَ اللَّهُ الْعَزِيزُ}", "cited_as_written": "سورة الشورى (42: 3)", "miyar": {"status": "مؤيَّد", "reason": "تطابق حرفي مع نص البيانات عند الموضع المذكور", "matched_ref": "42:3", "matched_text": "كَذَٰلِكَ يُوحِيٓ إِلَيۡكَ وَإِلَى ٱلَّذِينَ مِن قَبۡلِكَ ٱللَّهُ ٱلۡعَزِيزُ ٱلۡحَكِيمُ", "suggestion": null}}, {"position": 22, "item_id": "T24", "condition": "B", "block": 3, "warmup": false, "quote": "{بِإِذْنِ رَبِّهَا ۗ وَيَظْرِبُ اللَّهُ الْأَمْثَالَ لِلنَّاسِ لَعَلَّهُمْ}", "cited_as_written": "[إبراهيم: 25]", "miyar": {"status": "خاطئ أو غير موجود", "reason": "قريب من نص الموضع المذكور لكنه ليس نصه (نقل محرّف)", "matched_ref": "14:25", "matched_text": "تُؤۡتِيٓ أُكُلَهَا كُلَّ حِينِۭ بِإِذۡنِ رَبِّهَاۗ وَيَضۡرِبُ ٱللَّهُ ٱلۡأَمۡثَالَ لِلنَّاسِ لَعَلَّهُمۡ يَتَذَكَّرُونَ", "suggestion": {"ref": "14:25", "text": "تُؤۡتِيٓ أُكُلَهَا كُلَّ حِينِۭ بِإِذۡنِ رَبِّهَاۗ وَيَضۡرِبُ ٱللَّهُ ٱلۡأَمۡثَالَ لِلنَّاسِ لَعَلَّهُمۡ يَتَذَكَّرُونَ"}}}, {"position": 23, "item_id": "T13", "condition": "A", "block": 4, "warmup": false, "quote": "﴿فَآمِنُوا بِاللَّهِ وَرَسُولِهِ وَالنُّورِ الَّدِي أَنْزَلْنَا ۚ وَاللَّهُ﴾", "cited_as_written": "[التغابن: 8]"}, {"position": 24, "item_id": "T14", "condition": "A", "block": 4, "warmup": false, "quote": "«الطَّاغُوتَ ۖ فَمِنْهُمْ مَنْ هَدَى اللَّهُ وَمِنْهُمْ مَنْ»", "cited_as_written": "سورة النحل (16: 36)"}, {"position": 25, "item_id": "T15", "condition": "A", "block": 4, "warmup": false, "quote": "{آيَاتٍ بَيِّنَاتٍ ۖ وَمَا يَكْفُرُ بِهَا إِلَّا}", "cited_as_written": "سورة البقرة"}, {"position": 26, "item_id": "T16", "condition": "A", "block": 4, "warmup": false, "quote": "«أَمْوَالُنَا وَأَهْلُونَا فَاسْتَغْفِرْ لَنَا ۚ يَقُولُونَ بِأَلْسِنَتِهِمْ مَا لَيْسَ»", "cited_as_written": "[الفتح: 11]"}, {"position": 27, "item_id": "T17", "condition": "A", "block": 4, "warmup": false, "quote": "﴿بِآيَاتِ بِّهِمْ لَهُمْ عَذَابٌ مِنْ رِجْزٍ﴾", "cited_as_written": "سورة الجاثية، الآية 11"}, {"position": 28, "item_id": "T18", "condition": "A", "block": 4, "warmup": false, "quote": "﴿إِنِّي قَدْ جَاءَنِي مِنَ الْعِلْمِ مَا لَمْ يَأْتِكَ فَاتَّبِعْنِي﴾", "cited_as_written": "سورة مريم (19: 43)"}]};
+const KEY = "miyar-benefit-" + DATA.reviewer + "-" + DATA.build.slice(0, 12);
+const COND = { A: "يدوي — بلا مِعيار", B: "بمساعدة مِعيار" };
+let st = { done: [], current: null, started: false };
+try { st = JSON.parse(localStorage.getItem(KEY) || "null") || st; } catch {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const screen = document.getElementById("screen");
+const riyadh = (ms) => new Date(ms + 3 * 3600e3).toISOString().slice(0, 19) + "+03:00";
+
+function strip(i) {
+  const s = DATA.sequence[i];
+  document.getElementById("pos").textContent = s ? `العنصر ${i + 1} من ${DATA.sequence.length}` : "انتهت الجلسة";
+  const c = document.getElementById("cond"); c.textContent = "";
+  if (s) { const p = el("span", "pill " + s.condition, COND[s.condition]); c.append(p); }
+}
+
+function intro() {
+  strip(-1); screen.textContent = "";
+  const c = el("section", "card");
+  c.append(el("h2", null, "قبل البدء"));
+  const ul = el("ul");
+  for (const t of [
+    `${DATA.sequence.length} عنصراً بترتيب مقفل مسبقاً. كل عنصر يظهر مرة واحدة، ولا رجوع إلى عنصر محفوظ.`,
+    "لكل عنصر: اضغط «ابدأ العنصر» فيظهر المقطع ويبدأ التوقيت، واضغط «احفظ الحكم» حين تنتهي فيتوقف.",
+    "في كتل «يدوي»: استخدم أي مصحف أو تطبيق (مثل quran.com)، ولا تفتح مِعيار ولا موقعه.",
+    "في كتل «بمساعدة مِعيار»: تظهر أدلة مِعيار مع العنصر. تحقق منها ولا تقبلها دون نظر؛ ويجوز لك فتح المصحف.",
+    "الاستراحة بين العناصر مسموحة (قبل «ابدأ العنصر»)، لا أثناءه. إن انقطعت أثناء عنصر فعلّم «حدث انقطاع».",
+    "قاعدة المطابقة كما في Gold Set: تُتجاهل الحركات وصور الألف والهمزة و(ى/ي) و(ة/ه) والترقيم؛ أي حرف آخر أو كلمة ناقصة = «يختلف»؛ المقطع الجزئي مقبول؛ ذكر السورة وحدها ليس موضعاً محدداً.",
+    DATA.notice,
+  ]) ul.append(el("li", null, t));
+  c.append(ul);
+  const b = el("button", null, "ابدأ الجلسة");
+  b.addEventListener("click", () => { st.started = true; save(); render(); });
+  c.append(b); screen.append(c);
+}
+
+function waiting(i) {
+  const s = DATA.sequence[i]; strip(i); screen.textContent = "";
+  const prev = DATA.sequence[i - 1];
+  const c = el("section", "card " + s.condition);
+  if (!prev || prev.condition !== s.condition) {
+    c.append(el("h2", null, `كتلة جديدة: ${COND[s.condition]}`));
+    c.append(el("p", "muted", s.condition === "A" ? "تحقق يدوياً بالمصحف. لا تفتح مِعيار." : "ستظهر أدلة مِعيار مع كل عنصر."));
+  }
+  if (s.warmup) c.append(el("p", "muted", "عنصر إحماء (لا يدخل في الحساب)، لكن عامله كغيره."));
+  const b = el("button", null, "ابدأ العنصر");
+  b.addEventListener("click", () => { st.current = { i, started_at_ms: Date.now() }; save(); render(); });
+  c.append(b); screen.append(c);
+}
+
+function item(i) {
+  const s = DATA.sequence[i]; strip(i); screen.textContent = "";
+  const c = el("section", "card " + s.condition);
+  c.append(el("p", "notice", DATA.notice));
+  c.append(el("p", "label", "المقطع كما ورد"), el("p", "quote", s.quote));
+  c.append(el("p", "label", "الموضع كما كُتب"), el("p", "cited", s.cited_as_written));
+  if (s.miyar) {
+    const m = el("div", "miyar");
+    m.append(el("p", "v", `حكم مِعيار: ${s.miyar.status}`), el("p", null, `السبب: ${s.miyar.reason}`));
+    if (s.miyar.matched_text) m.append(el("p", "label", `نص البيانات ${s.miyar.matched_ref ? "(" + s.miyar.matched_ref + ")" : ""}`), el("p", "t", s.miyar.matched_text));
+    if (s.miyar.suggestion && s.miyar.suggestion.text && !s.miyar.matched_text)
+      m.append(el("p", "label", `أقرب آية في البيانات (${s.miyar.suggestion.ref})`), el("p", "t", s.miyar.suggestion.text));
+    c.append(m);
+  }
+  const fs = el("fieldset"); fs.append(el("legend", null, "حكمك"));
+  let chosen = null;
+  const btn = el("button", null, "احفظ الحكم"); btn.disabled = true;
+  for (const [v, label] of DATA.verdicts) {
+    const l = el("label", "opt"); const r = document.createElement("input");
+    r.type = "radio"; r.name = "v"; r.value = v; r.id = `v-${i}-${v}`;
+    r.addEventListener("change", () => { chosen = v; btn.disabled = false; });
+    l.append(r, el("span", null, label)); fs.append(l);
+  }
+  const notes = document.createElement("textarea"); notes.id = `n-${i}`; notes.placeholder = "ملاحظات (اختياري)"; notes.setAttribute("aria-label", "ملاحظات");
+  const ck = el("label", "check"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = `int-${i}`;
+  ck.append(cb, el("span", null, "حدث انقطاع أثناء هذا العنصر"));
+  btn.addEventListener("click", () => {
+    const end = Date.now(), cur = st.current;
+    st.done.push({ position: s.position, item_id: s.item_id, condition: s.condition, block: s.block, warmup: s.warmup,
+      started_at_ms: cur.started_at_ms, submitted_at_ms: end, duration_ms: end - cur.started_at_ms,
+      started_at: riyadh(cur.started_at_ms), submitted_at: riyadh(end),
+      human_verdict: chosen, notes: notes.value, interrupted: cb.checked || !!cur.reloaded });
+    st.current = null; save(); render();
+  });
+  c.append(fs, notes, ck, btn); screen.append(c);
+}
+
+function finish() {
+  strip(DATA.sequence.length); screen.textContent = "";
+  const c = el("section", "card");
+  c.append(el("h2", null, "انتهت الجلسة"), el("p", "muted", "انسخ البيانات الخام وألصقها في المحادثة كما هي، دون تعديل."));
+  const out = document.createElement("textarea"); out.id = "out"; out.readOnly = true; out.setAttribute("aria-label", "البيانات الخام");
+  out.value = JSON.stringify({ reviewer: DATA.reviewer, build: DATA.build,
+    reviewer_info: { reviewer_type: "owner_nonindependent", description: "صاحب المشروع؛ غير مستقل؛ تحقق نصي لا مراجعة شرعية" },
+    user_agent: navigator.userAgent, records: st.done });
+  const msg = el("p", "muted");
+  const b = el("button", null, "انسخ البيانات الخام");
+  b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(out.value); msg.textContent = "نُسخت. ألصقها في المحادثة."; }
+    catch { out.focus(); out.select(); msg.textContent = "حُدد النص. انسخه يدوياً."; }
+  });
+  c.append(b, msg, out); screen.append(c);
+}
+
+function render() {
+  const i = st.done.length;
+  if (!st.started) return intro();
+  if (i >= DATA.sequence.length) return finish();
+  if (st.current && st.current.i === i) return item(i);
+  return waiting(i);
+}
+if (st.current) { st.current.reloaded = true; save(); }
+render();
+</script>
