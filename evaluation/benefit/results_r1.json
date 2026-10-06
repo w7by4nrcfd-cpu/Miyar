@@ -1,0 +1,46 @@
+{
+ "primary_endpoint": "median_seconds per item: A (Manual-only) vs B (Miyar-assisted)",
+ "by_condition": {
+  "A": {
+   "n_items": 12,
+   "median_seconds": 8.5,
+   "total_seconds": 108.2,
+   "min_seconds": 2.0,
+   "max_seconds": 18.9,
+   "correct": 11,
+   "problems_detected": 6,
+   "n_problem_items": 6,
+   "false_alarms": 0,
+   "n_clean_items": 6,
+   "cannot_determine": 0,
+   "interrupted": 0
+  },
+  "B": {
+   "n_items": 12,
+   "median_seconds": 7.5,
+   "total_seconds": 89.9,
+   "min_seconds": 2.1,
+   "max_seconds": 10.7,
+   "correct": 10,
+   "problems_detected": 5,
+   "n_problem_items": 6,
+   "false_alarms": 0,
+   "n_clean_items": 6,
+   "cannot_determine": 0,
+   "interrupted": 0,
+   "disagreed_with_miyar": 2,
+   "disagreed_and_reviewer_correct": 0
+  }
+ },
+ "preregistered_interpretation": "negative",
+ "miyar_status_matches_key": {
+  "agree": 24,
+  "of": 24
+ },
+ "percentages": "لا نسب مئوية؛ أعداد ومقامات وأزمنة فعلية فقط.",
+ "reviewer": {
+  "reviewer_type": "owner_nonindependent",
+  "description": "صاحب المشروع؛ غير مستقل؛ تحقق نصي لا مراجعة شرعية"
+ },
+ "computed_at": "2026-10-06T05:32+03:00"
+}

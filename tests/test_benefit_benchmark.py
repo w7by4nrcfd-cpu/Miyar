@@ -236,3 +236,20 @@ def test_interpretation_rule():
         a = {"median_seconds": ma, "correct": ca, "problems_detected": da}
         bb = {"median_seconds": mb, "correct": cb, "problems_detected": db}
         assert b.interpret(a, bb) == want
+
+
+# ---------- النتيجة الفعلية المقفلة (r1) ----------
+def test_locked_r1_result_is_reproducible(tmp_path):
+    """البيانات الخام مقفلة ببصمتها، والمفتاح المكشوف يطابق بصمته المسجّلة، وإعادة الحساب تعطي النتيجة المحفوظة."""
+    if not (BEN / "results_r1.json").exists():
+        pytest.skip("لم تُحسب نتيجة بعد")
+    assert b.sha256(BEN / "raw_r1.json") == _read(BEN / "LOCK_r1.json")["raw_sha256"]
+    assert b.sha256(BEN / "key.json") == _read(BEN / b.PREREG)["key_sha256"]
+    d = tmp_path / "benefit"
+    shutil.copytree(BEN, d)
+    again = b.cmd_compute("r1", ROOT, d)
+    saved = _read(BEN / "results_r1.json")
+    again.pop("computed_at"), saved.pop("computed_at")
+    assert again == saved
+    text = (BEN / "results_r1.json").read_text(encoding="utf-8")
+    assert "%" not in text and saved["reviewer"]["reviewer_type"] == "owner_nonindependent"
