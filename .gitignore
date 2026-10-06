@@ -8,3 +8,12 @@ venv/
 *.db
 runs/
 node_modules/
+# ملفات محلية لا تُتتبَّع
+.DS_Store
+Thumbs.db
+*.egg-info/
+*.swp
+*.orig
+.ipynb_checkpoints/
+test-results/
+playwright-report/
